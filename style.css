@@ -213,12 +213,70 @@ body[data-page="ad"] .post-grid {
   padding: 20px;
 }
 
+.post-body {
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.post-body h3,
+.post-body h4 {
+  margin: 28px 0 12px;
+  color: var(--accent-green);
+}
+
+.post-body p,
+.post-body ul,
+.post-body ol,
+.post-body blockquote {
+  margin: 0 0 14px;
+}
+
+.post-body ul,
+.post-body ol {
+  padding-left: 22px;
+}
+
+.post-body li {
+  margin-bottom: 8px;
+}
+
+.post-body blockquote {
+  border-left: 3px solid var(--accent-blue);
+  padding: 10px 14px;
+  background: rgba(88, 166, 255, 0.08);
+  color: var(--text);
+}
+
+.post-body code {
+  font-family: inherit;
+}
+
 .post-article pre {
   margin: 14px 0 0;
   background: #0b1016;
   border: 1px solid var(--border);
   padding: 12px;
   overflow-x: auto;
+}
+
+.post-body pre {
+  margin: 14px 0;
+}
+
+.post-body img {
+  display: block;
+  width: 100%;
+  max-width: 980px;
+  margin: 10px 0 18px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #0b1016;
+}
+
+.post-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
 }
 
 @media (max-width: 980px) {
