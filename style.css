@@ -128,18 +128,64 @@ a:hover { color: var(--accent-green); }
 
 .lang-toggle {
   margin-left: auto;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  min-width: 154px;
+  height: 40px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--text);
-  padding: 8px 12px;
-  border-radius: 4px;
+  padding: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s ease;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .lang-toggle:hover {
   border-color: var(--accent-green);
+}
+
+.lang-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 255, 156, 0.18);
+}
+
+.lang-toggle-slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  border: 1px solid var(--accent-green);
+  border-radius: 6px;
+  background: rgba(0, 255, 156, 0.08);
+  box-shadow: inset 0 0 18px rgba(0, 255, 156, 0.06);
+  transition: transform 0.22s ease;
+}
+
+.lang-toggle[data-lang="zh"] .lang-toggle-slider {
+  transform: translateX(100%);
+}
+
+.lang-toggle-option {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 50%;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1;
+  color: var(--text);
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.lang-toggle[data-lang="en"] .lang-toggle-option[data-lang-option="en"],
+.lang-toggle[data-lang="zh"] .lang-toggle-option[data-lang-option="zh"] {
   color: var(--accent-green);
+  text-shadow: 0 0 10px rgba(0, 255, 156, 0.2);
 }
 
 .content-head h2 {
@@ -271,6 +317,11 @@ body[data-page="ad"] .post-grid {
   border: 1px solid var(--border);
   border-radius: 6px;
   background: #0b1016;
+}
+
+.post-body img.post-image-small {
+  width: 50%;
+  min-width: 220px;
 }
 
 .post-body hr {
