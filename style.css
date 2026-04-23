@@ -1,0 +1,239 @@
+:root {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --muted: #8b949e;
+  --accent-green: #00ff9c;
+  --accent-blue: #58a6ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Consolas, "SFMono-Regular", Menlo, Monaco, "Courier New", monospace;
+}
+
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { color: var(--accent-green); }
+
+.site-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  background: #0b1016;
+  padding: 24px;
+}
+
+.avatar {
+  display: block;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-green);
+  background-image: url("assets/avatar.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin: 0 auto 16px;
+}
+
+.site-title {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  color: var(--accent-green);
+  text-align: center;
+}
+
+.intro {
+  margin: 0 0 12px;
+  line-height: 1.55;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 18px;
+}
+
+.tags span {
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  font-size: 0.76rem;
+  border-radius: 4px;
+  background: rgba(88, 166, 255, 0.05);
+}
+
+.github-link {
+  display: inline-block;
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+  padding: 8px 10px;
+  border-radius: 4px;
+  transition: 0.2s ease;
+}
+
+.github-link:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.main {
+  padding: 28px;
+}
+
+.top-nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.top-nav a {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: 0.2s ease;
+}
+
+.top-nav a:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-blue);
+}
+
+.top-nav a.active {
+  color: var(--accent-green);
+  border-color: var(--accent-green);
+  background: rgba(0, 255, 156, 0.08);
+}
+
+.lang-toggle {
+  margin-left: auto;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.lang-toggle:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.content-head h2 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+}
+
+.content-head p {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+body[data-page="web"] .post-grid,
+body[data-page="pentest"] .post-grid,
+body[data-page="ad"] .post-grid {
+  grid-template-columns: 1fr;
+}
+
+.post-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-blue);
+}
+
+.post-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+  color: var(--text);
+}
+
+.post-meta {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.badge {
+  display: inline-block;
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  margin-bottom: 10px;
+}
+
+.post-desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.post-article {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+}
+
+.post-article pre {
+  margin: 14px 0 0;
+  background: #0b1016;
+  border: 1px solid var(--border);
+  padding: 12px;
+  overflow-x: auto;
+}
+
+@media (max-width: 980px) {
+  .site-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: relative;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .main {
+    padding: 20px;
+  }
+}
