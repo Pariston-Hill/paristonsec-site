@@ -187,7 +187,7 @@ function renderSinglePost(lang) {
 
 (function init() {
   const page = document.body.dataset.page || "home";
-  const lang = "en";
+  const lang = localStorage.getItem("lang") || "zh";
   setLanguage(lang);
   applyStaticTranslations(lang);
   setupLanguageToggle(lang, page);

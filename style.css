@@ -324,6 +324,32 @@ body[data-page="ad"] .post-grid {
   min-width: 220px;
 }
 
+.post-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 14px 0 18px;
+}
+
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0b1016;
+  border: 1px solid var(--border);
+}
+
+.post-body th,
+.post-body td {
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.post-body th {
+  color: var(--accent-green);
+  background: rgba(0, 255, 156, 0.06);
+}
+
 .post-body hr {
   border: 0;
   border-top: 1px solid var(--border);
