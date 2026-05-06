@@ -29,7 +29,11 @@ const translations = {
     post_not_found: "Post Not Found",
     invalid_post: "Invalid post id",
     post_hint: "Use links from the home/category pages to open a valid post.",
-    no_code: "No code snippet available."
+    no_code: "No code snippet available.",
+    meta_category: "Category",
+    meta_date: "Date",
+    toc_title: "Contents",
+    back_to_top: "Back to top"
   },
   zh: {
     site_title: "红队技术档案",
@@ -61,14 +65,18 @@ const translations = {
     post_not_found: "未找到文章",
     invalid_post: "文章参数无效",
     post_hint: "请从首页或分类页点击有效文章链接访问。",
-    no_code: "暂无代码片段。"
+    no_code: "暂无代码片段。",
+    meta_category: "分类",
+    meta_date: "日期",
+    toc_title: "目录",
+    back_to_top: "返回顶部"
   }
 };
 
 const posts = window.postsData || [];
 
 function getLanguage() {
-  return localStorage.getItem("lang") || "en";
+  return localStorage.getItem("lang") || "zh";
 }
 
 function setLanguage(lang) {
@@ -149,6 +157,54 @@ function renderCards(page, lang) {
   `).join("");
 }
 
+function slugifyHeading(text, index) {
+  const base = text
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "");
+  return base || `section-${index + 1}`;
+}
+
+function renderPostTools(lang) {
+  const article = document.querySelector(".post-article");
+  const existingToc = document.querySelector(".post-toc");
+  const existingTop = document.querySelector(".back-to-top");
+  if (existingToc) existingToc.remove();
+  if (existingTop) existingTop.remove();
+  if (!article) return;
+
+  const headings = [...article.querySelectorAll(".post-body h2, .post-body h3, .post-body h4")];
+  const seen = new Map();
+  headings.forEach((heading, index) => {
+    const raw = slugifyHeading(heading.textContent || "", index);
+    const count = seen.get(raw) || 0;
+    seen.set(raw, count + 1);
+    heading.id = count ? `${raw}-${count + 1}` : raw;
+  });
+
+  if (headings.length > 1) {
+    const toc = document.createElement("aside");
+    toc.className = "post-toc";
+    toc.innerHTML = `
+      <p class="post-toc-title">${t("toc_title", lang)}</p>
+      <nav>${headings.map((heading) => `
+        <a class="toc-${heading.tagName.toLowerCase()}" href="#${heading.id}">${heading.textContent}</a>
+      `).join("")}</nav>
+    `;
+    article.insertAdjacentElement("afterend", toc);
+  }
+
+  const backToTop = document.createElement("button");
+  backToTop.className = "back-to-top";
+  backToTop.type = "button";
+  backToTop.textContent = "↑";
+  backToTop.setAttribute("aria-label", t("back_to_top", lang));
+  backToTop.setAttribute("title", t("back_to_top", lang));
+  backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  document.body.appendChild(backToTop);
+}
+
 function renderSinglePost(lang) {
   const params = new URLSearchParams(window.location.search);
   const postId = params.get("id") || document.body.dataset.postId;
@@ -170,7 +226,7 @@ function renderSinglePost(lang) {
   }
 
   titleEl.textContent = post.title[lang];
-  metaEl.textContent = `Category: ${post.categoryLabel[lang]} | Date: ${post.date}`;
+  metaEl.textContent = `${t("meta_category", lang)}: ${post.categoryLabel[lang]} | ${t("meta_date", lang)}: ${post.date}`;
   document.title = `${post.title[lang]} - Red Team Notes`;
 
   if (post.contentHtml && post.contentHtml[lang]) {
@@ -182,6 +238,7 @@ function renderSinglePost(lang) {
     document.getElementById("post-code").textContent = post.code || t("no_code", lang);
     document.getElementById("post-code-block").hidden = !post.code;
   }
+  renderPostTools(lang);
   setActiveNav(post.category);
 }
 

@@ -98,6 +98,17 @@ a:hover { color: var(--accent-green); }
   padding: 28px;
 }
 
+body[data-page="post"] .main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 20px;
+  align-items: start;
+}
+
+body[data-page="post"] .top-nav {
+  grid-column: 1 / -1;
+}
+
 .top-nav {
   display: flex;
   gap: 10px;
@@ -257,6 +268,7 @@ body[data-page="ad"] .post-grid {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 20px;
+  min-width: 0;
 }
 
 .post-body {
@@ -350,6 +362,72 @@ body[data-page="ad"] .post-grid {
   background: rgba(0, 255, 156, 0.06);
 }
 
+.post-toc {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(22, 27, 34, 0.86);
+  padding: 14px;
+}
+
+.post-toc-title {
+  margin: 0 0 10px;
+  color: var(--accent-green);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.post-toc nav {
+  display: grid;
+  gap: 8px;
+}
+
+.post-toc a {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.post-toc a:hover {
+  color: var(--accent-green);
+}
+
+.post-toc .toc-h3 {
+  padding-left: 10px;
+}
+
+.post-toc .toc-h4 {
+  padding-left: 20px;
+  font-size: 0.74rem;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 34px;
+  bottom: 34px;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(0, 255, 156, 0.52);
+  border-radius: 8px;
+  background: rgba(22, 27, 34, 0.68);
+  color: var(--accent-green);
+  font: inherit;
+  font-size: 1.15rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+.back-to-top:hover {
+  background: rgba(0, 255, 156, 0.12);
+}
+
 .post-body hr {
   border: 0;
   border-top: 1px solid var(--border);
@@ -370,5 +448,21 @@ body[data-page="ad"] .post-grid {
 
   .main {
     padding: 20px;
+  }
+
+  body[data-page="post"] .main {
+    display: block;
+  }
+
+  .post-toc {
+    position: relative;
+    top: auto;
+    max-height: none;
+    margin-top: 16px;
+  }
+
+  .back-to-top {
+    right: 20px;
+    bottom: 20px;
   }
 }
