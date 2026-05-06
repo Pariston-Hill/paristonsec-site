@@ -3080,15 +3080,15 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
   },
   {
     id: "windows-privilege-escalation",
-    href: "posts/pentest/windows-privilege-escalation.html",
+    href: "posts/ad/windows-privilege-escalation.html",
     title: {
       "en": "Windows Privilege Escalation: Complete Enumeration Methodology",
       "zh": "Windows 权限提升：完整枚举方法论"
     },
-    category: "pentest",
+    category: "ad",
     categoryLabel: {
-      "en": "Penetration Testing",
-      "zh": "渗透测试"
+      "en": "Active Directory",
+      "zh": "活动目录"
     },
     description: {
       "en": "Organize Windows local privilege escalation targets, scenarios, tools, situational awareness, systems, users, services and permission enumeration according to the original note structure.",
