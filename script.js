@@ -166,6 +166,24 @@ function slugifyHeading(text, index) {
   return base || `section-${index + 1}`;
 }
 
+function scrollHeadingToReadablePosition(heading, behavior = "smooth") {
+  if (!heading) return;
+  const rect = heading.getBoundingClientRect();
+  const targetTop = window.scrollY + rect.top - window.innerHeight * 0.42;
+  window.scrollTo({
+    top: Math.max(0, targetTop),
+    behavior
+  });
+}
+
+function safeDecodeHash(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function renderPostTools(lang) {
   const article = document.querySelector(".post-article");
   const existingToc = document.querySelector(".post-toc");
@@ -201,6 +219,18 @@ function renderPostTools(lang) {
       });
     };
 
+    tocLinks.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const id = safeDecodeHash(link.getAttribute("href").slice(1));
+        const heading = document.getElementById(id);
+        if (!heading) return;
+        event.preventDefault();
+        history.pushState(null, "", `#${encodeURIComponent(id)}`);
+        setActiveToc(id);
+        scrollHeadingToReadablePosition(heading);
+      });
+    });
+
     setActiveToc(headings[0].id);
     const observer = new IntersectionObserver((entries) => {
       const visible = entries
@@ -214,6 +244,14 @@ function renderPostTools(lang) {
       threshold: [0, 1]
     });
     headings.forEach((heading) => observer.observe(heading));
+  }
+
+  if (window.location.hash) {
+    const hashId = safeDecodeHash(window.location.hash.slice(1));
+    const targetHeading = document.getElementById(hashId);
+    if (targetHeading) {
+      requestAnimationFrame(() => scrollHeadingToReadablePosition(targetHeading, "auto"));
+    }
   }
 
   const backToTop = document.createElement("button");

@@ -110,11 +110,18 @@ body[data-page="post"] .top-nav {
 }
 
 .top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
   gap: 10px;
-  margin-bottom: 22px;
+  margin: -28px -28px 22px;
+  padding: 28px 28px 18px;
   flex-wrap: wrap;
   align-items: center;
+  background: rgba(13, 17, 23, 0.92);
+  border-bottom: 1px solid rgba(48, 54, 61, 0.72);
+  backdrop-filter: blur(10px);
 }
 
 .top-nav a {
@@ -281,6 +288,7 @@ body[data-page="ad"] .post-grid {
 .post-body h4 {
   color: var(--accent-green);
   line-height: 1.25;
+  scroll-margin-top: 42vh;
 }
 
 .post-body h2 {
@@ -380,8 +388,8 @@ body[data-page="ad"] .post-grid {
 
 .post-toc {
   position: sticky;
-  top: 24px;
-  max-height: calc(100vh - 48px);
+  top: 108px;
+  max-height: calc(100vh - 132px);
   overflow-y: auto;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -469,6 +477,11 @@ body[data-page="ad"] .post-grid {
 
   .main {
     padding: 20px;
+  }
+
+  .top-nav {
+    margin: -20px -20px 20px;
+    padding: 20px 20px 14px;
   }
 
   body[data-page="post"] .main {
