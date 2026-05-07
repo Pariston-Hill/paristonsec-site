@@ -37,6 +37,14 @@ a:hover { color: var(--accent-green); }
   padding: 24px;
 }
 
+body[data-page="post"] .site-layout {
+  grid-template-columns: 1fr;
+}
+
+body[data-page="post"] .sidebar {
+  display: none;
+}
+
 .avatar {
   display: block;
   width: 220px;

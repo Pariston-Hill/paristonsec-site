@@ -143,9 +143,6 @@ function renderCards(page, lang) {
   if (page === "web" || page === "pentest" || page === "ad") {
     list = list.filter((p) => p.category === page);
   }
-  if (page === "home") {
-    list = list.slice(0, 6);
-  }
 
   grid.innerHTML = list.map((post) => `
     <article class="post-card">
