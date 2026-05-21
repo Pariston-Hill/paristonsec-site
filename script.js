@@ -18,6 +18,7 @@ const translations = {
     nav_web: "Web Security",
     nav_pentest: "Penetration Testing",
     nav_ad: "Active Directory",
+    nav_exploit_research: "Exploit Research",
     home_title: "Recent Blogs",
     home_desc: "Latest research notes, attack chain walkthroughs, and lab reproductions.",
     web_title: "Web Security",
@@ -26,6 +27,8 @@ const translations = {
     pentest_desc: "Real-world assessment flow, pivoting techniques, and operator methodology.",
     ad_title: "Active Directory",
     ad_desc: "AD attack paths, escalation opportunities, and domain operation notes.",
+    exploit_research_title: "Exploit Research",
+    exploit_research_desc: "White-box auditing, vulnerability discovery, and end-to-end exploit development notes.",
     post_not_found: "Post Not Found",
     invalid_post: "Invalid post id",
     post_hint: "Use links from the home/category pages to open a valid post.",
@@ -54,6 +57,7 @@ const translations = {
     nav_web: "Web 安全",
     nav_pentest: "渗透测试",
     nav_ad: "活动目录",
+    nav_exploit_research: "漏洞利用研究",
     home_title: "最近博客",
     home_desc: "最新研究笔记、攻击链复盘与实验环境复现记录。",
     web_title: "Web 安全",
@@ -62,6 +66,8 @@ const translations = {
     pentest_desc: "真实项目中的评估流程、横向移动与操作方法论。",
     ad_title: "活动目录",
     ad_desc: "AD 攻击路径、提权机会与域环境实战笔记。",
+    exploit_research_title: "漏洞利用研究",
+    exploit_research_desc: "白盒审计、漏洞发现与完整利用链开发笔记。",
     post_not_found: "未找到文章",
     invalid_post: "文章参数无效",
     post_hint: "请从首页或分类页点击有效文章链接访问。",
@@ -124,7 +130,13 @@ function setupLanguageToggle(currentLang, page) {
 }
 
 function setActiveNav(page) {
-  const navMap = { home: "blog", web: "web", pentest: "pentest", ad: "ad" };
+  const navMap = {
+    home: "blog",
+    web: "web",
+    pentest: "pentest",
+    "exploit-research": "exploit-research",
+    ad: "ad"
+  };
   const activeKey = navMap[page];
   document.querySelectorAll(".top-nav a").forEach((item) => {
     if (item.dataset.nav === activeKey) {
@@ -140,7 +152,7 @@ function renderCards(page, lang) {
   if (!grid) return;
 
   let list = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
-  if (page === "web" || page === "pentest" || page === "ad") {
+  if (page === "web" || page === "pentest" || page === "ad" || page === "exploit-research") {
     list = list.filter((p) => p.category === page);
   }
 

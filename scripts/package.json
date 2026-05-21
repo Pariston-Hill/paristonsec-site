@@ -1,0 +1,8 @@
+{
+  "name": "paristonsec-site-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "marked": "^15.0.12"
+  }
+}
