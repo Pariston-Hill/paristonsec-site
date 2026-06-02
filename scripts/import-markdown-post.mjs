@@ -65,7 +65,7 @@ function postProcessHtml(html) {
   return normalizeBlockHtml(
     html
     .replace(
-      /<p>([\s\S]*?)!\[([^\]]*)\]\(([^)]+)\)([\s\S]*?)<\/p>/g,
+      /<p>([^<]*?)!\[([^\]]*)\]\(([^)]+)\)([^<]*?)<\/p>/g,
       (_, before, alt, src, after) => {
         const chunks = [];
         const lead = before.replace(/\n/g, " ").trim();
