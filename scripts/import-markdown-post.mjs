@@ -48,6 +48,13 @@ function preprocessMarkdown(markdown, postSlug) {
   let text = stripDuplicateTail(markdown);
   text = adjustMarkdownHeadings(text);
 
+  text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, href) => {
+    const source = href.trim().replace(/^<|>$/g, "");
+    if (/^(?:[a-z]+:|\/|#|assets\/posts\/)/i.test(source)) return match;
+    const file = path.basename(source.replace(/\\/g, "/"));
+    return `![${alt}](assets/posts/${postSlug}/${file})`;
+  });
+
   text = text.replace(/!\[\[([^\]]+)\]\]/g, (_, name) => {
     const file = name.trim();
     return `\n\n![${file}](assets/posts/${postSlug}/${file})\n\n`;
@@ -131,6 +138,29 @@ function copyImages(markdown, imagesDir, assetDir) {
     }
     fs.copyFileSync(src, dest);
     copied.push(file);
+  }
+
+  return copied;
+}
+
+function copyMarkdownImages(markdown, markdownDir, assetDir) {
+  const refs = [...markdown.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)]
+    .map((match) => match[1].trim().replace(/^<|>$/g, ""))
+    .filter((href) => !/^(?:[a-z]+:|\/|#|assets\/posts\/)/i.test(href));
+  const unique = [...new Set(refs)];
+  const copied = [];
+
+  fs.mkdirSync(assetDir, { recursive: true });
+
+  for (const href of unique) {
+    const src = path.resolve(markdownDir, href);
+    const dest = path.join(assetDir, path.basename(href.replace(/\\/g, "/")));
+    if (!fs.existsSync(src)) {
+      console.warn(`[warn] missing markdown image: ${href}`);
+      continue;
+    }
+    fs.copyFileSync(src, dest);
+    copied.push(href);
   }
 
   return copied;
@@ -315,6 +345,11 @@ export function importPost({
   const postSlug = id;
   const assetDir = path.join(ROOT, "assets/posts", postSlug);
   const copied = copyImages(markdownZh, imagesDir, assetDir);
+  const copiedMarkdownImages = copyMarkdownImages(
+    markdownZh,
+    path.dirname(markdownPath),
+    assetDir
+  );
   if (markdownPathEn) {
     copyImages(fs.readFileSync(markdownPathEn, "utf8"), imagesDir, assetDir);
   }
@@ -353,7 +388,10 @@ export function importPost({
   createCategoryPage();
   patchSiteNavigation();
 
-  return { post, copiedImages: copied.length };
+  return {
+    post,
+    copiedImages: copied.length + copiedMarkdownImages.length
+  };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
